@@ -7,5 +7,5 @@
 
 
 module.exports =  {
-    '@primary-color': '#f00'
+    '@primary-color': '#fff'
 };
