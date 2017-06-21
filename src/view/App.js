@@ -451,7 +451,7 @@ class App extends Component {
                         <div className="header">
                             <div className="icon-logo" style={{marginRight: '20px'}}>
                             </div><Button type={'primary'} size={'small'} style={{marginRight: '20px'}}>最大化
-                            </Button><Select size={'small'}>
+                            </Button><Select  defaultValue={this.state.symbols[0].name} size={'small'}>
                             { this.state.symbols.map((symbol) => <Option key={symbol.name}> {symbol.name} </Option>) }
                             </Select>
                         </div>

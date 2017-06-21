@@ -5,42 +5,57 @@
 @padding: 10px;
 
 html {
-  width: 100%;
-  height: 100%;
+	width: 100%;
+	height: 100%;
 }
 body {
-  margin: 0;
-  width: 100%;
-  height: 100%;
-  padding: 0;
+	margin: 0;
+	width: 100%;
+	height: 100%;
+	padding: 0;
 }
 body {
-  margin: 0;
-  padding: 0;
-  background: #3a3a3a;
-  background: linear-gradient(to bottom, #3a3a3a 0%, #3a3a3a 100%);
-  color: rgb(244, 245, 246);
-  font-size: 14px;
-  font-family: "Microsoft Yahei";
+	margin: 0;
+	padding: 0;
+	background: #3a3a3a;
+	background: linear-gradient(to bottom, #3a3a3a 0%, #3a3a3a 100%);
+	color: rgb(244, 245, 246);
+	font-size: 12px;
+	font-family: "Microsoft Yahei";
+}
+
+:focus {
+	outline: none;
 }
 
 .panel {
-  &>.ant-tabs {
-    height: 100%;
-    &>.ant-tabs-bar {
-      margin-bottom: 0;
-    }
-    &>.ant-tabs-content {
-      position: absolute;
-      top: 30px;
-      bottom: 0;
-      padding: 6px 4px;
-      background-color: @component-bg;
-      &>.ant-tabs-tabpane-active {
-        border-radius: 4px;
-        height: 100%;
-        background: #1e1f1f;
-      }
-    }
-  }
+	&>.ant-tabs {
+		height: 100%;
+		&>.ant-tabs-bar {
+			margin-bottom: 0;
+		}
+		&>.ant-tabs-content {
+			position: absolute;
+			top: 30px;
+			bottom: 0;
+			padding: 6px 4px;
+			background-color: @component-bg;
+			&>.ant-tabs-tabpane-active {
+				border-radius: 4px;
+				height: 100%;
+				background: #1e1f1f;
+			}
+		}
+	}
+}
+
+.ant-select {
+	outline: none;
+}
+.ant-tabs-nav-container {
+	font-size: 12px;
+	line-height: 21px;
+}
+.ant-select-open .ant-select-selection {
+	box-shadow: none;
 }
