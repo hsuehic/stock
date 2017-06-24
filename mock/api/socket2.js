@@ -1,10 +1,10 @@
-{
+module.exports = {
     "type": "LOGIN",
     "code": 0,
     "data": {
         "dcs": []
     }
-}
+};
 
 
 /*type "USERLOGIN"(String) 登录命令的结果

@@ -1,4 +1,4 @@
-{
+module.exports = {
     "type": "INIT",
     "code": 0,
     "data": {
@@ -9,4 +9,4 @@
         "show": 10,
         "session_id": ""
     }
-}
+};

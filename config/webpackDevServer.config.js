@@ -1,5 +1,5 @@
 'use strict';
-
+const path = require('path');
 const errorOverlayMiddleware = require('react-error-overlay/middleware');
 const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMiddleware');
 const config = require('./webpack.config.dev');
@@ -79,6 +79,16 @@ module.exports = function(proxy, allowedHost) {
     public: allowedHost,
     proxy,
     setup(app) {
+      app.all('/api/:file',function (req, res, next) {
+        let mockFilePath = path.resolve(paths.mockDir, `${req.params.file}.js`);
+
+        // res.sendFile(mockFilePath);
+
+        let json = require(mockFilePath);
+        res.json(json);
+
+      });
+
       // This lets us open files from the runtime error overlay.
       app.use(errorOverlayMiddleware());
       // This service worker file is effectively a 'no-op' that will reset any

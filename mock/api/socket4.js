@@ -1,4 +1,4 @@
-{
+module.exports = {
     "type": "SYMBOLGROUP",
     "code": 0,
     "data": {
@@ -213,7 +213,7 @@
             }
         ]
     }
-}
+};
 
 /* Loss：方向判断失败亏损率百分比
  * Type: 此货币允许的交易类型。目前只有-1 1，-1代表看跌DOWN，1代表看涨 UP

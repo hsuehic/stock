@@ -1,4 +1,4 @@
-{
+module.exports = {
     "type": "ACCOUNTDETAILS",
     "code": 0,
     "data": {
@@ -8,7 +8,7 @@
         "name_base64": "VGVzdCBBY2NvdW50",
         "name": "Test Account"
     }
-}
+};
 
 /*
  *  type "ACCOUNTDETAILS"(String) 获取账户信息命令的结果

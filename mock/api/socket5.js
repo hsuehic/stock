@@ -1,4 +1,4 @@
-{
+module.exports = {
     "type": "GETOPENORDER",
     "code": 0,
     "data": {
@@ -16,4 +16,4 @@
             }
         ]
     }
-}
+};

@@ -1,4 +1,4 @@
-{
+module.exports = {
     "type": "QUOTESHISTORY",
     "code": 0,
     "data": {
@@ -3591,7 +3591,7 @@
         "symbols": "GBPUSDbo",
         "period": 1
     }
-}
+};
 
 
 /*

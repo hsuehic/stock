@@ -1,10 +1,11 @@
-{
+module.exports = {
     "type": "OPENORDER",
     "code": 2073,
     "data": {
         "flag": -5812525
     }
-}
+};
+
 
 /*
 type "OPENORDER"(String) 获取账户信息命令的结果

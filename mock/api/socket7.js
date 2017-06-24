@@ -1,4 +1,4 @@
-{
+module.exports = {
     "type": "GETHISTORYORDER",
     "code": 0,
     "data": {
@@ -351,7 +351,7 @@
         ],
         "flag": 0
     }
-}
+};
 
 /* type "ACCOUNTDETAILS"(String) 获取账户信息命令的结果
 

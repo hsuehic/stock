@@ -1,4 +1,4 @@
-{
+module.exports = {
     "type": "PRICEREQUEST",
     "code": 0,
     "data": {
@@ -17,4 +17,4 @@
             }
         ]
     }
-}
+};
