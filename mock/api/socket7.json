@@ -1,0 +1,375 @@
+{
+    "type": "GETHISTORYORDER",
+    "code": 0,
+    "data": {
+        "orders": [
+            {
+                "position": 1399797,
+                "symbol": "EURUSD.bo",
+                "type": -1,
+                "open_price": 1.05569,
+                "open_time": 1481524814,
+                "investment": 5,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 1.05568,
+                "close_time": 1481524874,
+                "status": 1,
+                "cmd": 1,
+                "profit": 4
+            },
+            {
+                "position": 1399828,
+                "symbol": "USDJPYbo",
+                "type": 1,
+                "open_price": 115.329,
+                "open_time": 1481634686,
+                "investment": 5,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 115.295,
+                "close_time": 1481634746,
+                "status": -1,
+                "cmd": 0,
+                "profit": -5
+            },
+            {
+                "position": 1399829,
+                "symbol": "USDJPYbo",
+                "type": -1,
+                "open_price": 115.33,
+                "open_time": 1481634688,
+                "investment": 5,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 115.295,
+                "close_time": 1481634748,
+                "status": 1,
+                "cmd": 1,
+                "profit": 4
+            },
+            {
+                "position": 1399831,
+                "symbol": "GBPUSDbo",
+                "type": 1,
+                "open_price": 1.27176,
+                "open_time": 1481641200,
+                "investment": 5,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 1.27165,
+                "close_time": 1481642117,
+                "status": -1,
+                "cmd": 0,
+                "profit": -5
+            },
+            {
+                "position": 1399832,
+                "symbol": "GBPUSDbo",
+                "type": -1,
+                "open_price": 1.27173,
+                "open_time": 1481641204,
+                "investment": 5,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 1.27165,
+                "close_time": 1481642117,
+                "status": 1,
+                "cmd": 1,
+                "profit": 4
+            },
+            {
+                "position": 1399833,
+                "symbol": "GBPJPYbo",
+                "type": 1,
+                "open_price": 145.781,
+                "open_time": 1481675582,
+                "investment": 5,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 145.773,
+                "close_time": 1481675642,
+                "status": -1,
+                "cmd": 0,
+                "profit": -5
+            },
+            {
+                "position": 1399834,
+                "symbol": "GBPJPYbo",
+                "type": 1,
+                "open_price": 145.781,
+                "open_time": 1481676388,
+                "investment": 5,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 145.784,
+                "close_time": 1481676447,
+                "status": 1,
+                "cmd": 0,
+                "profit": 4
+            },
+            {
+                "position": 1399893,
+                "symbol": "GBPJPYbo",
+                "type": 1,
+                "open_price": 145.683,
+                "open_time": 1481713392,
+                "investment": 5,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 145.684,
+                "close_time": 1481713452,
+                "status": 1,
+                "cmd": 0,
+                "profit": 4
+            },
+            {
+                "position": 1399927,
+                "symbol": "GBPJPYbo",
+                "type": 1,
+                "open_price": 146.032,
+                "open_time": 1481732183,
+                "investment": 5,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 146.059,
+                "close_time": 1481732243,
+                "status": 1,
+                "cmd": 0,
+                "profit": 4
+            },
+            {
+                "position": 1399930,
+                "symbol": "EURUSDbo",
+                "type": -1,
+                "open_price": 1.05052,
+                "open_time": 1481776686,
+                "investment": 5,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 1.05061,
+                "close_time": 1481776746,
+                "status": -1,
+                "cmd": 1,
+                "profit": -5
+            },
+            {
+                "position": 1399931,
+                "symbol": "AUDUSDbo",
+                "type": -1,
+                "open_price": 0.74242,
+                "open_time": 1481778133,
+                "investment": 5,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 0.74236,
+                "close_time": 1481778193,
+                "status": 1,
+                "cmd": 1,
+                "profit": 4
+            },
+            {
+                "position": 1399932,
+                "symbol": "EURUSDbo",
+                "type": 1,
+                "open_price": 1.0511,
+                "open_time": 1481781449,
+                "investment": 5,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 1.05115,
+                "close_time": 1481781509,
+                "status": 1,
+                "cmd": 0,
+                "profit": 4
+            },
+            {
+                "position": 1399933,
+                "symbol": "EURJPYbo",
+                "type": 1,
+                "open_price": 123.453,
+                "open_time": 1481782596,
+                "investment": 5,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 123.451,
+                "close_time": 1481782656,
+                "status": -1,
+                "cmd": 0,
+                "profit": -5
+            },
+            {
+                "position": 1400055,
+                "symbol": "EURCHFbo",
+                "type": -1,
+                "open_price": 1.06878,
+                "open_time": 1482247853,
+                "investment": 5,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 1.06874,
+                "close_time": 1482247913,
+                "status": 1,
+                "cmd": 1,
+                "profit": 4
+            },
+            {
+                "position": 1400201,
+                "symbol": "GBPUSDbo",
+                "type": 1,
+                "open_price": 1.21637,
+                "open_time": 1484111877,
+                "investment": 5,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 1.21625,
+                "close_time": 1484111937,
+                "status": -1,
+                "cmd": 0,
+                "profit": -5
+            },
+            {
+                "position": 1400202,
+                "symbol": "GBPUSDbo",
+                "type": -1,
+                "open_price": 1.21636,
+                "open_time": 1484111881,
+                "investment": 5,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 1.21625,
+                "close_time": 1484111941,
+                "status": 1,
+                "cmd": 1,
+                "profit": 4
+            },
+            {
+                "position": 1400203,
+                "symbol": "USDCADbo",
+                "type": -1,
+                "open_price": 1.32461,
+                "open_time": 1484112062,
+                "investment": 5,
+                "expiration": 15,
+                "win": 82,
+                "close_price": 1.3248,
+                "close_time": 1484112962,
+                "status": -1,
+                "cmd": 1,
+                "profit": -5
+            },
+            {
+                "position": 1400851,
+                "symbol": "USDJPYbo",
+                "type": -1,
+                "open_price": 113.786,
+                "open_time": 1488947179,
+                "investment": 5,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 113.788,
+                "close_time": 1488947239,
+                "status": -1,
+                "cmd": 1,
+                "profit": -5
+            },
+            {
+                "position": 1400852,
+                "symbol": "USDJPYbo",
+                "type": 1,
+                "open_price": 113.786,
+                "open_time": 1488947180,
+                "investment": 5,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 113.786,
+                "close_time": 1488947240,
+                "status": 0,
+                "cmd": 0,
+                "profit": 0
+            },
+            {
+                "position": 1401008,
+                "symbol": "EURUSDbo",
+                "type": -1,
+                "open_price": 1.07633,
+                "open_time": 1489993037,
+                "investment": 5,
+                "expiration": 1440,
+                "win": 86,
+                "close_price": 1.07625,
+                "close_time": 1490079437,
+                "status": 1,
+                "cmd": 1,
+                "profit": 4.3
+            },
+            {
+                "position": 1401009,
+                "symbol": "GBPCHFbo",
+                "type": 1,
+                "open_price": 1.2349,
+                "open_time": 1489993050,
+                "investment": 5,
+                "expiration": 1440,
+                "win": 86,
+                "close_price": 1.23302,
+                "close_time": 1490079450,
+                "status": -1,
+                "cmd": 0,
+                "profit": -5
+            },
+            {
+                "position": 1401010,
+                "symbol": "GBPUSDbo",
+                "type": 1,
+                "open_price": 1.24555,
+                "open_time": 1490190795,
+                "investment": 100,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 1.24573,
+                "close_time": 1490190855,
+                "status": 1,
+                "cmd": 0,
+                "profit": 80
+            },
+            {
+                "position": 1401058,
+                "symbol": "GBPUSDbo",
+                "type": 1,
+                "open_price": 1.29424,
+                "open_time": 1496851143,
+                "investment": 100,
+                "expiration": 1,
+                "win": 80,
+                "close_price": 1.29463,
+                "close_time": 1496851203,
+                "status": 1,
+                "cmd": 0,
+                "profit": 80
+            }
+        ],
+        "flag": 0
+    }
+}
+
+/* type "ACCOUNTDETAILS"(String) 获取账户信息命令的结果
+
+    code 0(int) 命令执行结果0，代表成功,其他code含义请查看附件
+
+    data {object}服务器返回的消息结果，code为0时才会有data数据。
+
+    Position 订单号
+    Symbol 货币名称
+    Type 交易类型。目前只有-1 1，-1代表看跌DOWN，1代表看涨 UP
+    Open_price 开仓价
+    Open_time 开仓时间
+    Investment 投资金额
+    Expiration 预期时间
+    Win 盈利率
+    Close_price 平仓价格
+    Close_time 平仓时间
+    Status -1亏损 0 平局 1 盈利
+    Cmd 1看涨 -1看跌
+    Profit 盈利值
+*/
