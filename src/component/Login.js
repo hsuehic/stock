@@ -7,7 +7,7 @@
 
 
 import React from 'react';
-import { Form, Icon, Input, Button, Checkbox } from 'antd';
+import { Form, Icon, Input, Button, Checkbox, notification } from 'antd';
 
 import {login} from '../api';
 import logo from '../assets/clm3-logo.png';
@@ -20,7 +20,8 @@ export default class Login extends React.Component {
         super(props);
         this.state = {
             loginError: false,
-            errorMessage: ''
+            errorMessage: '',
+            isFetching: false
         };
     }
 
@@ -33,24 +34,36 @@ export default class Login extends React.Component {
     }
 
     onLogin () {
-        let username = document.getElementById('username');
-        let password = document.getElementById('password');
+        let username = document.getElementById('username').value;
+        let password = document.getElementById('password').value;
         let promise = login({
-            username,
+            login: username,
             password
         });
 
+        this.setState({
+            isFetching: true
+        });
         promise.then((res) => {
-            if (res) {
+            this.setState({
+                isFetching: false
+            });
+            if (res.code === 0) {
                 window.location.href = 'index.html';
             } else {
                 this.setState({
                     loginError: true,
-                    errorMessage: '用户名或密码错误!'
+                    errorMessage: res.message
                 })
             }
         }).catch((ex) => {
-            console.log(ex);
+            this.setState({
+                isFetching: false
+            });
+            notification.error({
+                message: '网络请求出错了！',
+                description: '返回的数据格式不正确！'
+            });
         });
     }
 
@@ -65,10 +78,10 @@ export default class Login extends React.Component {
 
             <form id="loginModel" className="login-form" action="/index.html" method="post">
                 <div className="login-row">
-                    <input id="username" name="username" type="text" value="" placeholder="Account Number" autoCapitalize="off" autoCorrect="off" />
+                    <input id="username" name="login" type="text" placeholder="Account Number" />
                 </div>
                 <div className="login-row">
-                    <input id="password" name="password" type="password" value="" placeholder="Password" />
+                    <input id="password" name="password" type="password" placeholder="Password" />
                 </div>
                 {
                     this.state.loginError &&
@@ -78,7 +91,7 @@ export default class Login extends React.Component {
                 }
 
                 <div className="login-row login-button-row">
-                    <input type="button" id="login-button" onClick={this.onLogin.bind(this)} value="Login" name="login" className="btn" />
+                    <Button disabled={this.state.isFetching} loading={this.state.isFetching} type="button" id="login-button" onClick={this.onLogin.bind(this)} className="btn">Login</Button>
                 </div>
                 <div className="login-row register-demouser-href-row">
                     <a className="btn" href="http://www.clmforex.com/demo-account/" target="_blank">Create Account</a>

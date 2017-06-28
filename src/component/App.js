@@ -21,7 +21,7 @@ const Option = Select.Option;
 
 const TabPane = Tabs.TabPane;
 
-const CHART_CONTAINER_STYLE = { position: 'relative', marginLeft: '258px', height: '100%', zIndex: 1};
+const CHART_CONTAINER_STYLE = { position: 'relative', marginLeft: '358px', height: '100%', zIndex: 1};
 const CHART_CONTAINER_STYLE_FULL_SCREEN = {position: 'fixed', top: '0', left: '0', marginLeft: '0', width: '100%', height: '100%', zIndex: 99999};
 
 
@@ -365,8 +365,9 @@ class App extends Component {
 
     getLatestQuotes () {
         let promise = getQuotesHistory();
-        promise.then(({quotes}) => {
-            if (quotes) {
+        promise.then((res) => {
+            if (res.code === 0) {
+                let quotes = res.data;
                 let data = [];
                 let times = [];
                 quotes.forEach((quote) => {
@@ -456,7 +457,14 @@ class App extends Component {
                 <div className="App-content">
                     <div className="nav panel">
                         <Tabs type="card">
-                            <TabPane tab="二元期商品" key="1">Content of Tab Pane 1</TabPane>
+                            <TabPane tab="二元期商品" key="1">
+                                <div className="table-header">
+                                    <div className="row header">
+                                        <div className="cell name">商品</div>
+                                        <div className="cell price">价位</div>
+                                    </div>
+                                </div>
+                            </TabPane>
                         </Tabs>
                     </div>
                     <div className="main" style={this.state.chartContainerStyle}>
@@ -490,12 +498,57 @@ class App extends Component {
                 <div className="App-footer panel">
                     <Tabs type="card">
                         <TabPane tab="二元期订单" key="1">
-                            <Table>
-
-                            </Table>
+                            <div className="table-header">
+                                <div className="row header">
+                                    <div className="cell">单号</div>
+                                    <div className="cell">资产</div>
+                                    <div className="cell">开仓价</div>
+                                    <div className="cell">现价</div>
+                                    <div className="cell">看涨/看跌</div>
+                                    <div className="cell">时间</div>
+                                    <div className="cell">到期</div>
+                                    <div className="cell">投资</div>
+                                    <div className="cell">支出</div>
+                                    <div className="cell">状态</div>
+                                    <div className="cell"></div>
+                                </div>
+                            </div>
+                            <div className="table-footer">
+                                <div className="row header">
+                                    <div className="cell" style={{width: '100px'}}>余客&nbsp; 1006.16</div>
+                                    <div className="cell" style={{width: '100px'}}>净值&nbsp; 1006.23</div>
+                                    <div className="cell" style={{width: '130px'}}>已用保证金&nbsp; 108348</div>
+                                    <div className="cell" style={{width: '130px'}}>可用保证金&nbsp; 120384</div>
+                                    <div className="cell" style={{width: '130px'}}>保证金比例&nbsp; 1500%</div>
+                                    <div className="cell"></div>
+                                </div>
+                            </div>
                         </TabPane>
-                        <TabPane tab="日志" key="2">Content of Tab Pane 1</TabPane>
-                        <TabPane tab="账户" key="3">Content of Tab Pane 1</TabPane>
+                        <TabPane tab="日志" key="2">
+                            <div className="table-header">
+                                <div className="row header">
+                                    <div className="cell" style={{width: '100px'}}>单号</div>
+                                    <div className="cell" style={{width: '120px'}}>时间</div>
+                                    <div className="cell" style={{width: '120px'}}>种类</div>
+                                    <div className="cell" style={{width: '130px'}}>类型</div>
+                                    <div className="cell"></div>
+                                </div>
+                            </div>
+                        </TabPane>
+                        <TabPane tab="账户" key="3">
+                            <div className="table-header">
+                                <div className="row header">
+                                    <div className="cell" style={{width: '100px'}}>账户信息</div>
+                                    <div className="cell"></div>
+                                </div>
+                            </div>
+                            <div className="table-rows">
+                                <div className="row">
+                                    <div className="cell" style={{width: '120px'}}></div>
+                                    <div className="cell"></div>
+                                </div>
+                            </div>
+                        </TabPane>
                     </Tabs>
                 </div>
             </div>

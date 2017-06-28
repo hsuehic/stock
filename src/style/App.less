@@ -1,3 +1,9 @@
+@gap: 10px;
+@header-height: 36px;
+@nav-with: 348px;
+@main-margin-left: @nav-with + @gap;
+@footer-height: 198px;
+
 #root, .App {
     position: relative;
     width: 100%;
@@ -7,7 +13,7 @@
         left: 0;
         bottom: 0;
         width: 100%;
-        height: 198px;
+        height: @footer-height;
         z-index: 2;
         padding: 10px;
     }
@@ -16,10 +22,10 @@
         left: 0;
         top: 0;
         width: 100%;
-        height: 50px;
-        padding: 10px 20px 10px 20px;
+        height: @header-height;
+        padding: 6px 20px 6px 20px;
         z-index: 2;
-        line-height: 30px;
+        line-height: 24px;
         
         .ant-dropdown-trigger {
             margin: 0 10px;
@@ -32,16 +38,16 @@
         box-sizing: border-box;
         width: 100%;
         height: 100%;
-        padding: 50px 10px 198px 10px;
+        padding: @header-height @gap @footer-height @gap;
         .nav {
             position: relative;
-            width: 248px;
+            width: @nav-with;
             height: 100%;
             float: left;
         }
         .main {
             position: relative;
-            margin-left: 258px;
+            margin-left: @main-margin-left;
             height: 100%;
             background: #404141;
             .header {
@@ -63,5 +69,66 @@
                 bottom: 10px;
             }
         }
+    }
+}
+.panel > .ant-tabs > .ant-tabs-content {
+    padding: 2px 4px;
+}
+.table-header {
+    display: table;
+    width: 100%;
+    .row {
+        display: table-row;
+        height: 24px;
+        line-height: 24px;
+        overflow: hidden;
+        background-color: rgb(82,82,82);
+        &:first-child {
+            margin-top: 3px;
+            border-top: none;
+        }
+        .cell {
+            display: table-cell;
+            &.name {
+                width: 50%;
+            }
+            &.price {
+                width: 50%;
+            }
+        }
+    }
+}
+
+.table-footer {
+    display: table;
+    width: 100%;;
+    background-color: rgb(82,82,82);
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    .row {
+        display: table-row;
+        height: 24px;
+        line-height: 24px;
+        .cell {
+            &:first-child {
+                padding-left: 4px;
+            }
+            display: table-cell;
+        }
+    }
+}
+
+
+.table-rows {
+    position: absolute;
+    display: table;
+    width: 100%;
+    top: 24px;
+    bottom: 24px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    .row {
+        display: table-row;
     }
 }
