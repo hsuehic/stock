@@ -20,7 +20,7 @@ const processResponse = (res) => {
                 case BO_RET.BO_RET_OK.code:
                     return json.data;
                 default:
-                    return {};
+                    return null;
             }
         });
     } else {

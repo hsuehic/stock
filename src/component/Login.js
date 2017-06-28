@@ -14,10 +14,14 @@ import logo from '../assets/clm3-logo.png';
 
 const FormItem = Form.Item;
 
-export default class Account extends React.Component {
+export default class Login extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            loginError: false,
+            errorMessage: ''
+        };
     }
 
     componentDidMount() {
@@ -37,9 +41,16 @@ export default class Account extends React.Component {
         });
 
         promise.then((res) => {
-
+            if (res) {
+                window.location.href = 'index.html';
+            } else {
+                this.setState({
+                    loginError: true,
+                    errorMessage: '用户名或密码错误!'
+                })
+            }
         }).catch((ex) => {
-
+            console.log(ex);
         });
     }
 
@@ -59,6 +70,13 @@ export default class Account extends React.Component {
                 <div className="login-row">
                     <input id="password" name="password" type="password" value="" placeholder="Password" />
                 </div>
+                {
+                    this.state.loginError &&
+                    <div className="login-error">
+                        { this.state.errorMessage }
+                    </div>
+                }
+
                 <div className="login-row login-button-row">
                     <input type="button" id="login-button" onClick={this.onLogin.bind(this)} value="Login" name="login" className="btn" />
                 </div>
