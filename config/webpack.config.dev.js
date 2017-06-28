@@ -32,7 +32,7 @@ module.exports = {
     // These are the "entry points" to our application.
     // This means they will be the "root" imports that are included in JS bundle.
     // The first two entry points enable "hot" CSS and auto-refreshes for JS.
-    entry: [
+    entry: {
         // Include an alternative client for WebpackDevServer. A client's job is to
         // connect to WebpackDevServer by a socket and get notified about changes.
         // When you save a file, the client will either apply hot updates (in case
@@ -43,17 +43,18 @@ module.exports = {
         // the line below with these two lines if you prefer the stock client:
         // require.resolve('webpack-dev-server/client') + '?/',
         // require.resolve('webpack/hot/dev-server'),
-        require.resolve('react-dev-utils/webpackHotDevClient'),
+        devClient: require.resolve('react-dev-utils/webpackHotDevClient'),
         // We ship a few polyfills by default:
-        require.resolve('./polyfills'),
+        polyfills: require.resolve('./polyfills'),
         // Errors should be considered fatal in development
-        require.resolve('react-error-overlay'),
+        errorOverlay: require.resolve('react-error-overlay'),
         // Finally, this is your app's code:
-        paths.appIndexJs,
+        app: paths.appIndexJs,
         // We include the app code last so that if there is a runtime error during
         // initialization, it doesn't blow up the WebpackDevServer client, and
         // changing JS code would still trigger a refresh.
-    ],
+        login: paths.loginIndexJs,
+    },
     output: {
         // Next line is not used in dev but WebpackDevServer crashes without it:
         path: paths.appBuild,
@@ -62,7 +63,7 @@ module.exports = {
         // This does not produce a real file. It's just the virtual path that is
         // served by WebpackDevServer in development. This is the JS bundle
         // containing code from all our entry points, and the Webpack runtime.
-        filename: 'static/js/bundle.js',
+        filename: 'static/js/[name].bundle.js',
         // There are also additional JS chunk files if you use code splitting.
         chunkFilename: 'static/js/[name].chunk.js',
         // This is the URL that app is served from. We use "/" in development.
@@ -298,7 +299,16 @@ module.exports = {
         // Generates an `index.html` file with the <script> injected.
         new HtmlWebpackPlugin({
             inject: true,
+            chuncks: ['devClient', 'polyfills', 'errorOverlay', 'app'],
+            chunksSortMode: 'dependency',
             template: paths.appHtml,
+        }),
+        // Generates an `login.html` file with the <script> injected.
+        new HtmlWebpackPlugin({
+            inject: true,
+            chuncks: ['devClient', 'polyfills', 'errorOverlay', 'login'],
+            chunksSortMode: 'dependency',
+            template: paths.loginHtml,
         }),
         // Makes some environment variables available to the JS code, for example:
         // if (process.env.NODE_ENV === 'development') { ... }. See `./env.js`.
