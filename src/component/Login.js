@@ -8,8 +8,11 @@
 
 import React from 'react';
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
-const FormItem = Form.Item;
 
+import {login} from '../api';
+import logo from '../assets/clm3-logo.png';
+
+const FormItem = Form.Item;
 
 export default class Account extends React.Component {
 
@@ -25,27 +28,42 @@ export default class Account extends React.Component {
 
     }
 
+    onLogin () {
+        let username = document.getElementById('username');
+        let password = document.getElementById('password');
+        let promise = login({
+            username,
+            password
+        });
+
+        promise.then((res) => {
+
+        }).catch((ex) => {
+
+        });
+    }
+
     render() {
         return <div className="center-wrapper">
             <div className="login-row logo-wrap">
-                <a href="#" target="_blank"><img className="logo" src="../assets/clm3-logo.png" style="" onerror="this.style.display='none'" /></a>
+                <a href="#" target="_blank"><img className="logo" src={logo} /></a>
             </div>
             <div className="login-row header-row">
                 <div className="header"></div>
             </div>
 
-            <form id="loginModel" className="login-form" action="desktop.html" method="post">
+            <form id="loginModel" className="login-form" action="/index.html" method="post">
                 <div className="login-row">
-                    <input id="username" name="username" type="text" value="" placeholder="Account Number" autocapitalize="off" autocorrect="off" />
+                    <input id="username" name="username" type="text" value="" placeholder="Account Number" autoCapitalize="off" autoCorrect="off" />
                 </div>
                 <div className="login-row">
                     <input id="password" name="password" type="password" value="" placeholder="Password" />
                 </div>
                 <div className="login-row login-button-row">
-                    <input type="submit" id="login-button" value="Login" name="login" className="btn" />
+                    <input type="button" id="login-button" onClick={this.onLogin.bind(this)} value="Login" name="login" className="btn" />
                 </div>
                 <div className="login-row register-demouser-href-row">
-                    <a className="create-demouser-href" href="http://www.clmforex.com/demo-account/" target="_blank">Create Account</a>
+                    <a className="btn" href="http://www.clmforex.com/demo-account/" target="_blank">Create Account</a>
                 </div>
             </form>
 

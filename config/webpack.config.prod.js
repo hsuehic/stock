@@ -321,9 +321,10 @@ module.exports = {
         new InterpolateHtmlPlugin(env.raw),
         // Generates an `index.html` file with the <script> injected.
         new HtmlWebpackPlugin({
+            filename: 'index.html',
             inject: true,
             template: paths.appHtml,
-            chuncks: ['polyfills', 'app'],
+            chunks: ['polyfills', 'app'],
             minify: {
                 removeComments: true,
                 collapseWhitespace: true,
@@ -338,9 +339,10 @@ module.exports = {
             },
         }),
         new HtmlWebpackPlugin({
+            filename: 'login.html',
             inject: true,
             template: paths.loginHtml,
-            chuncks: ['polyfills', 'login'],
+            chunks: ['polyfills', 'login'],
             minify: {
                 removeComments: true,
                 collapseWhitespace: true,

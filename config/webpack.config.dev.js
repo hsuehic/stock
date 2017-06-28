@@ -298,16 +298,18 @@ module.exports = {
         new InterpolateHtmlPlugin(env.raw),
         // Generates an `index.html` file with the <script> injected.
         new HtmlWebpackPlugin({
+            filename: 'index.html',
             inject: true,
-            chuncks: ['devClient', 'polyfills', 'errorOverlay', 'app'],
-            chunksSortMode: 'dependency',
+            chunks: ['devClient', 'polyfills', 'errorOverlay', 'app'],
+            chunksSortMode: 'none',
             template: paths.appHtml,
         }),
         // Generates an `login.html` file with the <script> injected.
         new HtmlWebpackPlugin({
+            filename: 'login.html',
             inject: true,
-            chuncks: ['devClient', 'polyfills', 'errorOverlay', 'login'],
-            chunksSortMode: 'dependency',
+            chunks: ['devClient', 'polyfills', 'errorOverlay', 'login'],
+            chunksSortMode: 'none',
             template: paths.loginHtml,
         }),
         // Makes some environment variables available to the JS code, for example:

@@ -7,6 +7,9 @@ html, body, div, span, img, b, a, ul, li, form, label, table, textarea, tbody, t
     vertical-align: baseline;
     font-size: 100%;
 }
+:focus {
+    outline: none;
+}
 
 a, a:hover, input, textarea {
     -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
@@ -19,6 +22,7 @@ a, a:hover, input, textarea {
         background: white;
         padding: 6px 50px;
         width: 285px;
+        box-sizing: content-box;
         &.logo-wrap {
             border-radius: 15px 15px 0 0;
             padding-top: 70px;
@@ -61,6 +65,7 @@ a, a:hover, input, textarea {
     .login-form {
         .login-row {
             padding-bottom: 10px;
+            text-align: center;
         }
         input[type="text"], input[type="password"] {
             margin: 0;
@@ -85,6 +90,9 @@ a, a:hover, input, textarea {
             box-sizing: border-box;
             align-items: flex-start;
             text-align: center;
+            border: none;
+            color: #fff;
+            display: inline-block;
         }
 
     }
