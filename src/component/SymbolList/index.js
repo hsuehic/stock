@@ -21,7 +21,8 @@ export default class SymbolList extends React.Component {
         onCreateOrder: PropTypes.func,
         onCreateUpOrder: PropTypes.func,
         onCreateDownOrder: PropTypes.func,
-        onFavoriteClick: PropTypes.func
+        onFavoriteClick: PropTypes.func,
+        onCurrentSymbolChange: PropTypes.func
     };
 
     static defaultProps = {
@@ -56,9 +57,16 @@ export default class SymbolList extends React.Component {
     }
 
     onRowClick (symbol) {
+        let currentSymbol = symbol.name;
+
         this.setState({
-            currentSymbol: symbol.name
+            currentSymbol
+        }, () => {
+            if (typeof this.props.onCurrentSymbolChange === 'function') {
+                this.props.onCurrentSymbolChange(symbol);
+            }
         });
+
     }
 
     onCreateOrder (symbol) {
@@ -89,7 +97,7 @@ export default class SymbolList extends React.Component {
         return <div className="table-rows">
             {
                 this.props.symbols.map((symbol) => <SymbolItem
-                    symbol={symbol.name}
+                    symbol={symbol}
                     onCreateOrder={this.onCreateOrder.bind(this)}
                     onCreateUpOrder={this.onCreateUpOrder.bind(this)}
                     onCreateDownOrder={this.onCreateDownOrder.bind(this)}

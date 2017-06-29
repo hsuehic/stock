@@ -106,6 +106,27 @@
     .ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab.ant-tabs-tab-active{
         background-color: #1e1f1f;
     }
+    .table-rows {
+        top: 0;
+        .cell {
+            box-sizing: border-box;
+            width: 160px;
+            vertical-align: top;
+        }
+        .row-selected {
+            overflow:hidden;
+            margin: 3px 0;
+            .sub-row {
+                margin: 3px 0;
+            }
+            .cell {
+                width: 156px;
+                height: 22px;
+                line-height: 22px;
+                display: inline-block;
+            }
+        }
+    }
 }
 .table-header {
     display: table;
@@ -200,4 +221,28 @@
 }
 .btn-down:hover {
     background-color: #00aa00 !important;
+}
+
+.btn-favorite {
+    background-color: #1e1f1f !important;
+    margin-right: 6px !important;
+}
+
+.btn-favorite:hover {
+    background-color: #3a3a3a !important;
+}
+.btn-favorite.selected {
+    background-color: #6666ff !important;
+}
+.btn-cancel {
+    background-color: #5abaf1 !important;
+}
+.btn-cancel:hover {
+    background-color: #4c96c4 !important;
+}
+.btn-default {
+    background-color: #949495 !important;
+}
+.btn-default:hover {
+    background-color: #aaaaaa !important;
 }

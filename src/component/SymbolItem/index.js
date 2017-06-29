@@ -23,9 +23,7 @@ export default class SymbolItem extends React.Component {
     };
 
     static defaultProps = {
-        symbol: '',
-        price: 0,
-        direction: 0,
+        symbol: {},
         isOpen: false
     };
 
@@ -52,8 +50,8 @@ export default class SymbolItem extends React.Component {
     }
 
     onFavoriteClick (key) {
-        if (typeof this.props.onCreateDownOrder === 'function') {
-            this.props.onCreateDownOrder(this.props.symbol, key);
+        if (typeof this.props.onFavoriteClick === 'function') {
+            this.props.onFavoriteClick(this.props.symbol, key);
         }
     }
 
@@ -81,42 +79,42 @@ export default class SymbolItem extends React.Component {
 
     render () {
         let color = this.getTextColor(this.props.symbol.direction);
-        let collapsedNode = <div class="row" style={{cursor: 'pointer'}} onClick={this.onRowClick.bind(this)}>
-            <div class="cell">{this.props.symbol.name}
-            </div><div class="cell" style={{color: color}}><b class="g-arr-down">▼</b>{this.props.price}
+        let collapsedNode = <div className="row" style={{cursor: 'pointer'}} onClick={this.onRowClick.bind(this)}>
+            <div className="cell">{this.props.symbol.name}
+            </div><div className="cell" style={{color: color}}> {this.props.symbol.direction > 0 ? <b>▲</b> : <b>▼</b>} &nbsp;&nbsp;{this.props.symbol.price}
             </div>
         </div>;
 
-        let expandedNode = <div class="row" style={{padding: '4px', backgroundColor: '', borderRadius: '4px'}}>
-            <div class="row">
-                <div class="cell">{this.props.symbol}
-                </div><div class="cell" style={{color: color}}><b class="g-arr-down">▼</b>{this.props.price}
+        let expandedNode = <div className="row-selected" style={{padding: '4px', backgroundColor: '#6a6a6a', borderRadius: '4px'}}>
+            <div className="sub-row">
+                <div className="cell">{this.props.symbol.name}
+                </div><div className="cell" style={{color: color}}><b>▼</b>{this.props.symbol.price}
                 </div>
             </div>
-            <div className="row">
+            <div className="sub-row">
                 <div className="cell">收藏</div>
                 <div className="cell">
-                    <Button onClick={this.onFavoriteClick.bind(this,'1')} size={'small'} type={ this.props.favorites.favorite1 ? 'primary' : ''}>1</Button>
-                    <Button onClick={this.onFavoriteClick.bind(this,'2')} size={'small'} type={ this.props.favorites.favorite2 ? 'primary' : ''}>2</Button>
-                    <Button onClick={this.onFavoriteClick.bind(this,'3')} size={'small'} type={ this.props.favorites.favorite3 ? 'primary' : ''}>3</Button>
+                    <Button className={ this.props.favorites.favorite1 ? 'btn-favorite selected' : 'btn-favorite'} onClick={this.onFavoriteClick.bind(this,'1')} size={'small'} >1</Button>
+                    <Button className={ this.props.favorites.favorite2 ? 'btn-favorite selected' : 'btn-favorite'} onClick={this.onFavoriteClick.bind(this,'2')} size={'small'} >2</Button>
+                    <Button className={ this.props.favorites.favorite3 ? 'btn-favorite selected' : 'btn-favorite'} onClick={this.onFavoriteClick.bind(this,'3')} size={'small'} >3</Button>
                 </div>
             </div>
-            <div className="row">
+            <div className="sub-row">
                 <div className="cell">直到60%支出</div>
                 <div className="cell">5.00 &nbsp; 投资 <br />
                     60秒
                 </div>
             </div>
 
-            <div className="row">
-                <Button onClick={this.onCreateOrder.bind(this)} style={{width: '100%'}}>下单</Button>
+            <div className="sub-row">
+                <Button className={'btn-default'} type={'primary'} size={'small'} onClick={this.onCreateOrder.bind(this)} style={{width: '100%'}}>下单</Button>
             </div>
-            <div className="row">
-                <div className="cell" style={{padding: '0 4px'}}>
-                    <Button onClick={this.onCreateUpOrder.bind(this)} style={{width: '100%'}} className={'btn-up'}>看涨</Button>
+            <div className="sub-row">
+                <div className="cell" style={{padding: '0 4px 0 0'}}>
+                    <Button size={'small'} onClick={this.onCreateUpOrder.bind(this)} style={{width: '100%'}} className={'btn-up'}>看涨</Button>
                 </div>
-                <div className="cell" style={{padding: '0 4px'}}>
-                    <Button onClick={this.onCreateDownOrder.bind(this)} style={{width: '100%'}} className={'btn-down'}>看跌</Button>
+                <div className="cell" style={{padding: '0 0 0 4px'}}>
+                    <Button size={'small'} onClick={this.onCreateDownOrder.bind(this)} style={{width: '100%'}} className={'btn-down'}>看跌</Button>
                 </div>
             </div>
             

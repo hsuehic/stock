@@ -377,7 +377,7 @@ class App extends Component {
         this.getLatestQuotes();
         this.timer = window.setInterval(() => {
             this.getLatestQuotes();
-        }, 3000);
+        }, 10000);
     }
 
     componentWillUnmount () {
@@ -579,6 +579,10 @@ class App extends Component {
 
     }
 
+    onCurrentSymbolChange (symbol) {
+        this.setSymbol(symbol.name);
+    }
+
     onFavoriteClick (symbol, key) {
         let stateName = `favorite${key}`;
         let favorite = this.state[stateName];
@@ -605,6 +609,10 @@ class App extends Component {
     }
 
     onSymbolSelect (value, option) {
+        this.setSymbol(value);
+    }
+
+    setSymbol (value) {
         this.setState({
             symbol: value,
             isLoading: true
@@ -674,19 +682,50 @@ class App extends Component {
                                                     onCreateOrder={this.onCreateOrder.bind(this)}
                                                     onCreateDownOrder={this.onCreateDownOrder.bind(this)}
                                                     onCreateUpOrder={this.onCreateUpOrder.bind(this)}
+                                                    onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
                                                     favorite1={this.state.favorite1}
                                                     favorite2={this.state.favorite2}
                                                     favorite3={this.state.favorite3}
                                                 />
                                             </TabPane>
                                             <TabPane tab="1" key="1">
-                                                1
+                                                <SymbolList
+                                                    symbols={symbols1}
+                                                    onFavoriteClick={this.onFavoriteClick.bind(this)}
+                                                    onCreateOrder={this.onCreateOrder.bind(this)}
+                                                    onCreateDownOrder={this.onCreateDownOrder.bind(this)}
+                                                    onCreateUpOrder={this.onCreateUpOrder.bind(this)}
+                                                    onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
+                                                    favorite1={this.state.favorite1}
+                                                    favorite2={this.state.favorite2}
+                                                    favorite3={this.state.favorite3}
+                                                />
                                             </TabPane>
                                             <TabPane tab="2" key="2">
-                                                2
+                                                <SymbolList
+                                                    symbols={symbols2}
+                                                    onFavoriteClick={this.onFavoriteClick.bind(this)}
+                                                    onCreateOrder={this.onCreateOrder.bind(this)}
+                                                    onCreateDownOrder={this.onCreateDownOrder.bind(this)}
+                                                    onCreateUpOrder={this.onCreateUpOrder.bind(this)}
+                                                    onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
+                                                    favorite1={this.state.favorite1}
+                                                    favorite2={this.state.favorite2}
+                                                    favorite3={this.state.favorite3}
+                                                />
                                             </TabPane>
                                             <TabPane tab="3" key="3">
-                                                3
+                                                <SymbolList
+                                                    symbols={symbols3}
+                                                    onFavoriteClick={this.onFavoriteClick.bind(this)}
+                                                    onCreateOrder={this.onCreateOrder.bind(this)}
+                                                    onCreateDownOrder={this.onCreateDownOrder.bind(this)}
+                                                    onCreateUpOrder={this.onCreateUpOrder.bind(this)}
+                                                    onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
+                                                    favorite1={this.state.favorite1}
+                                                    favorite2={this.state.favorite2}
+                                                    favorite3={this.state.favorite3}
+                                                />
                                             </TabPane>
                                         </Tabs>
                                     </div>
@@ -698,7 +737,7 @@ class App extends Component {
                         <div className="header">
                             <div className="icon-logo" style={{marginRight: '20px'}}>
                             </div><Button onClick={this.onFullScreen.bind(this)} type={'primary'} size={'small'} style={{marginRight: '20px'}}>{this.state.fullScreen ? '还原' : '最大化'}
-                            </Button><Select  defaultValue={this.state.symbol} size={'small'} onSelect={this.onSymbolSelect.bind(this)}>
+                            </Button><Select  value={this.state.symbol} size={'small'} onSelect={this.onSymbolSelect.bind(this)}>
                             { this.state.symbols.map((symbol) => <Option key={symbol.name}> {symbol.name} </Option>) }
                             </Select>
                         </div>
