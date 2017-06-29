@@ -9,7 +9,7 @@ const apiServer = `http://web.bo-bmw.com`;
 
 export const API_URL = {
     LOGIN: `${apiServer}/api/socket2`, // 登录
-    LOGOUT: `${apiServer}/api/logout`, // 退出登录
+    LOGOUT: `${apiServer}/api/socket12`, // 退出登录
     GET_SERVER_INFO: `${apiServer}/api/socket3`, // 获取服务器信息
     SYMBOL_GROUP: `${apiServer}/api/socket4`, // 获取货币信息
     GET_OPEN_ORDER: `${apiServer}/api/socket5`, // 获取持仓单

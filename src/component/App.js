@@ -1,6 +1,6 @@
 import 'whatwg-fetch';
 import React, { Component } from 'react';
-import { Button, Dropdown, Menu, Select, Table, Tabs } from 'antd';
+import { Button, Dropdown, Menu, Modal, Select, Tabs } from 'antd';
 import SymbolList from './SymbolList';
 import fecha from 'fecha';
 
@@ -14,7 +14,7 @@ import 'echarts/lib/component/grid';
 import 'echarts/lib/component/legend';
 import ReactEchartsCore from 'echarts-for-react/lib/core';
 
-import { getAccountDetails, getHistoryOrder, getOpenOrder, getPrice, getQuotesHistory, getServerInfo, getSymbolGroup  } from '../api';
+import { getAccountDetails, getHistoryOrder, openOrder, getOpenOrder, getPrice, getQuotesHistory, getServerInfo, getSymbolGroup  } from '../api';
 
 import '../style/App.less';
 
@@ -24,6 +24,26 @@ const TabPane = Tabs.TabPane;
 
 const CHART_CONTAINER_STYLE = { position: 'relative', marginLeft: '358px', height: '100%', zIndex: 1};
 const CHART_CONTAINER_STYLE_FULL_SCREEN = {position: 'fixed', top: '0', left: '0', marginLeft: '0', width: '100%', height: '100%', zIndex: 1049};
+
+const PERIOD = [{
+    label: 'M1',
+    key: 1
+},{
+    label: 'M5',
+    key: 5
+},{
+    label: 'M15',
+    key: 15
+},{
+    label: 'M30',
+    key: 30
+},{
+    label: 'H1',
+    key: 60
+},{
+    label: 'H4',
+    key: 240
+}];
 
 
 class App extends Component {
@@ -320,7 +340,7 @@ class App extends Component {
                 series: [
                     {
                         type: 'candlestick',
-                        name: '日K',
+                        name: 'M1',
                         data: [],
                         itemStyle: {
                             normal: {
@@ -346,10 +366,17 @@ class App extends Component {
             isLoading: false,
             timeDiff: 0,
             historySpan: 1,// 1 一天， 30 一月， -1 所有
-            symbolList: {
-
+            symbolList: {},
+            symbolNames: '',
+            modalCreateUpOrderVisible: false,
+            order: {
+                symbol: '',
+                type: -1,
+                expiration: 1
             },
-            symbolNames: ''
+            modalCreateOrderVisible: false,
+            modalOrderInfoVisible: false,
+            orderInfo: {}
         };
         this.onChartEvents = {
             dataZoom: this.onDataZoom.bind(this)
@@ -359,25 +386,26 @@ class App extends Component {
             start: 50,
             end: 100
         };
+    }
+
+    componentDidMount (){
         this.getServerInfo();
         this.getAccountInfo();
         this.getSymbolGroup(() => {
             let getPricesFunc = this.getPrices.bind(this);
             this.getPriceTimer = window.setInterval(getPricesFunc, 1000);
         });
-    }
-
-    componentDidMount (){
         setTimeout(() => {
             if (this.echarts) {
                 this.echarts.resize();
             }
         }, 300);
+        this.getOpenOrders();
         this.getHistoryOrders();
         this.getLatestQuotes();
         this.timer = window.setInterval(() => {
             this.getLatestQuotes();
-        }, 10000);
+        }, this.state.period * 60 * 1000);
     }
 
     componentWillUnmount () {
@@ -427,9 +455,18 @@ class App extends Component {
 
     getOpenOrders () {
         let params = {};
+        let promise = getOpenOrder(params);
+        promise.then((res) => {
+            if (res && res.code === 0) {
+                this.setState({
+                    orders: res.data.orders
+                });
+            }
+        });
     }
 
     getSymbolGroup (callback) {
+        let self = this;
         let params = {};
         let promise = getSymbolGroup(params);
         promise.then((res) => {
@@ -445,7 +482,7 @@ class App extends Component {
                     };
                 });
                 let symbolNames= Object.keys(symbolList).join(',');
-                this.setState({
+                self.setState({
                     symbols,
                     symbolList,
                     symbolNames
@@ -488,7 +525,17 @@ class App extends Component {
         });
     }
 
+    getSymbolPrice (symbolName) {
+        let v = '';
+        let symbol = this.state.symbolList[symbolName];
+        if (symbol) {
+            v = symbol.price;
+        }
+        return v;
+    }
+
     getServerInfo () {
+        let self = this;
         let params = {};
         let promise = getServerInfo(params);
         promise.then((res) => {
@@ -496,7 +543,7 @@ class App extends Component {
                 let data = res.data;
                 let time = data.server_time;
                 let timeDiff = (new Date()).getTime() - time * 1000;
-                this.setState({
+                self.setState({
                     serverInfo: data,
                     timeDiff: timeDiff
                 });
@@ -516,7 +563,16 @@ class App extends Component {
                 let data = [];
                 let times = [];
                 quotes.forEach((quote) => {
-                    let timeStr = fecha.format(new Date(quote.t * 1000 + this.state.timeDiff), 'HH:mm');
+                    let format
+                    switch (this.state.period) {
+                        case 240:
+                            format = 'MM/dd';
+                            break;
+                        default:
+                            format = 'HH:mm';
+                            break;
+                    }
+                    let timeStr = fecha.format(new Date(quote.t * 1000 + this.state.timeDiff), format);
                     times.push(timeStr);
                     let o = quote.o / 100;
                     let h = (quote.o + quote.h) / 100;
@@ -538,6 +594,61 @@ class App extends Component {
             }
         });
 
+    }
+
+    calculateStatus (order) {
+        let symbolName = order.symbol;
+        let openPrice = order.open_price;
+        let symbol = this.state.symbolList[symbolName];
+        let price = symbol.price;
+        let type = order.type === 'UP' ? 1: -1;
+        let d = (price - openPrice) * type;
+        let v = 0;
+        if (d > 0) {
+            v = 1;
+        } else if(d < 0) {
+            v = -1;
+        }
+        return v;
+    }
+
+    calculateProfit (order) {
+        let status = this.calculateStatus(order);
+        let v = 0;
+        if (status > 0) {
+            v = order.investment * 0.01 * order.win;
+        } else if (status < 0) {
+            v = order.investment * -1;
+        }
+        return v;
+    }
+
+    calculateExpirations (symbolName) {
+        let value = [];
+        let symbol = this.state.symbolList[symbolName];
+        if (symbol) {
+
+        }
+        return value;
+    }
+    
+    calculateStatusNode (order) {
+        let s = this.calculateStatus(order);
+        let text = '平盘';
+        let color = '#ffffff';
+        switch (s) {
+            case 1:
+                text = '盈利';
+                color = '#ff0000';
+                break;
+            case -1:
+                text = '亏损';
+                color = '#00ff00';
+                break;
+            default:
+                break;
+        }
+        return <span style={{color: color}}>{text}</span>;
     }
 
     getTypeName (type) {
@@ -568,14 +679,38 @@ class App extends Component {
     }
 
     onCreateOrder (symbol) {
-
+        this.setState({
+            modalCreateOrderVisible: true
+        });
     }
 
     onCreateUpOrder (symbol) {
-
+        this.setState({
+            order: {
+                symbol: symbol.name,
+                type: 1,
+                expiration: 1
+            },
+            modalCreateUpOrderVisible: true
+        });
     }
 
     onCreateDownOrder (symbol) {
+        this.setState({
+            order: {
+                symbol: symbol.name,
+                type: -1,
+                expiration: 1
+            },
+            modalCreateUpOrderVisible: true
+        });
+    }
+
+    onSubmitCreateOrderUp () {
+
+    }
+
+    onSubmitCreateOrderDown () {
 
     }
 
@@ -606,6 +741,75 @@ class App extends Component {
             chartContainerStyle,
             fullScreen
         })
+    }
+
+    onHideCreateUpOrder() {
+        this.setState({
+            modalCreateUpOrderVisible: false
+        })
+    }
+
+    onHideModalOrderInfo () {
+        this.setState({
+            modalOrderInfoVisible: false
+        })
+    }
+
+    onHideModalCreateOrder () {
+        this.setState({
+            modalCreateOrderVisible: false
+        })
+    }
+
+    onPeriodSelect (value, option) {
+        let key = parseInt(value);
+        let label
+        for (let i = 0; i < PERIOD.length; i++) {
+            if (PERIOD[i].key === key) {
+                label = PERIOD[i].label;
+                break;
+            }
+        }
+        let chartOptions = this.state.chartOptions;
+        chartOptions.series[0].name = label;
+        this.setState({
+            period: key,
+            chartOptions: chartOptions
+        }, () => {
+            window.clearInterval(this.timer);
+            this.getLatestQuotes();
+            this.timer = window.setInterval(this.getLatestQuotes.bind(this), this.state.period * 60 * 1000);
+        });
+    }
+
+    onSubmitCreateOrder () {
+
+    }
+
+    onSubmitCreateUpOrder () {
+        this.setState({
+            modalCreateUpOrderVisible: false
+        });
+        let symbolName = this.state.order.symbol;
+        let type = this.state.order.type === 1 ? 'UP': 'DOWN';
+        let params = {
+            symbol: symbolName,
+            expiration: this.state.order.expiration,
+            type: type,
+            volume: 5,
+            flag: -5812525,
+            time: '',
+            msec: ''
+        };
+        let promise = openOrder(params);
+        promise.then((res) => {
+            if (res && res.code === 0) {
+                this.setState({
+                    modalOrderInfoVisible: true,
+                    orderInfo: res.data
+                });
+            }
+        });
     }
 
     onSymbolSelect (value, option) {
@@ -737,8 +941,8 @@ class App extends Component {
                         <div className="header">
                             <div className="icon-logo" style={{marginRight: '20px'}}>
                             </div><Button onClick={this.onFullScreen.bind(this)} type={'primary'} size={'small'} style={{marginRight: '20px'}}>{this.state.fullScreen ? '还原' : '最大化'}
-                            </Button><Select  value={this.state.symbol} size={'small'} onSelect={this.onSymbolSelect.bind(this)}>
-                            { this.state.symbols.map((symbol) => <Option key={symbol.name}> {symbol.name} </Option>) }
+                            </Button><span style={{marginRight: '20px'}}>{this.state.symbol}</span><Select  value={this.state.period  + ''} size={'small'} onSelect={this.onPeriodSelect.bind(this)}>
+                            { PERIOD.map((period) => <Option key={period.key}> {period.label} </Option>) }
                             </Select>
                         </div>
                         <div style={{position: 'absolute', top: '30px', bottom: '0', width: '100%'}}>
@@ -767,16 +971,16 @@ class App extends Component {
                         <TabPane tab="二元期订单" key="1">
                             <div className="table-header">
                                 <div className="row header">
-                                    <div className="cell" style={{width: '100px'}}>订单号</div>
-                                    <div className="cell" style={{width: '100px'}}>货币</div>
-                                    <div className="cell" style={{width: '100px'}}>开仓价</div>
-                                    <div className="cell" style={{width: '100px'}}>现价</div>
-                                    <div className="cell" style={{width: '100px'}}>看涨/看跌</div>
-                                    <div className="cell" style={{width: '100px'}}>时间</div>
-                                    <div className="cell" style={{width: '100px'}}>到期</div>
-                                    <div className="cell" style={{width: '100px'}}>投资</div>
-                                    <div className="cell" style={{width: '100px'}}>支出</div>
-                                    <div className="cell" style={{width: '100px'}}>状态</div>
+                                    <div className="cell" style={{width: '101px'}}>订单号</div>
+                                    <div className="cell" style={{width: '101px'}}>货币</div>
+                                    <div className="cell" style={{width: '101px'}}>开仓价</div>
+                                    <div className="cell" style={{width: '101px'}}>现价</div>
+                                    <div className="cell" style={{width: '101px'}}>看涨/看跌</div>
+                                    <div className="cell" style={{width: '121px'}}>时间</div>
+                                    <div className="cell" style={{width: '121px'}}>到期</div>
+                                    <div className="cell" style={{width: '101px'}}>投资</div>
+                                    <div className="cell" style={{width: '101px'}}>盈亏</div>
+                                    <div className="cell" style={{width: '101px'}}>状态</div>
                                     <div className="cell"></div>
                                 </div>
                             </div>
@@ -784,16 +988,16 @@ class App extends Component {
                             <div className="table-rows">
                                 {
                                     this.state.orders.map((order) => <div className="row">
-                                            <div className="cell" style={{width: '120px'}}>#{order.position}
-                                            </div><div className="cell">{order.symbol}
-                                            </div><div className="cell">{order.open_price}
-                                            </div><div className="cell">{''}
-                                            </div><div className="cell">{this.getTypeName(order.type)}
-                                            </div><div className="cell">{''}
-                                            </div><div className="cell">{order.expiration}
-                                            </div><div className="cell">{order.investment}
-                                            </div><div className="cell">{''}
-                                            </div><div className="cell">{''}
+                                            <div className="cell" style={{width: '100px'}}>#{order.position}
+                                            </div><div className="cell" style={{width: '100px'}}>{order.symbol}
+                                            </div><div className="cell" style={{width: '100px'}}>{order.open_price}
+                                            </div><div className="cell" style={{width: '100px'}}>{this.getSymbolPrice(order.symbol)}
+                                            </div><div className="cell" style={{width: '100px'}}>{this.getTypeName(order.type)}
+                                            </div><div className="cell" style={{width: '120px'}}>{this.formatDateTime(order.open_time)}
+                                            </div><div className="cell" style={{width: '120px'}}>{this.formatDateTime(order.open_time + order.expiration * 60)}
+                                            </div><div className="cell" style={{width: '100px'}}>{order.investment}
+                                            </div><div className="cell" style={{width: '100px'}}>{this.calculateProfit(order)}
+                                            </div><div className="cell" style={{width: '100px'}}>{this.calculateStatusNode(order)}
                                             </div>
                                         </div>
                                     )
@@ -811,7 +1015,7 @@ class App extends Component {
                                     <div className="cell" style={{width: '120px'}}>投资金额</div>
                                     <div className="cell" style={{width: '100px'}}>预期时间</div>
                                     <div className="cell" style={{width: '120px'}}>平仓价格</div>
-                                    <div className="cell" style={{width: '120px'}}>盈利值</div>
+                                    <div className="cell" style={{width: '120px'}}>盈亏</div>
                                     <div className="cell"></div>
                                 </div>
                             </div>
@@ -862,6 +1066,94 @@ class App extends Component {
                         </TabPane>
                     </Tabs>
                 </div>
+                <Modal
+                    className={'order-dialog-small'}
+                    visible={this.state.modalCreateUpOrderVisible}
+                    closable={false}
+                    title="下单?"
+                    footer={
+                        <div style={{textAlign: 'center'}}>
+                            <Button onClick={this.onSubmitCreateUpOrder.bind(this)} style={{width: '90px'}} size={'small'} className={ this.state.order.type === 1 ? 'btn-up': 'btn-down'}>{this.state.order.type === 1 ? '看涨': '看跌'}</Button><Button onClick={this.onHideCreateUpOrder.bind(this)} style={{width: '90px', marginLeft: '20px'}} size={'small'} className={ 'btn-cancel' }>取消</Button>
+                        </div>
+                    }
+                >
+                    <p>买 5.00 &nbsp; {this.state.order.symbol} {this.state.order.type === 1 ? '看涨': '看跌'}为期60S</p>
+                </Modal>
+
+
+                <Modal
+                    className={'order-dialog-large'}
+                    visible={this.state.modalCreateOrderVisible}
+                    closable={false}
+                    title={this.state.symbol}
+                    footer={
+                        <div style={{textAlign: 'center'}}>
+                            <Button style={{width: '100%'}} className={'btn-default'} onClick={this.onHideModalCreateOrder.bind(this)}>取消</Button>
+                        </div>
+                    }
+                >
+                    <div className="order-row">
+                        <div className="cell">
+                            投放资本
+                        </div><div className="cell">
+                            <input type="text" value="5.0" ref = {(input) => {this.investmentInput = input}} />
+                        </div><div className="cell">
+                            <Button onClick={this.onSubmitCreateOrderUp.bind(this)} style={{width: '90px'}} size={'small'} className={ 'btn-up'}>看涨</Button>
+                        </div>
+                    </div>
+                    <div className="order-row">
+                        <div className="cell">
+                            支付盈利
+                        </div><div className="cell">
+
+                        </div><div className="cell">
+                            {this.getSymbolPrice(this.state.symbol)}
+                        </div>
+                    </div>
+                    <div className="order-row">
+                        <div className="cell">
+                            手动关闭委托
+                        </div><div className="cell">
+                            --
+                        </div><div className="cell">                        
+
+                        </div>
+                    </div>
+                    <div className="order-row">
+                        <div className="cell">
+                            到期
+                        </div><div className="cell">
+                            <Select style={{width: '60px'}}>
+                                {
+                                    this.calculateExpirations(this.state.symbol).map((item) => {
+                                        return <Option key={item.key}>{item.label}</Option>
+                                    })
+                                }
+                            </Select>
+                        </div><div className="cell">
+                            <Button onClick={this.onSubmitCreateOrderDown.bind(this)} style={{width: '90px'}} size={'small'} className={ 'btn-down'}>看跌</Button>
+                        </div>
+                    </div>
+                </Modal>
+
+
+                <Modal
+                    className={'order-dialog-info'}
+                    visible={this.state.modalOrderInfoVisible}
+                    closable={false}
+                    title={this.state.orderInfo.symbol + ' ' + this.state.orderInfo.type}
+                    footer={
+                        <div style={{textAlign: 'center'}}>
+                            <Button onClick={this.onHideModalOrderInfo.bind(this)} style={{width: '90px'}} size={'small'} className={'btn-default'}>取消</Button>
+                        </div>
+                    }
+                >
+                    <div>
+                        <div className="chart-box">
+
+                        </div>
+                    </div>
+                </Modal>
             </div>
         );
     }
