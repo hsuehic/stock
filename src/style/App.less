@@ -96,6 +96,9 @@
                 width: 50%;
             }
         }
+        .cell:first-child {
+            padding-left: 8px;
+        }
     }
 }
 
@@ -122,13 +125,32 @@
 
 .table-rows {
     position: absolute;
-    display: table;
-    width: 100%;
-    top: 24px;
-    bottom: 24px;
+    display: block;
+    left: 4px;
+    right: 4px;
+    top: 30px;
+    bottom: 4px;
+    border-radius: 4px;
     overflow-x: hidden;
     overflow-y: auto;
+    padding: 0 4px;
     .row {
-        display: table-row;
+        display: block;
+        margin: 3px 0;
+        background-color: #3b3b3b;
+        line-height: 22px;
+        border-radius: 4px;
+        .cell {
+            display: inline-block;
+            margin-right: 1px;
+            padding: 0 0 0 4px;
+            border-right: solid 1px #313131;
+        }
+        .cell:last-child {
+            border-right: none;
+        }
+        &:hover{
+            background-color: #6a6a6a;
+        }
     }
 }

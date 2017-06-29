@@ -31,12 +31,15 @@ class App extends Component {
         super(props, context)
         this.state = {
             account: {
-                name: '111038',
-                credit: 0,
-                balance: 1134.5,
-                name_base64: 'Vk',
-                currency: 'USD'
+                "balance": 10675.3,
+                "credit": 0,
+                "currency": "USD",
+                "name_base64": "VGVzdCBBY2NvdW50",
+                "name": "Test Account"
             },
+            orders: [],
+            historyOrders: [],
+            serverInfo: {},
             symbols: [
                 {
                     "name": "EURUSDbo",
@@ -335,7 +338,9 @@ class App extends Component {
             chartContainerStyle: CHART_CONTAINER_STYLE,
             favorite1: [],
             favorite2: [],
-            favorite3: []
+            favorite3: [],
+            symbol: 'GBPUSDbo',
+            period: 1
         };
         this.onChartEvents = {
             dataZoom: this.onDataZoom.bind(this)
@@ -345,6 +350,9 @@ class App extends Component {
             start: 50,
             end: 100
         };
+        this.getServerInfo();
+        this.getAccountInfo();
+        this.getSymbolGroup();
     }
 
     componentDidMount (){
@@ -363,11 +371,55 @@ class App extends Component {
         window.clearInterval(this.timer);
     }
 
-    getLatestQuotes () {
-        let promise = getQuotesHistory();
+    getAccountInfo() {
+        let params = {};
+        let promise = getAccountDetails(params);
         promise.then((res) => {
             if (res.code === 0) {
-                let quotes = res.data;
+                this.setState({
+                    account: res.data
+                });
+            }
+        });
+    }
+
+    getHistoryOrders () {
+
+    }
+
+    getOpenOrders () {
+
+    }
+
+    getSymbolGroup () {
+
+    }
+
+    getPrices () {
+
+    }
+
+    getServerInfo () {
+        let params = {};
+        let promise = getServerInfo(params);
+        promise.then((res) => {
+            if (res.code === 0) {
+                this.setState({
+                    serverInfo: res.data
+                });
+            }
+        });
+    }
+
+    getLatestQuotes () {
+        let params = {
+            symbol: this.state.symbol,
+            period: this.state.period
+        }
+        let promise = getQuotesHistory(params);
+        promise.then((res) => {
+            if (res.code === 0) {
+                let quotes = res.data.quotes;
                 let data = [];
                 let times = [];
                 quotes.forEach((quote) => {
@@ -500,7 +552,7 @@ class App extends Component {
                         <TabPane tab="二元期订单" key="1">
                             <div className="table-header">
                                 <div className="row header">
-                                    <div className="cell">单号</div>
+                                    <div className="cell">订单号</div>
                                     <div className="cell">资产</div>
                                     <div className="cell">开仓价</div>
                                     <div className="cell">现价</div>
@@ -513,26 +565,56 @@ class App extends Component {
                                     <div className="cell"></div>
                                 </div>
                             </div>
-                            <div className="table-footer">
+
+                            <div className="table-rows">
+                                {
+                                    this.state.orders.map((order) => <div className="row">
+                                            <div className="cell" style={{width: '120px'}}>帐户名
+                                            </div><div className="cell">{this.state.account.name}
+                                            </div><div className="cell">{this.state.account.name}
+                                            </div><div className="cell">{this.state.account.name}
+                                            </div><div className="cell">{this.state.account.name}
+                                            </div><div className="cell">{this.state.account.name}
+                                            </div><div className="cell">{this.state.account.name}
+                                            </div><div className="cell">{this.state.account.name}
+                                            </div><div className="cell">{this.state.account.name}
+                                            </div>
+                                        </div>
+                                    )
+                                }
+                            </div>
+                        </TabPane>
+                        <TabPane tab="历史订单" key="2">
+                            <div className="table-header">
                                 <div className="row header">
-                                    <div className="cell" style={{width: '100px'}}>余客&nbsp; 1006.16</div>
-                                    <div className="cell" style={{width: '100px'}}>净值&nbsp; 1006.23</div>
-                                    <div className="cell" style={{width: '130px'}}>已用保证金&nbsp; 108348</div>
-                                    <div className="cell" style={{width: '130px'}}>可用保证金&nbsp; 120384</div>
-                                    <div className="cell" style={{width: '130px'}}>保证金比例&nbsp; 1500%</div>
+                                    <div className="cell" style={{width: '100px'}}>订单号</div>
+                                    <div className="cell" style={{width: '120px'}}>货币名称</div>
+                                    <div className="cell" style={{width: '120px'}}>交易类型</div>
+                                    <div className="cell" style={{width: '130px'}}>开仓价</div>
+                                    <div className="cell" style={{width: '130px'}}>开仓时间</div>
+                                    <div className="cell" style={{width: '120px'}}>投资金额</div>
+                                    <div className="cell" style={{width: '130px'}}>平仓价格</div>
+                                    <div className="cell" style={{width: '120px'}}>盈利值</div>
                                     <div className="cell"></div>
                                 </div>
                             </div>
-                        </TabPane>
-                        <TabPane tab="日志" key="2">
-                            <div className="table-header">
-                                <div className="row header">
-                                    <div className="cell" style={{width: '100px'}}>单号</div>
-                                    <div className="cell" style={{width: '120px'}}>时间</div>
-                                    <div className="cell" style={{width: '120px'}}>种类</div>
-                                    <div className="cell" style={{width: '130px'}}>类型</div>
-                                    <div className="cell"></div>
-                                </div>
+
+                            <div className="table-rows">
+                                {
+                                    this.state.historyOrders.map((historyOrder) => <div className="row">
+                                            <div className="cell" style={{width: '120px'}}>帐户名
+                                            </div><div className="cell">{this.state.account.name}
+                                            </div><div className="cell">{this.state.account.name}
+                                            </div><div className="cell">{this.state.account.name}
+                                            </div><div className="cell">{this.state.account.name}
+                                            </div><div className="cell">{this.state.account.name}
+                                            </div><div className="cell">{this.state.account.name}
+                                            </div><div className="cell">{this.state.account.name}
+                                            </div><div className="cell">{this.state.account.name}
+                                            </div>
+                                        </div>
+                                    )
+                                }
                             </div>
                         </TabPane>
                         <TabPane tab="账户" key="3">
@@ -544,8 +626,20 @@ class App extends Component {
                             </div>
                             <div className="table-rows">
                                 <div className="row">
-                                    <div className="cell" style={{width: '120px'}}></div>
-                                    <div className="cell"></div>
+                                    <div className="cell" style={{width: '120px'}}>帐户名
+                                    </div><div className="cell">{this.state.account.name}</div>
+                                </div>
+                                <div className="row">
+                                    <div className="cell" style={{width: '120px'}}>货币类型
+                                    </div><div className="cell">{this.state.account.currency}</div>
+                                </div>
+                                <div className="row">
+                                    <div className="cell" style={{width: '120px'}}>账户余客
+                                    </div><div className="cell">{this.state.account.balance}</div>
+                                </div>
+                                <div className="row">
+                                    <div className="cell" style={{width: '120px'}}>信用额
+                                    </div><div className="cell">{this.state.account.credit}</div>
                                 </div>
                             </div>
                         </TabPane>

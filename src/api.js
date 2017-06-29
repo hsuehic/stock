@@ -101,7 +101,10 @@ export const get = (url, params = {}, opts = {}) => {
     }
     let queryString = tmp.join('&');
     url = `${url}?${queryString}`;
-    opts = Object.assign({}, opts, {method: 'GET'});
+    opts = Object.assign({}, opts,  {
+        credentials: 'include',
+        method: 'GET'
+    });
     return fetch(url, opts).then(processResponse);
 };
 
@@ -117,18 +120,18 @@ export const post = (url, params = {}, opts = {}) => {
     for (let key in params) {
         data.append(key, params[key]);
     }
-    opts = Object.assign({}, opts, { method: 'POST', body: data });
-    return fetch(url, opts).then(processResponse).catch((res) => {
-        openNotificationWithIcon({
-            type: 'error',
-            message: '网络请求出错！',
-            description: '返回结果不正确！'
-        });
-    });
+    opts = Object.assign({},  {
+        credentials: 'include',
+        method: 'POST',
+        body: data
+    }, opts);
+    return fetch(url, opts).then(processResponse);
 };
 
 export const login = (params) => {
-    return post(API_URL.LOGIN, params);
+    return post(API_URL.LOGIN, params, {
+        credentials: 'omit'
+    });
 };
 
 export const logout = (params) =>  {
