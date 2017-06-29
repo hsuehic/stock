@@ -74,6 +74,39 @@
 .panel > .ant-tabs > .ant-tabs-content {
     padding: 2px 4px;
 }
+.b-symbol-list {
+    & > .ant-tabs {
+        height: 100%;
+        & > .ant-tabs-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 24px;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        & > .ant-tabs-bar {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 24px;
+            right: 0;
+            background-color: #525252;
+        }
+    }
+    .ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab {
+        padding: 1px 6px 0px 6px;
+        background-color: #888;
+        border-radius: 0 0 4px 4px;
+        min-width: 24px;
+        text-align: center;
+        margin-left: 6px;
+    }
+    .ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab.ant-tabs-tab-active{
+        background-color: #1e1f1f;
+    }
+}
 .table-header {
     display: table;
     width: 100%;
@@ -153,4 +186,18 @@
             background-color: #6a6a6a;
         }
     }
+}
+
+.btn-up {
+    background-color: #ff0000 !important;
+}
+.btn-up:hover {
+    background-color: #aa0000 !important;
+}
+
+.btn-down {
+    background-color: #00ff00 !important;
+}
+.btn-down:hover {
+    background-color: #00aa00 !important;
 }

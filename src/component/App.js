@@ -1,6 +1,7 @@
 import 'whatwg-fetch';
 import React, { Component } from 'react';
 import { Button, Dropdown, Menu, Select, Table, Tabs } from 'antd';
+import SymbolList from './SymbolList';
 import fecha from 'fecha';
 
 import echarts from 'echarts/lib/echarts';
@@ -22,7 +23,7 @@ const Option = Select.Option;
 const TabPane = Tabs.TabPane;
 
 const CHART_CONTAINER_STYLE = { position: 'relative', marginLeft: '358px', height: '100%', zIndex: 1};
-const CHART_CONTAINER_STYLE_FULL_SCREEN = {position: 'fixed', top: '0', left: '0', marginLeft: '0', width: '100%', height: '100%', zIndex: 99999};
+const CHART_CONTAINER_STYLE_FULL_SCREEN = {position: 'fixed', top: '0', left: '0', marginLeft: '0', width: '100%', height: '100%', zIndex: 1049};
 
 
 class App extends Component {
@@ -285,7 +286,8 @@ class App extends Component {
                         textStyle: {
                             align: 'center'
                         },
-                        inside: false
+                        inside: false,
+                        showMaxLabel: true
                     },
                     splitLine: {
                         show: true
@@ -340,7 +342,14 @@ class App extends Component {
             favorite2: [],
             favorite3: [],
             symbol: 'GBPUSDbo',
-            period: 1
+            period: 1,
+            isLoading: false,
+            timeDiff: 0,
+            historySpan: 1,// 1 一天， 30 一月， -1 所有
+            symbolList: {
+
+            },
+            symbolNames: ''
         };
         this.onChartEvents = {
             dataZoom: this.onDataZoom.bind(this)
@@ -352,7 +361,10 @@ class App extends Component {
         };
         this.getServerInfo();
         this.getAccountInfo();
-        this.getSymbolGroup();
+        this.getSymbolGroup(() => {
+            let getPricesFunc = this.getPrices.bind(this);
+            this.getPriceTimer = window.setInterval(getPricesFunc, 1000);
+        });
     }
 
     componentDidMount (){
@@ -361,14 +373,28 @@ class App extends Component {
                 this.echarts.resize();
             }
         }, 300);
+        this.getHistoryOrders();
         this.getLatestQuotes();
         this.timer = window.setInterval(() => {
             this.getLatestQuotes();
-        }, 5000);
+        }, 3000);
     }
 
     componentWillUnmount () {
         window.clearInterval(this.timer);
+        window.clearInterval(this.getPriceTimer);
+    }
+
+    /**
+     * 格式化日期
+     * @param timestamp
+     */
+    formatDateTime (timestamp) {
+        let v = '';
+        if (timestamp) {
+            v = fecha.format(new Date(timestamp * 1000 + this.state.timeDiff), 'YYYY/MM/dd HH:mm:ss');
+        }
+        return v;
     }
 
     getAccountInfo() {
@@ -383,20 +409,83 @@ class App extends Component {
         });
     }
 
-    getHistoryOrders () {
-
+    getHistoryOrders (params) {
+        params = params || {
+                from: 1478033917,
+                to: 2068713600
+            };
+        let promise = getHistoryOrder(params);
+        promise.then((res) => {
+            if (res && res.code === 0) {
+                let orders = res.data.orders;
+                this.setState({
+                    historyOrders: orders
+                });
+            }
+        });
     }
 
     getOpenOrders () {
-
+        let params = {};
     }
 
-    getSymbolGroup () {
-
+    getSymbolGroup (callback) {
+        let params = {};
+        let promise = getSymbolGroup(params);
+        promise.then((res) => {
+            if (res && res.code === 0) {
+                let symbols = res.data.symbols;
+                let symbolList = {};
+                symbols.map((symbol) => {
+                    let name = symbol.name;
+                    symbolList[name] = {
+                        name: name,
+                        price: symbol.price,
+                        direction: 0
+                    };
+                });
+                let symbolNames= Object.keys(symbolList).join(',');
+                this.setState({
+                    symbols,
+                    symbolList,
+                    symbolNames
+                });
+                if (typeof callback === 'function') {
+                    callback();
+                }
+            }
+        });
     }
 
     getPrices () {
+        let params = {
+            symbols: this.state.symbolNames
+        };
+        let promise = getPrice(params);
+        promise.then((res) => {
+           if (res && res.code === 0) {
+               let prices = res.data.quotes;
+               let symbolList = this.state.symbolList;
+               prices.map((item) => {
+                   let name = Object.keys(item)[0];
+                   let obj = symbolList[name];
+                   let price = item[name];
+                   if (obj.price === price) {
+                       obj.direction = 0;
+                   } else if (obj.price > price) {
+                       obj.direction = -1;
+                   } else {
+                       obj.direction = 1;
+                   }
+                   obj.price = price;
+                   symbolList[name] = Object.assign({}, obj);
+               });
+               this.setState({
+                   symbolList
+               });
+           }
 
+        });
     }
 
     getServerInfo () {
@@ -404,14 +493,18 @@ class App extends Component {
         let promise = getServerInfo(params);
         promise.then((res) => {
             if (res.code === 0) {
+                let data = res.data;
+                let time = data.server_time;
+                let timeDiff = (new Date()).getTime() - time * 1000;
                 this.setState({
-                    serverInfo: res.data
+                    serverInfo: data,
+                    timeDiff: timeDiff
                 });
             }
         });
     }
 
-    getLatestQuotes () {
+    getLatestQuotes (callback) {
         let params = {
             symbol: this.state.symbol,
             period: this.state.period
@@ -423,7 +516,7 @@ class App extends Component {
                 let data = [];
                 let times = [];
                 quotes.forEach((quote) => {
-                    let timeStr = fecha.format(new Date(quote.t * 1000), 'HH:mm');
+                    let timeStr = fecha.format(new Date(quote.t * 1000 + this.state.timeDiff), 'HH:mm');
                     times.push(timeStr);
                     let o = quote.o / 100;
                     let h = (quote.o + quote.h) / 100;
@@ -440,8 +533,29 @@ class App extends Component {
                     chartOptions
                 });
             }
+            if (typeof callback === 'function') {
+                callback();
+            }
         });
 
+    }
+
+    getTypeName (type) {
+        let v = '';
+        if (type) {
+            switch (type) {
+                case -1:
+                    v = 'DOWN';
+                    break;
+                case 1:
+                    v = 'UP';
+                    break;
+                default:
+                    v = '';
+                    break;
+            }
+        }
+        return v;
     }
 
     onChartReady () {
@@ -451,6 +565,33 @@ class App extends Component {
     onDataZoom (dataZoom) {
         this.dataZoom.start = dataZoom.batch[0].start;
         this.dataZoom.end = dataZoom.batch[0].end;
+    }
+
+    onCreateOrder (symbol) {
+
+    }
+
+    onCreateUpOrder (symbol) {
+
+    }
+
+    onCreateDownOrder (symbol) {
+
+    }
+
+    onFavoriteClick (symbol, key) {
+        let stateName = `favorite${key}`;
+        let favorite = this.state[stateName];
+        let name = symbol.name;
+        let index = favorite.indexOf(name);
+        if (index > -1) {
+            favorite.splice(index, 1);
+        } else {
+            favorite.push(name);
+        }
+        this.setState({
+            [stateName]: favorite
+        });
     }
 
     onFullScreen () {
@@ -463,36 +604,46 @@ class App extends Component {
         })
     }
 
-    render() {
-        const menu = (
-            <Menu>
-                <Menu.Item>
-                    <a target="_blank" rel="noopener noreferrer" href="http://www.alipay.com/">1st menu item</a>
-                </Menu.Item>
-                <Menu.Item>
-                    <a target="_blank" rel="noopener noreferrer" href="http://www.taobao.com/">2nd menu item</a>
-                </Menu.Item>
-                <Menu.Item>
-                    <a target="_blank" rel="noopener noreferrer" href="http://www.tmall.com/">3d menu item</a>
-                </Menu.Item>
-            </Menu>
-        )
+    onSymbolSelect (value, option) {
+        this.setState({
+            symbol: value,
+            isLoading: true
+        }, () => {
+            this.getLatestQuotes(() => {
+                this.setState({
+                    isLoading: false
+                });
+            });
+        });
+    }
 
-        let dealers = ['张三', '李四', '王五']
-        const MenuItem = Menu.Item
+    render() {
+        let dealers = ['张三', '李四', '王五'];
+        const MenuItem = Menu.Item;
         let dealerMenu = <Menu>
             { dealers.map((dealer, index) => <MenuItem key={index}><span>{dealer}</span></MenuItem>) }
-        </Menu>
+        </Menu>;
 
-        let i18ns = ['中文', 'English']
+        let i18ns = ['中文', 'English'];
         let i18nMenu = <Menu>
             { i18ns.map((i18n, index) => <MenuItem key={index}><span>{i18n}</span></MenuItem>)}
-        </Menu>
+        </Menu>;
 
         let helps = ['帮助', '关于']
         let helpMenu = <Menu>
             {helps.map((help,index) => <MenuItem key={index}><span>{help}</span></MenuItem>) }
-        </Menu>
+        </Menu>;
+
+        let symbols = Object.values(this.state.symbolList);
+        let symbols1 = symbols.filter((item) => {
+            return this.state.favorite1.indexOf(item.name) > -1;
+        });
+        let symbols2 = symbols.filter((item) => {
+            return this.state.favorite2.indexOf(item.name) > -1;
+        });
+        let symbols3 = symbols.filter((item) => {
+            return this.state.favorite3.indexOf(item.name) > -1;
+        });
 
         return (
             <div className="App">
@@ -505,7 +656,6 @@ class App extends Component {
                         <span>账户号:{this.state.account.name}</span>
                     </div>
                 </div>
-                <div className="App-slider"></div>
                 <div className="App-content">
                     <div className="nav panel">
                         <Tabs type="card">
@@ -515,6 +665,31 @@ class App extends Component {
                                         <div className="cell name">商品</div>
                                         <div className="cell price">价位</div>
                                     </div>
+                                    <div className="b-symbol-list" style={{position: 'absolute', top: '30px', left: '4px', bottom: '6px', right: '4px'}}>
+                                        <Tabs tabPosition="bottom" type="card">
+                                            <TabPane tab="全部" key="0">
+                                                <SymbolList
+                                                    symbols={symbols}
+                                                    onFavoriteClick={this.onFavoriteClick.bind(this)}
+                                                    onCreateOrder={this.onCreateOrder.bind(this)}
+                                                    onCreateDownOrder={this.onCreateDownOrder.bind(this)}
+                                                    onCreateUpOrder={this.onCreateUpOrder.bind(this)}
+                                                    favorite1={this.state.favorite1}
+                                                    favorite2={this.state.favorite2}
+                                                    favorite3={this.state.favorite3}
+                                                />
+                                            </TabPane>
+                                            <TabPane tab="1" key="1">
+                                                1
+                                            </TabPane>
+                                            <TabPane tab="2" key="2">
+                                                2
+                                            </TabPane>
+                                            <TabPane tab="3" key="3">
+                                                3
+                                            </TabPane>
+                                        </Tabs>
+                                    </div>
                                 </div>
                             </TabPane>
                         </Tabs>
@@ -523,7 +698,7 @@ class App extends Component {
                         <div className="header">
                             <div className="icon-logo" style={{marginRight: '20px'}}>
                             </div><Button onClick={this.onFullScreen.bind(this)} type={'primary'} size={'small'} style={{marginRight: '20px'}}>{this.state.fullScreen ? '还原' : '最大化'}
-                            </Button><Select  defaultValue={this.state.symbols[0].name} size={'small'}>
+                            </Button><Select  defaultValue={this.state.symbol} size={'small'} onSelect={this.onSymbolSelect.bind(this)}>
                             { this.state.symbols.map((symbol) => <Option key={symbol.name}> {symbol.name} </Option>) }
                             </Select>
                         </div>
@@ -536,6 +711,7 @@ class App extends Component {
                                     lazyUpdate={ true }
                                     onChartReady={ this.onChartReady.bind(this)}
                                     onEvents={this.onChartEvents}
+                                    showLoading={this.state.isLoading}
                                     ref={(e) => {
                                         if (e) {
                                             this.echarts = e.getEchartsInstance();
@@ -552,16 +728,16 @@ class App extends Component {
                         <TabPane tab="二元期订单" key="1">
                             <div className="table-header">
                                 <div className="row header">
-                                    <div className="cell">订单号</div>
-                                    <div className="cell">资产</div>
-                                    <div className="cell">开仓价</div>
-                                    <div className="cell">现价</div>
-                                    <div className="cell">看涨/看跌</div>
-                                    <div className="cell">时间</div>
-                                    <div className="cell">到期</div>
-                                    <div className="cell">投资</div>
-                                    <div className="cell">支出</div>
-                                    <div className="cell">状态</div>
+                                    <div className="cell" style={{width: '100px'}}>订单号</div>
+                                    <div className="cell" style={{width: '100px'}}>货币</div>
+                                    <div className="cell" style={{width: '100px'}}>开仓价</div>
+                                    <div className="cell" style={{width: '100px'}}>现价</div>
+                                    <div className="cell" style={{width: '100px'}}>看涨/看跌</div>
+                                    <div className="cell" style={{width: '100px'}}>时间</div>
+                                    <div className="cell" style={{width: '100px'}}>到期</div>
+                                    <div className="cell" style={{width: '100px'}}>投资</div>
+                                    <div className="cell" style={{width: '100px'}}>支出</div>
+                                    <div className="cell" style={{width: '100px'}}>状态</div>
                                     <div className="cell"></div>
                                 </div>
                             </div>
@@ -569,15 +745,16 @@ class App extends Component {
                             <div className="table-rows">
                                 {
                                     this.state.orders.map((order) => <div className="row">
-                                            <div className="cell" style={{width: '120px'}}>帐户名
-                                            </div><div className="cell">{this.state.account.name}
-                                            </div><div className="cell">{this.state.account.name}
-                                            </div><div className="cell">{this.state.account.name}
-                                            </div><div className="cell">{this.state.account.name}
-                                            </div><div className="cell">{this.state.account.name}
-                                            </div><div className="cell">{this.state.account.name}
-                                            </div><div className="cell">{this.state.account.name}
-                                            </div><div className="cell">{this.state.account.name}
+                                            <div className="cell" style={{width: '120px'}}>#{order.position}
+                                            </div><div className="cell">{order.symbol}
+                                            </div><div className="cell">{order.open_price}
+                                            </div><div className="cell">{''}
+                                            </div><div className="cell">{this.getTypeName(order.type)}
+                                            </div><div className="cell">{''}
+                                            </div><div className="cell">{order.expiration}
+                                            </div><div className="cell">{order.investment}
+                                            </div><div className="cell">{''}
+                                            </div><div className="cell">{''}
                                             </div>
                                         </div>
                                     )
@@ -590,10 +767,11 @@ class App extends Component {
                                     <div className="cell" style={{width: '100px'}}>订单号</div>
                                     <div className="cell" style={{width: '120px'}}>货币名称</div>
                                     <div className="cell" style={{width: '120px'}}>交易类型</div>
-                                    <div className="cell" style={{width: '130px'}}>开仓价</div>
+                                    <div className="cell" style={{width: '120px'}}>开仓价</div>
                                     <div className="cell" style={{width: '130px'}}>开仓时间</div>
                                     <div className="cell" style={{width: '120px'}}>投资金额</div>
-                                    <div className="cell" style={{width: '130px'}}>平仓价格</div>
+                                    <div className="cell" style={{width: '100px'}}>预期时间</div>
+                                    <div className="cell" style={{width: '120px'}}>平仓价格</div>
                                     <div className="cell" style={{width: '120px'}}>盈利值</div>
                                     <div className="cell"></div>
                                 </div>
@@ -602,15 +780,15 @@ class App extends Component {
                             <div className="table-rows">
                                 {
                                     this.state.historyOrders.map((historyOrder) => <div className="row">
-                                            <div className="cell" style={{width: '120px'}}>帐户名
-                                            </div><div className="cell">{this.state.account.name}
-                                            </div><div className="cell">{this.state.account.name}
-                                            </div><div className="cell">{this.state.account.name}
-                                            </div><div className="cell">{this.state.account.name}
-                                            </div><div className="cell">{this.state.account.name}
-                                            </div><div className="cell">{this.state.account.name}
-                                            </div><div className="cell">{this.state.account.name}
-                                            </div><div className="cell">{this.state.account.name}
+                                            <div className="cell" style={{width: '100px'}}>#{historyOrder.position}
+                                            </div><div className="cell" style={{width: '120px'}}>{historyOrder.symbol}
+                                            </div><div className="cell" style={{width: '120px'}}>{this.getTypeName(historyOrder.type)}
+                                            </div><div className="cell" style={{width: '120px'}}>{historyOrder.open_price}
+                                            </div><div className="cell" style={{width: '130px'}}>{this.formatDateTime(historyOrder.open_time)}
+                                            </div><div className="cell" style={{width: '120px'}}>{historyOrder.investment}
+                                            </div><div className="cell" style={{width: '100px'}}>{historyOrder.expiration}
+                                            </div><div className="cell" style={{width: '120px'}}>{historyOrder.close_price}
+                                            </div><div className="cell" style={{width: '120px'}}>{historyOrder.profit}
                                             </div>
                                         </div>
                                     )
