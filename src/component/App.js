@@ -555,9 +555,15 @@ class App extends Component {
         let params = {
             symbol: this.state.symbol,
             period: this.state.period
-        }
+        };
+        this.setState({
+            isLoading: true
+        });
         let promise = getQuotesHistory(params);
         promise.then((res) => {
+            this.setState({
+                isLoading: false
+            });
             if (res.code === 0) {
                 let quotes = res.data.quotes;
                 let data = [];

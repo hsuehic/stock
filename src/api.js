@@ -129,9 +129,7 @@ export const post = (url, params = {}, opts = {}) => {
 };
 
 export const login = (params) => {
-    return post(API_URL.LOGIN, params, {
-        credentials: 'omit'
-    });
+    return post(API_URL.LOGIN, params);
 };
 
 export const logout = (params) =>  {
