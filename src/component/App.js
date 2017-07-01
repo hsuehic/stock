@@ -23,7 +23,7 @@ const Option = Select.Option;
 
 const TabPane = Tabs.TabPane;
 
-const CHART_CONTAINER_STYLE = { position: 'relative', marginLeft: '378px', height: '100%', zIndex: 1};
+const CHART_CONTAINER_STYLE = { position: 'relative', marginLeft: '358px', height: '100%', zIndex: 1};
 const CHART_CONTAINER_STYLE_FULL_SCREEN = {position: 'fixed', top: '0', left: '0', marginLeft: '0', width: '100%', height: '100%', zIndex: 1049};
 
 const PERIOD = [{
