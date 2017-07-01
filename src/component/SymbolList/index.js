@@ -94,7 +94,7 @@ export default class SymbolList extends React.Component {
     }
 
     render() {
-        return <div className="table-rows">
+        return <div>
             {
                 this.props.symbols.map((symbol) => <SymbolItem
                     symbol={symbol}

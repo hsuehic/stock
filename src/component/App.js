@@ -13,6 +13,7 @@ import 'echarts/lib/component/tooltip';
 import 'echarts/lib/component/grid';
 import 'echarts/lib/component/legend';
 import ReactEchartsCore from 'echarts-for-react/lib/core';
+import Scrollbars from 'react-custom-scrollbars';
 
 import { getAccountDetails, getHistoryOrder, openOrder, getOpenOrder, getPrice, getQuotesHistory, getServerInfo, getSymbolGroup  } from '../api';
 
@@ -886,56 +887,78 @@ class App extends Component {
                                     <div className="b-symbol-list" style={{position: 'absolute', top: '30px', left: '4px', bottom: '6px', right: '4px'}}>
                                         <Tabs tabPosition="bottom" type="card">
                                             <TabPane tab="全部" key="0">
-                                                <SymbolList
-                                                    symbols={symbols}
-                                                    onFavoriteClick={this.onFavoriteClick.bind(this)}
-                                                    onCreateOrder={this.onCreateOrder.bind(this)}
-                                                    onCreateDownOrder={this.onCreateDownOrder.bind(this)}
-                                                    onCreateUpOrder={this.onCreateUpOrder.bind(this)}
-                                                    onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
-                                                    favorite1={this.state.favorite1}
-                                                    favorite2={this.state.favorite2}
-                                                    favorite3={this.state.favorite3}
-                                                />
+                                                <Scrollbars
+                                                    autoHide
+                                                    autoHideTimeout={1000}
+                                                    autoHideDuration={200}>
+                                                    <SymbolList
+                                                        symbols={symbols}
+                                                        onFavoriteClick={this.onFavoriteClick.bind(this)}
+                                                        onCreateOrder={this.onCreateOrder.bind(this)}
+                                                        onCreateDownOrder={this.onCreateDownOrder.bind(this)}
+                                                        onCreateUpOrder={this.onCreateUpOrder.bind(this)}
+                                                        onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
+                                                        favorite1={this.state.favorite1}
+                                                        favorite2={this.state.favorite2}
+                                                        favorite3={this.state.favorite3}
+                                                    />
+                                                </Scrollbars>
                                             </TabPane>
                                             <TabPane tab="1" key="1">
-                                                <SymbolList
-                                                    symbols={symbols1}
-                                                    onFavoriteClick={this.onFavoriteClick.bind(this)}
-                                                    onCreateOrder={this.onCreateOrder.bind(this)}
-                                                    onCreateDownOrder={this.onCreateDownOrder.bind(this)}
-                                                    onCreateUpOrder={this.onCreateUpOrder.bind(this)}
-                                                    onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
-                                                    favorite1={this.state.favorite1}
-                                                    favorite2={this.state.favorite2}
-                                                    favorite3={this.state.favorite3}
-                                                />
+                                                <Scrollbars
+                                                    autoHide
+                                                    autoHideTimeout={1000}
+                                                    autoHideDuration={200}>
+                                                    <SymbolList
+                                                        symbols={symbols1}
+                                                        onFavoriteClick={this.onFavoriteClick.bind(this)}
+                                                        onCreateOrder={this.onCreateOrder.bind(this)}
+                                                        onCreateDownOrder={this.onCreateDownOrder.bind(this)}
+                                                        onCreateUpOrder={this.onCreateUpOrder.bind(this)}
+                                                        onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
+                                                        favorite1={this.state.favorite1}
+                                                        favorite2={this.state.favorite2}
+                                                        favorite3={this.state.favorite3}
+                                                    />
+                                                </Scrollbars>
                                             </TabPane>
                                             <TabPane tab="2" key="2">
-                                                <SymbolList
-                                                    symbols={symbols2}
-                                                    onFavoriteClick={this.onFavoriteClick.bind(this)}
-                                                    onCreateOrder={this.onCreateOrder.bind(this)}
-                                                    onCreateDownOrder={this.onCreateDownOrder.bind(this)}
-                                                    onCreateUpOrder={this.onCreateUpOrder.bind(this)}
-                                                    onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
-                                                    favorite1={this.state.favorite1}
-                                                    favorite2={this.state.favorite2}
-                                                    favorite3={this.state.favorite3}
-                                                />
+
+                                                <Scrollbars
+                                                    autoHide
+                                                    autoHideTimeout={1000}
+                                                    autoHideDuration={200}>
+                                                    <SymbolList
+                                                        symbols={symbols2}
+                                                        onFavoriteClick={this.onFavoriteClick.bind(this)}
+                                                        onCreateOrder={this.onCreateOrder.bind(this)}
+                                                        onCreateDownOrder={this.onCreateDownOrder.bind(this)}
+                                                        onCreateUpOrder={this.onCreateUpOrder.bind(this)}
+                                                        onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
+                                                        favorite1={this.state.favorite1}
+                                                        favorite2={this.state.favorite2}
+                                                        favorite3={this.state.favorite3}
+                                                    />
+                                                </Scrollbars>
                                             </TabPane>
                                             <TabPane tab="3" key="3">
-                                                <SymbolList
-                                                    symbols={symbols3}
-                                                    onFavoriteClick={this.onFavoriteClick.bind(this)}
-                                                    onCreateOrder={this.onCreateOrder.bind(this)}
-                                                    onCreateDownOrder={this.onCreateDownOrder.bind(this)}
-                                                    onCreateUpOrder={this.onCreateUpOrder.bind(this)}
-                                                    onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
-                                                    favorite1={this.state.favorite1}
-                                                    favorite2={this.state.favorite2}
-                                                    favorite3={this.state.favorite3}
-                                                />
+
+                                                <Scrollbars
+                                                    autoHide
+                                                    autoHideTimeout={1000}
+                                                    autoHideDuration={200}>
+                                                    <SymbolList
+                                                        symbols={symbols3}
+                                                        onFavoriteClick={this.onFavoriteClick.bind(this)}
+                                                        onCreateOrder={this.onCreateOrder.bind(this)}
+                                                        onCreateDownOrder={this.onCreateDownOrder.bind(this)}
+                                                        onCreateUpOrder={this.onCreateUpOrder.bind(this)}
+                                                        onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
+                                                        favorite1={this.state.favorite1}
+                                                        favorite2={this.state.favorite2}
+                                                        favorite3={this.state.favorite3}
+                                                    />
+                                                </Scrollbars>
                                             </TabPane>
                                         </Tabs>
                                     </div>
@@ -992,6 +1015,10 @@ class App extends Component {
                             </div>
 
                             <div className="table-rows">
+                                <Scrollbars
+                                    autoHide
+                                    autoHideTimeout={1000}
+                                    autoHideDuration={200}>
                                 {
                                     this.state.orders.map((order) => <div className="row">
                                             <div className="cell" style={{width: '100px'}}>#{order.position}
@@ -1008,6 +1035,7 @@ class App extends Component {
                                         </div>
                                     )
                                 }
+                                </Scrollbars>
                             </div>
                         </TabPane>
                         <TabPane tab="历史订单" key="2">
@@ -1026,22 +1054,28 @@ class App extends Component {
                                 </div>
                             </div>
 
+
                             <div className="table-rows">
-                                {
-                                    this.state.historyOrders.map((historyOrder) => <div className="row">
-                                            <div className="cell" style={{width: '100px'}}>#{historyOrder.position}
-                                            </div><div className="cell" style={{width: '120px'}}>{historyOrder.symbol}
-                                            </div><div className="cell" style={{width: '120px'}}>{this.getTypeName(historyOrder.type)}
-                                            </div><div className="cell" style={{width: '120px'}}>{historyOrder.open_price}
-                                            </div><div className="cell" style={{width: '130px'}}>{this.formatDateTime(historyOrder.open_time)}
-                                            </div><div className="cell" style={{width: '120px'}}>{historyOrder.investment}
-                                            </div><div className="cell" style={{width: '100px'}}>{historyOrder.expiration}
-                                            </div><div className="cell" style={{width: '120px'}}>{historyOrder.close_price}
-                                            </div><div className="cell" style={{width: '120px'}}>{historyOrder.profit}
+                                <Scrollbars
+                                           autoHide
+                                           autoHideTimeout={1000}
+                                           autoHideDuration={200}>
+                                    {
+                                        this.state.historyOrders.map((historyOrder) => <div className="row">
+                                                <div className="cell" style={{width: '100px'}}>#{historyOrder.position}
+                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.symbol}
+                                                </div><div className="cell" style={{width: '120px'}}>{this.getTypeName(historyOrder.type)}
+                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.open_price}
+                                                </div><div className="cell" style={{width: '130px'}}>{this.formatDateTime(historyOrder.open_time)}
+                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.investment}
+                                                </div><div className="cell" style={{width: '100px'}}>{historyOrder.expiration}
+                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.close_price}
+                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.profit}
+                                                </div>
                                             </div>
-                                        </div>
-                                    )
-                                }
+                                        )
+                                    }
+                                </Scrollbars>
                             </div>
                         </TabPane>
                         <TabPane tab="账户" key="3">
@@ -1052,22 +1086,30 @@ class App extends Component {
                                 </div>
                             </div>
                             <div className="table-rows">
-                                <div className="row">
-                                    <div className="cell" style={{width: '120px'}}>帐户名
-                                    </div><div className="cell">{this.state.account.name}</div>
-                                </div>
-                                <div className="row">
-                                    <div className="cell" style={{width: '120px'}}>货币类型
-                                    </div><div className="cell">{this.state.account.currency}</div>
-                                </div>
-                                <div className="row">
-                                    <div className="cell" style={{width: '120px'}}>账户余客
-                                    </div><div className="cell">{this.state.account.balance}</div>
-                                </div>
-                                <div className="row">
-                                    <div className="cell" style={{width: '120px'}}>信用额
-                                    </div><div className="cell">{this.state.account.credit}</div>
-                                </div>
+
+                                <Scrollbars
+                                    autoHide
+                                    autoHideTimeout={1000}
+                                    autoHideDuration={200}>
+                                    <div>
+                                        <div className="row">
+                                            <div className="cell" style={{width: '120px'}}>帐户名
+                                            </div><div className="cell">{this.state.account.name}</div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="cell" style={{width: '120px'}}>货币类型
+                                            </div><div className="cell">{this.state.account.currency}</div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="cell" style={{width: '120px'}}>账户余客
+                                            </div><div className="cell">{this.state.account.balance}</div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="cell" style={{width: '120px'}}>信用额
+                                            </div><div className="cell">{this.state.account.credit}</div>
+                                        </div>
+                                    </div>
+                                </Scrollbars>
                             </div>
                         </TabPane>
                     </Tabs>
