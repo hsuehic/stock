@@ -887,6 +887,7 @@ class App extends Component {
                                     <div className="b-symbol-list" style={{position: 'absolute', top: '30px', left: '4px', bottom: '6px', right: '4px'}}>
                                         <Tabs tabPosition="bottom" type="card">
                                             <TabPane tab="全部" key="0">
+                                                <div className="table-rows">
                                                 <Scrollbars
                                                     autoHide
                                                     autoHideTimeout={1000}
@@ -903,8 +904,10 @@ class App extends Component {
                                                         favorite3={this.state.favorite3}
                                                     />
                                                 </Scrollbars>
+                                                </div>
                                             </TabPane>
                                             <TabPane tab="1" key="1">
+                                                <div className="table-rows">
                                                 <Scrollbars
                                                     autoHide
                                                     autoHideTimeout={1000}
@@ -921,9 +924,10 @@ class App extends Component {
                                                         favorite3={this.state.favorite3}
                                                     />
                                                 </Scrollbars>
+                                                </div>
                                             </TabPane>
                                             <TabPane tab="2" key="2">
-
+                                                <div className="table-rows">
                                                 <Scrollbars
                                                     autoHide
                                                     autoHideTimeout={1000}
@@ -940,9 +944,10 @@ class App extends Component {
                                                         favorite3={this.state.favorite3}
                                                     />
                                                 </Scrollbars>
+                                                </div>
                                             </TabPane>
                                             <TabPane tab="3" key="3">
-
+                                                <div className="table-rows">
                                                 <Scrollbars
                                                     autoHide
                                                     autoHideTimeout={1000}
@@ -959,6 +964,7 @@ class App extends Component {
                                                         favorite3={this.state.favorite3}
                                                     />
                                                 </Scrollbars>
+                                                </div>
                                             </TabPane>
                                         </Tabs>
                                     </div>
