@@ -5,7 +5,7 @@
  * @description: 自定义常量
  */
 
-const apiServer = ''; //`http://web.bo-bmw.com`;
+const apiServer = `http://web.bo-bmw.com`;
 
 export const API_URL = {
     LOGIN: `${apiServer}/api/socket2`, // 登录
