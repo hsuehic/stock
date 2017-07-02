@@ -57,7 +57,7 @@ module.exports = {
         // We ship a few polyfills by default:
         // Errors should be considered fatal in development
         errorOverlay: require.resolve('react-error-overlay'),
-        vendor: [require.resolve('./polyfills'), 'react', 'react-dom', 'antd'],
+        vendor: [require.resolve('./polyfills'), 'react', 'react-dom'],
         // Finally, this is your app's code:
         app: paths.appIndexJs,
         // We include the app code last so that if there is a runtime error during

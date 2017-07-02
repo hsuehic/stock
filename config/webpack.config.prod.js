@@ -66,7 +66,7 @@ module.exports = {
     devtool: 'source-map',
     // In production, we only want to load the polyfills and the app code.
     entry: {
-        vendor: [require.resolve('./polyfills'), 'react', 'react-dom', 'antd'],
+        vendor: [require.resolve('./polyfills'), 'react', 'react-dom'],
         app: paths.appIndexJs,
         login: paths.loginIndexJs,
     },
