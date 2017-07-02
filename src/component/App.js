@@ -354,7 +354,13 @@ class App extends Component {
                     }
                 ]
             },
-            loadingOpts: {},
+            loadingOpts: {
+                text: '加载中',
+                color: '#c23531',
+                textColor: '#fff',
+                maskColor: 'rgba(86, 86, 86, 0.6)',
+                zlevel: 0
+            },
             showLoading: true,
             showChart: false,
             fullScreen: false,
@@ -373,7 +379,13 @@ class App extends Component {
             order: {
                 symbol: '',
                 type: -1,
-                expiration: 1
+                investment: 5,
+                expiration: 1,
+                expirations: [{
+                    key: 1,
+                    label: '60秒',
+                    win: 80
+                }]
             },
             modalCreateOrderVisible: false,
             modalOrderInfoVisible: false,
@@ -422,6 +434,19 @@ class App extends Component {
         let v = '';
         if (timestamp) {
             v = fecha.format(new Date(timestamp * 1000 + this.state.timeDiff), 'YYYY/MM/dd HH:mm:ss');
+        }
+        return v;
+    }
+
+    formatExpiration (expiration) {
+        let v = '';
+        if (1 === expiration) {
+            v = '60秒';
+        } else if (expiration < 60) {
+            v = `${expiration}分钟`;
+        } else {
+            expiration = expiration / 60;
+            v = `${expiration}小时`
         }
         return v;
     }
@@ -477,9 +502,8 @@ class App extends Component {
                 symbols.map((symbol) => {
                     let name = symbol.name;
                     symbolList[name] = {
-                        name: name,
-                        price: symbol.price,
-                        direction: 0
+                        direction: 0,
+                        ...symbol
                     };
                 });
                 let symbolNames= Object.keys(symbolList).join(',');
@@ -633,8 +657,27 @@ class App extends Component {
     calculateExpirations (symbolName) {
         let value = [];
         let symbol = this.state.symbolList[symbolName];
+        let getKey = (str) => {
+            let v = parseInt(str);
+            return v;
+        };
+        let getLabel = (str) => {
+            let v = getKey(str);
+            return this.formatExpiration(v);
+        };
         if (symbol) {
-
+            let expiration = symbol.expiration;
+            let arr = expiration.split(',');
+            arr.map((str) => {
+                if (str) {
+                    let tmp = str.split('-');
+                    value.push({
+                        key: getKey(tmp[0]),
+                        win: tmp[1],
+                        label: getLabel(tmp[0])
+                    });
+                }
+            })
         }
         return value;
     }
@@ -686,43 +729,88 @@ class App extends Component {
     }
 
     onCreateOrder (symbol) {
+        let self = this;
+        let expirations = this.calculateExpirations(symbol.name);
         this.setState({
+            order: {
+                symbol: symbol.name,
+                expiration: expirations[0].key,
+                win: expirations[0].win,
+                expirations: expirations
+            },
             modalCreateOrderVisible: true
+        }, () => {
+            window.setTimeout(() => {
+                self.investmentInput.focus();
+            }, 600);
         });
     }
 
     onCreateUpOrder (symbol) {
-        this.setState({
-            order: {
-                symbol: symbol.name,
-                type: 1,
-                expiration: 1
-            },
-            modalCreateUpOrderVisible: true
-        });
+        this.createUpDownOrder(symbol.name, 1);
     }
 
     onCreateDownOrder (symbol) {
+        this.createUpDownOrder(symbol.name, -1);
+    }
+
+    createUpDownOrder (symbolName, type) {
+        let order = this.state.order;
+        order.type = type;
+        order.symbol = symbolName
+        order.expiration = 1;
+        order.investment = 5;
         this.setState({
-            order: {
-                symbol: symbol.name,
-                type: -1,
-                expiration: 1
-            },
+            order,
             modalCreateUpOrderVisible: true
         });
     }
 
-    onSubmitCreateOrderUp () {
+
+    onSubmitCreateOrder (type) {
+        try {
+            let order = this.state.order;
+            order.investment = parseFloat(this.investmentInput.value);
+            order.type = type;
+            order.symbol = this.state.symbol;
+            this.setState({
+                order,
+                modalCreateUpOrderVisible: true,
+                modalCreateOrderVisible: false
+            });
+        } catch (ex) {
+            console.log(ex);
+        }
 
     }
 
-    onSubmitCreateOrderDown () {
+    onSubmitCreateOrderUp () {
+        this.onSubmitCreateOrder(1);
+    }
 
+    onSubmitCreateOrderDown () {
+        this.onSubmitCreateOrder(-1);
     }
 
     onCurrentSymbolChange (symbol) {
         this.setSymbol(symbol.name);
+    }
+
+    onExpirationChange (value) {
+        value = parseInt(value);
+        let order = this.state.order;
+        order.expiration = value;
+        let len = order.expirations.length;
+        for (let i = 0; i < len; i ++) {
+            let item = order.expirations[i];
+            if (item.key === value) {
+                order.win = item.win;
+                break;
+            }
+        }
+        this.setState({
+            order
+        });
     }
 
     onFavoriteClick (symbol, key) {
@@ -747,7 +835,7 @@ class App extends Component {
         this.setState({
             chartContainerStyle,
             fullScreen
-        })
+        });
     }
 
     onHideCreateUpOrder() {
@@ -789,21 +877,22 @@ class App extends Component {
         });
     }
 
-    onSubmitCreateOrder () {
-
-    }
-
-    onSubmitCreateUpOrder () {
+    onSubmitCreateUpDownOrder () {
         this.setState({
             modalCreateUpOrderVisible: false
         });
+        this.submitOrder();
+
+    }
+
+    submitOrder () {
         let symbolName = this.state.order.symbol;
         let type = this.state.order.type === 1 ? 'UP': 'DOWN';
         let params = {
             symbol: symbolName,
             expiration: this.state.order.expiration,
             type: type,
-            volume: 5,
+            volume: this.state.order.investment,
             flag: -5812525,
             time: '',
             msec: ''
@@ -990,6 +1079,7 @@ class App extends Component {
                                     onChartReady={ this.onChartReady.bind(this)}
                                     onEvents={this.onChartEvents}
                                     showLoading={this.state.isLoading}
+                                    loadingOption={this.state.loadingOpts}
                                     ref={(e) => {
                                         if (e) {
                                             this.echarts = e.getEchartsInstance();
@@ -1120,20 +1210,6 @@ class App extends Component {
                         </TabPane>
                     </Tabs>
                 </div>
-                <Modal
-                    className={'order-dialog-small'}
-                    visible={this.state.modalCreateUpOrderVisible}
-                    closable={false}
-                    title="下单?"
-                    footer={
-                        <div style={{textAlign: 'center'}}>
-                            <Button onClick={this.onSubmitCreateUpOrder.bind(this)} style={{width: '90px'}} size={'small'} className={ this.state.order.type === 1 ? 'btn-up': 'btn-down'}>{this.state.order.type === 1 ? '看涨': '看跌'}</Button><Button onClick={this.onHideCreateUpOrder.bind(this)} style={{width: '90px', marginLeft: '20px'}} size={'small'} className={ 'btn-cancel' }>取消</Button>
-                        </div>
-                    }
-                >
-                    <p>买 5.00 &nbsp; {this.state.order.symbol} {this.state.order.type === 1 ? '看涨': '看跌'}为期60S</p>
-                </Modal>
-
 
                 <Modal
                     className={'order-dialog-large'}
@@ -1142,7 +1218,7 @@ class App extends Component {
                     title={this.state.symbol}
                     footer={
                         <div style={{textAlign: 'center'}}>
-                            <Button style={{width: '100%'}} className={'btn-default'} onClick={this.onHideModalCreateOrder.bind(this)}>取消</Button>
+                            <Button size={'small'} style={{width: '100%'}} className={'btn-default'} onClick={this.onHideModalCreateOrder.bind(this)}>取消</Button>
                         </div>
                     }
                 >
@@ -1150,16 +1226,16 @@ class App extends Component {
                         <div className="cell">
                             投放资本
                         </div><div className="cell">
-                            <input type="text" value="5.0" ref = {(input) => {this.investmentInput = input}} />
+                            <input id="investment" name="investment" defaultValue="5.0" type="text" ref = {(input) => {this.investmentInput = input}} />
                         </div><div className="cell">
-                            <Button onClick={this.onSubmitCreateOrderUp.bind(this)} style={{width: '90px'}} size={'small'} className={ 'btn-up'}>看涨</Button>
+                            <Button onClick={this.onSubmitCreateOrderUp.bind(this)} style={{width: '138px'}} size={'small'} className={ 'btn-up'}>看涨</Button>
                         </div>
                     </div>
                     <div className="order-row">
                         <div className="cell">
                             支付盈利
                         </div><div className="cell">
-
+                            {this.state.order.win}%
                         </div><div className="cell">
                             {this.getSymbolPrice(this.state.symbol)}
                         </div>
@@ -1177,19 +1253,32 @@ class App extends Component {
                         <div className="cell">
                             到期
                         </div><div className="cell">
-                            <Select style={{width: '60px'}}>
+                            <Select value={this.state.order.expiration + ''} onChange={this.onExpirationChange.bind(this)} style={{width: '80px'}} size={'small'} >
                                 {
-                                    this.calculateExpirations(this.state.symbol).map((item) => {
+                                    this.state.order.expirations.map((item) => {
                                         return <Option key={item.key}>{item.label}</Option>
                                     })
                                 }
                             </Select>
                         </div><div className="cell">
-                            <Button onClick={this.onSubmitCreateOrderDown.bind(this)} style={{width: '90px'}} size={'small'} className={ 'btn-down'}>看跌</Button>
+                            <Button onClick={this.onSubmitCreateOrderDown.bind(this)} style={{width: '138px'}} size={'small'} className={ 'btn-down'}>看跌</Button>
                         </div>
                     </div>
                 </Modal>
 
+                <Modal
+                    className={'order-dialog-small'}
+                    visible={this.state.modalCreateUpOrderVisible}
+                    closable={false}
+                    title="下单?"
+                    footer={
+                        <div style={{textAlign: 'center'}}>
+                            <Button onClick={this.onSubmitCreateUpDownOrder.bind(this)} style={{width: '90px'}} size={'small'} className={ this.state.order.type === 1 ? 'btn-up': 'btn-down'}>{this.state.order.type === 1 ? '看涨': '看跌'}</Button><Button onClick={this.onHideCreateUpOrder.bind(this)} style={{width: '90px', marginLeft: '20px'}} size={'small'} className={ 'btn-cancel' }>取消</Button>
+                        </div>
+                    }
+                >
+                    <p>买 {this.state.order.investment} &nbsp; {this.state.order.symbol} {this.state.order.type === 1 ? '看涨': '看跌'}为期{this.formatExpiration(this.state.order.expiration)}</p>
+                </Modal>
 
                 <Modal
                     className={'order-dialog-info'}
