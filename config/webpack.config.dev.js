@@ -12,6 +12,16 @@ const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getClientEnvironment = require('./env');
 const paths = require('./paths');
 
+const sortChunks = (a,b) => {
+    console.log(a.names);
+    console.log(b.names);
+    let chunks = ['vendor', 'devClient', 'errorOverlay', 'app', 'login'];
+    let indexA = chunks.indexOf(a.names[0]);
+    let indexB = chunks.indexOf(b.names[0]);
+    let v = indexA - indexB;
+    return v;
+};
+
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
 const publicPath = '/';
@@ -45,9 +55,9 @@ module.exports = {
         // require.resolve('webpack/hot/dev-server'),
         devClient: require.resolve('react-dev-utils/webpackHotDevClient'),
         // We ship a few polyfills by default:
-        polyfills: require.resolve('./polyfills'),
         // Errors should be considered fatal in development
         errorOverlay: require.resolve('react-error-overlay'),
+        vendor: [require.resolve('./polyfills'), 'react', 'react-dom', 'antd'],
         // Finally, this is your app's code:
         app: paths.appIndexJs,
         // We include the app code last so that if there is a runtime error during
@@ -300,16 +310,16 @@ module.exports = {
         new HtmlWebpackPlugin({
             filename: 'index.html',
             inject: true,
-            chunks: ['devClient', 'polyfills', 'errorOverlay', 'app'],
-            chunksSortMode: 'none',
+            chunks: ['devClient', 'vendor', 'errorOverlay', 'app'],
+            chunksSortMode: sortChunks,
             template: paths.appHtml,
         }),
         // Generates an `login.html` file with the <script> injected.
         new HtmlWebpackPlugin({
             filename: 'login.html',
             inject: true,
-            chunks: ['devClient', 'polyfills', 'errorOverlay', 'login'],
-            chunksSortMode: 'none',
+            chunks: ['devClient', 'vendor','errorOverlay', 'login'],
+            chunksSortMode: sortChunks,
             template: paths.loginHtml,
         }),
         // Makes some environment variables available to the JS code, for example:
@@ -332,6 +342,10 @@ module.exports = {
         // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
         // You can remove this if you don't use Moment.js:
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'vendor',
+            minChunks: Infinity,
+        }),
     ],
     // Some libraries import Node modules but don't use them in the browser.
     // Tell Webpack to provide empty mocks for them so importing them works.

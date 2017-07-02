@@ -14,6 +14,16 @@ const paths = require('./paths');
 const getClientEnvironment = require('./env');
 const modifyVars = require('../src/theme');
 
+const sortChunks = (a,b) => {
+    console.log(a.names);
+    console.log(b.names);
+    let chunks = [ 'vendor', 'devClient', 'errorOverlay', 'app', 'login'];
+    let indexA = chunks.indexOf(a.names[0]);
+    let indexB = chunks.indexOf(b.names[0]);
+    let v = indexA - indexB;
+    return v;
+};
+
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
 const publicPath = paths.servedPath;
@@ -56,7 +66,7 @@ module.exports = {
     devtool: 'source-map',
     // In production, we only want to load the polyfills and the app code.
     entry: {
-        polyfills: require.resolve('./polyfills'),
+        vendor: [require.resolve('./polyfills'), 'react', 'react-dom', 'antd'],
         app: paths.appIndexJs,
         login: paths.loginIndexJs,
     },
@@ -324,7 +334,8 @@ module.exports = {
             filename: 'index.html',
             inject: true,
             template: paths.appHtml,
-            chunks: ['polyfills', 'app'],
+            chunks: ['vendor', 'app'],
+            chunksSortMode: sortChunks,
             minify: {
                 removeComments: true,
                 collapseWhitespace: true,
@@ -342,7 +353,8 @@ module.exports = {
             filename: 'login.html',
             inject: true,
             template: paths.loginHtml,
-            chunks: ['polyfills', 'login'],
+            chunks: ['vendor', 'login'],
+            chunksSortMode: sortChunks,
             minify: {
                 removeComments: true,
                 collapseWhitespace: true,
@@ -420,6 +432,10 @@ module.exports = {
         // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
         // You can remove this if you don't use Moment.js:
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'vendor',
+            minChunks: Infinity,
+        }),
     ],
     // Some libraries import Node modules but don't use them in the browser.
     // Tell Webpack to provide empty mocks for them so importing them works.
@@ -427,5 +443,4 @@ module.exports = {
         fs: 'empty',
         net: 'empty',
         tls: 'empty',
-    },
-};
+    },};
