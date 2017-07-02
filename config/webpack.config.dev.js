@@ -13,8 +13,6 @@ const getClientEnvironment = require('./env');
 const paths = require('./paths');
 
 const sortChunks = (a,b) => {
-    console.log(a.names);
-    console.log(b.names);
     let chunks = ['vendor', 'devClient', 'errorOverlay', 'app', 'login'];
     let indexA = chunks.indexOf(a.names[0]);
     let indexB = chunks.indexOf(b.names[0]);
