@@ -23,6 +23,12 @@ const Option = Select.Option;
 
 const TabPane = Tabs.TabPane;
 
+const COLORS = {
+    WIN: '#ff0000',
+    LOSS: '#00ff00',
+    EQUALS: '#ffffff'
+};
+
 const CHART_CONTAINER_STYLE = { position: 'relative', marginLeft: '358px', height: '100%', zIndex: 1};
 const CHART_CONTAINER_STYLE_FULL_SCREEN = {position: 'fixed', top: '0', left: '0', marginLeft: '0', width: '100%', height: '100%', zIndex: 1049};
 
@@ -317,8 +323,8 @@ class App extends Component {
                 yAxis: {
                     position: 'right',
                     scale: true,
-                    axisLine: { lineStyle: { color: '#8392A5' } },
-                    splitLine: { show: false },
+                    axisLine: {lineStyle: {color: '#8392A5'}},
+                    splitLine: {show: false},
                     textStyle: {
                         color: '#65f1f1'
                     },
@@ -389,7 +395,63 @@ class App extends Component {
             },
             modalCreateOrderVisible: false,
             modalOrderInfoVisible: false,
-            orderInfo: {}
+            orderInfo: {
+                "position": "12341434333", // 订单号
+                "symbol": "EURCHFbo", // 货币
+                "type": 1, //-1代表看跌DOWN，1代表看涨 UP
+                "open_price": 5, /// 开仓价
+                "open_time": 1498258796, //开仓时间
+                "investment": 100, //投资金额
+                "expiration": 5, //过期时间（分钟）。
+                "win": 50, //盈利百分比
+                "digits": 2 //报价的精度
+            },
+            pieChartOpts: {
+                title: [{
+                    text: '30:30',
+                    top:'center',
+                    left: 'center',
+                    textStyle: {
+                        fontSize: 30,
+                        color: '#ffff00'
+                    }
+                }],
+                color: ['#ffff00', '#cccccc'],
+                series: [{
+                    name:'访问来源',
+                    type:'pie',
+                    radius: ['90%', '100%'],
+                    avoidLabelOverlap: true,
+                    hoverAnimation: false,
+                    selectedOffset: 0,
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center',
+                            formatter: function () {
+                                return '30:30'
+                            }
+                        },
+                        emphasis: {
+                            show: false,
+                            formatter: '30:30',
+                            textStyle: {
+                                fontSize: '40',
+                                fontWeight: 'bold'
+                            }
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    data:[
+                        {value:600, name:'剩余时间'},
+                        {value:310, name:'已过时间'}
+                    ]
+                }]
+            }
         };
         this.onChartEvents = {
             dataZoom: this.onDataZoom.bind(this)
@@ -531,16 +593,18 @@ class App extends Component {
                prices.map((item) => {
                    let name = Object.keys(item)[0];
                    let obj = symbolList[name];
-                   let price = item[name];
-                   if (obj.price === price) {
-                       obj.direction = 0;
-                   } else if (obj.price > price) {
-                       obj.direction = -1;
-                   } else {
-                       obj.direction = 1;
+                   if (obj) {
+                       let price = item[name];
+                       if (obj.price === price) {
+                           obj.direction = 0;
+                       } else if (obj.price > price) {
+                           obj.direction = -1;
+                       } else {
+                           obj.direction = 1;
+                       }
+                       obj.price = price;
+                       symbolList[name] = Object.assign({}, obj);
                    }
-                   obj.price = price;
-                   symbolList[name] = Object.assign({}, obj);
                });
                this.setState({
                    symbolList
@@ -631,14 +695,17 @@ class App extends Component {
         let symbolName = order.symbol;
         let openPrice = order.open_price;
         let symbol = this.state.symbolList[symbolName];
-        let price = symbol.price;
-        let type = order.type === 'UP' ? 1: -1;
-        let d = (price - openPrice) * type;
         let v = 0;
-        if (d > 0) {
-            v = 1;
-        } else if(d < 0) {
-            v = -1;
+
+        if (symbol) {
+            let price = symbol.price;
+            let type = (order.type === 'UP' || order.type ===1) ? 1: -1;
+            let d = (price - openPrice) * type;
+            if (d > 0) {
+                v = 1;
+            } else if(d < 0) {
+                v = -1;
+            }
         }
         return v;
     }
@@ -652,6 +719,17 @@ class App extends Component {
             v = order.investment * -1;
         }
         return v;
+    }
+
+    calculateProfitNode (profit) {
+        let text = profit;
+        let color = COLORS.EQUALS;
+        if (profit > 0) {
+            color = COLORS.WIN;
+        } else if (profit < 0) {
+            color = COLORS.LOSS;
+        }
+        return <span style={{color:color}}>{text}</span>;
     }
 
     calculateExpirations (symbolName) {
@@ -685,15 +763,15 @@ class App extends Component {
     calculateStatusNode (order) {
         let s = this.calculateStatus(order);
         let text = '平盘';
-        let color = '#ffffff';
+        let color = COLORS.EQUALS;
         switch (s) {
             case 1:
                 text = '盈利';
-                color = '#ff0000';
+                color = COLORS.WIN;
                 break;
             case -1:
                 text = '亏损';
-                color = '#00ff00';
+                color = COLORS.LOSS;
                 break;
             default:
                 break;
@@ -765,7 +843,6 @@ class App extends Component {
             modalCreateUpOrderVisible: true
         });
     }
-
 
     onSubmitCreateOrder (type) {
         try {
@@ -853,6 +930,13 @@ class App extends Component {
     onHideModalCreateOrder () {
         this.setState({
             modalCreateOrderVisible: false
+        })
+    }
+
+    onOrderClick (order) {
+        this.setState({
+            orderInfo: order,
+            modalOrderInfoVisible: true
         })
     }
 
@@ -1116,7 +1200,7 @@ class App extends Component {
                                     autoHideTimeout={1000}
                                     autoHideDuration={200}>
                                 {
-                                    this.state.orders.map((order) => <div key={order.position} className="row">
+                                    this.state.orders.length > 0 ? this.state.orders.map((order) => <div key={order.position} className="row" onClick={this.onOrderClick.bind(this, order)}>
                                             <div className="cell" style={{width: '100px'}}>#{order.position}
                                             </div><div className="cell" style={{width: '100px'}}>{order.symbol}&nbsp;
                                             </div><div className="cell" style={{width: '100px'}}>{order.open_price}&nbsp;
@@ -1125,11 +1209,11 @@ class App extends Component {
                                             </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(order.open_time)}&nbsp;
                                             </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(order.open_time + order.expiration * 60)}&nbsp;
                                             </div><div className="cell" style={{width: '100px'}}>{order.investment}&nbsp;
-                                            </div><div className="cell" style={{width: '100px'}}>{this.calculateProfit(order)}&nbsp;
+                                            </div><div className="cell" style={{width: '100px'}}>{this.calculateProfitNode(this.calculateProfit(order))}&nbsp;
                                             </div><div className="cell" style={{width: '100px'}}>{this.calculateStatusNode(order)}&nbsp;
                                             </div>
                                         </div>
-                                    )
+                                    ): <div className="row-no-record">没有持仓订单！</div>
                                 }
                                 </Scrollbars>
                             </div>
@@ -1157,7 +1241,7 @@ class App extends Component {
                                            autoHideTimeout={1000}
                                            autoHideDuration={200}>
                                     {
-                                        this.state.historyOrders.map((historyOrder) => <div key={historyOrder.position} className="row">
+                                        this.state.historyOrders.length > 0 ? this.state.historyOrders.map((historyOrder) => <div key={historyOrder.position} className="row">
                                                 <div className="cell" style={{width: '100px'}}>#{historyOrder.position}&nbsp;
                                                 </div><div className="cell" style={{width: '120px'}}>{historyOrder.symbol}&nbsp;
                                                 </div><div className="cell" style={{width: '120px'}}>{this.getTypeName(historyOrder.type)}&nbsp;
@@ -1166,10 +1250,10 @@ class App extends Component {
                                                 </div><div className="cell" style={{width: '120px'}}>{historyOrder.investment}&nbsp;
                                                 </div><div className="cell" style={{width: '100px'}}>{historyOrder.expiration}&nbsp;
                                                 </div><div className="cell" style={{width: '120px'}}>{historyOrder.close_price}&nbsp;
-                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.profit}&nbsp;
+                                                </div><div className="cell" style={{width: '120px'}}>{this.calculateProfitNode(historyOrder.profit)}&nbsp;
                                                 </div>
                                             </div>
-                                        )
+                                        ) : <div className="row-no-record">没有符合条件的历史订单！</div>
                                     }
                                 </Scrollbars>
                             </div>
@@ -1210,7 +1294,6 @@ class App extends Component {
                         </TabPane>
                     </Tabs>
                 </div>
-
                 <Modal
                     className={'order-dialog-large'}
                     visible={this.state.modalCreateOrderVisible}
@@ -1284,18 +1367,81 @@ class App extends Component {
                     className={'order-dialog-info'}
                     visible={this.state.modalOrderInfoVisible}
                     closable={false}
-                    title={this.state.orderInfo.symbol + ' ' + this.state.orderInfo.type}
+                    title={this.state.orderInfo ? (this.state.orderInfo.symbol + ' ' + (this.state.orderInfo.type === 1 ? 'UP' : 'DOWN')) : '' }
                     footer={
                         <div style={{textAlign: 'center'}}>
-                            <Button onClick={this.onHideModalOrderInfo.bind(this)} style={{width: '90px'}} size={'small'} className={'btn-default'}>取消</Button>
+                            <Button onClick={this.onHideModalOrderInfo.bind(this)} style={{width: '100%'}} size={'small'} className={'btn-default'}>取消</Button>
                         </div>
                     }
                 >
-                    <div>
-                        <div className="chart-box">
+                        <div>
+                            <div className="chart-box">
+                                {/*<ReactEchartsCore*/}
+                                    {/*style={{position: 'absolute', width: '100%', height: '100%'}}*/}
+                                    {/*echarts={echarts}*/}
+                                    {/*notMerge={ true }*/}
+                                    {/*lazyUpdate={ true }*/}
+                                    {/*option ={this.state.pieChartOpts}*/}
 
+                                {/*/>*/}
+                            </div>
+                            <div className="info-box">
+                                <div className="row">
+                                    <div className="cell label1">
+                                        投资
+                                    </div>
+                                    <div className="cell value1">
+                                        {
+                                            this.state.orderInfo.investment
+                                        }
+                                    </div>
+                                    <div className="cell label2">
+                                        开仓价格
+                                    </div>
+                                    <div className="cell value2">
+                                        {
+                                            this.state.orderInfo.open_price
+                                        }
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="cell label1">
+                                        盈利
+                                    </div>
+                                    <div className="cell value1">
+                                        {
+                                            this.calculateProfit(this.state.orderInfo)
+                                        }
+                                    </div>
+                                    <div className="cell label2">
+                                        现价
+                                    </div>
+                                    <div className="cell value2">
+                                        {
+                                            this.getSymbolPrice(this.state.orderInfo.symbol)
+                                        }
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="cell label1">
+                                        到期
+                                    </div>
+                                    <div className="cell value1">
+                                        {
+                                            this.formatExpiration(this.state.orderInfo.expiration)
+                                        }
+                                    </div>
+                                    <div className="cell label2">
+                                        方向
+                                    </div>
+                                    <div className="cell value2">
+                                        {
+                                            this.getSymbolPrice(this.state.orderInfo.symbol) - this.state.orderInfo.open_price
+                                        }
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
                 </Modal>
             </div>
         );

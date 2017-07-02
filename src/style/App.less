@@ -258,8 +258,52 @@
 
 
 .order-dialog-info {
-    width: 720px !important;
-    height: 260px !important;
+    width: 660px !important;
+    .chart-box {
+        display: inline-block;
+        width: 120px;
+        height: 120px;
+        margin-right: 40px;
+        vertical-align: middle;
+    }
+    .info-box {
+        box-sizing: border-box;
+        display: inline-block;
+        width: 450px;
+        height: 120px;
+        padding: 15px 0;
+        vertical-align: middle;
+        .row {
+            height: 30px;
+            line-height: 30px;
+            .cell {
+                display: inline-block;
+                text-align: left;
+                &.label1 {
+                    width: 80px;
+                }
+                &.value1{
+                    width: 140px;
+                }
+                &.label2 {
+                    width: 100px;
+                }
+                &.value2 {
+                    width: 120px;
+                }
+            }
+        }
+    }
+}
+
+.row-no-record {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    text-align: center;
+    top: 50%;
+    line-height: 30px;
+    margin-top: -15px;
 }
 
 .order-row {

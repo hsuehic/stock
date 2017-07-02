@@ -4,16 +4,10 @@ module.exports = {
     "data": {
         "quotes": [
             {
-                "GBPUSD.bo": 1.27112
+                "GBPUSDbo": 1.27112
             },
             {
-                "EURUSD.bo": 1.11921
-            },
-            {
-                "EURUSDbo": 1.11921
-            },
-            {
-                "GBPUSDbo": 1.27149
+                "EURUSDbo": 1.11923
             }
         ]
     }
