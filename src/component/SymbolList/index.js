@@ -97,6 +97,7 @@ export default class SymbolList extends React.Component {
         return <div>
             {
                 this.props.symbols.map((symbol) => <SymbolItem
+                    key={symbol.name}
                     symbol={symbol}
                     onCreateOrder={this.onCreateOrder.bind(this)}
                     onCreateUpOrder={this.onCreateUpOrder.bind(this)}

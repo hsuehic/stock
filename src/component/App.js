@@ -1011,8 +1011,8 @@ class App extends Component {
                                     <div className="cell" style={{width: '101px'}}>开仓价</div>
                                     <div className="cell" style={{width: '101px'}}>现价</div>
                                     <div className="cell" style={{width: '101px'}}>看涨/看跌</div>
-                                    <div className="cell" style={{width: '121px'}}>时间</div>
-                                    <div className="cell" style={{width: '121px'}}>到期</div>
+                                    <div className="cell" style={{width: '141px'}}>时间</div>
+                                    <div className="cell" style={{width: '141px'}}>到期</div>
                                     <div className="cell" style={{width: '101px'}}>投资</div>
                                     <div className="cell" style={{width: '101px'}}>盈亏</div>
                                     <div className="cell" style={{width: '101px'}}>状态</div>
@@ -1026,17 +1026,17 @@ class App extends Component {
                                     autoHideTimeout={1000}
                                     autoHideDuration={200}>
                                 {
-                                    this.state.orders.map((order) => <div className="row">
+                                    this.state.orders.map((order) => <div key={order.position} className="row">
                                             <div className="cell" style={{width: '100px'}}>#{order.position}
-                                            </div><div className="cell" style={{width: '100px'}}>{order.symbol}
-                                            </div><div className="cell" style={{width: '100px'}}>{order.open_price}
-                                            </div><div className="cell" style={{width: '100px'}}>{this.getSymbolPrice(order.symbol)}
-                                            </div><div className="cell" style={{width: '100px'}}>{this.getTypeName(order.type)}
-                                            </div><div className="cell" style={{width: '120px'}}>{this.formatDateTime(order.open_time)}
-                                            </div><div className="cell" style={{width: '120px'}}>{this.formatDateTime(order.open_time + order.expiration * 60)}
-                                            </div><div className="cell" style={{width: '100px'}}>{order.investment}
-                                            </div><div className="cell" style={{width: '100px'}}>{this.calculateProfit(order)}
-                                            </div><div className="cell" style={{width: '100px'}}>{this.calculateStatusNode(order)}
+                                            </div><div className="cell" style={{width: '100px'}}>{order.symbol}&nbsp;
+                                            </div><div className="cell" style={{width: '100px'}}>{order.open_price}&nbsp;
+                                            </div><div className="cell" style={{width: '100px'}}>{this.getSymbolPrice(order.symbol)}&nbsp;
+                                            </div><div className="cell" style={{width: '100px'}}>{this.getTypeName(order.type)}&nbsp;
+                                            </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(order.open_time)}&nbsp;
+                                            </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(order.open_time + order.expiration * 60)}&nbsp;
+                                            </div><div className="cell" style={{width: '100px'}}>{order.investment}&nbsp;
+                                            </div><div className="cell" style={{width: '100px'}}>{this.calculateProfit(order)}&nbsp;
+                                            </div><div className="cell" style={{width: '100px'}}>{this.calculateStatusNode(order)}&nbsp;
                                             </div>
                                         </div>
                                     )
@@ -1047,15 +1047,15 @@ class App extends Component {
                         <TabPane tab="历史订单" key="2">
                             <div className="table-header">
                                 <div className="row header">
-                                    <div className="cell" style={{width: '100px'}}>订单号</div>
-                                    <div className="cell" style={{width: '120px'}}>货币名称</div>
-                                    <div className="cell" style={{width: '120px'}}>交易类型</div>
-                                    <div className="cell" style={{width: '120px'}}>开仓价</div>
-                                    <div className="cell" style={{width: '130px'}}>开仓时间</div>
-                                    <div className="cell" style={{width: '120px'}}>投资金额</div>
-                                    <div className="cell" style={{width: '100px'}}>预期时间</div>
-                                    <div className="cell" style={{width: '120px'}}>平仓价格</div>
-                                    <div className="cell" style={{width: '120px'}}>盈亏</div>
+                                    <div className="cell" style={{width: '101px'}}>订单号</div>
+                                    <div className="cell" style={{width: '121px'}}>货币名称</div>
+                                    <div className="cell" style={{width: '121px'}}>交易类型</div>
+                                    <div className="cell" style={{width: '121px'}}>开仓价</div>
+                                    <div className="cell" style={{width: '141px'}}>开仓时间</div>
+                                    <div className="cell" style={{width: '121px'}}>投资金额</div>
+                                    <div className="cell" style={{width: '101px'}}>预期时间</div>
+                                    <div className="cell" style={{width: '121px'}}>平仓价格</div>
+                                    <div className="cell" style={{width: '121px'}}>盈亏</div>
                                     <div className="cell"></div>
                                 </div>
                             </div>
@@ -1067,16 +1067,16 @@ class App extends Component {
                                            autoHideTimeout={1000}
                                            autoHideDuration={200}>
                                     {
-                                        this.state.historyOrders.map((historyOrder) => <div className="row">
-                                                <div className="cell" style={{width: '100px'}}>#{historyOrder.position}
-                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.symbol}
-                                                </div><div className="cell" style={{width: '120px'}}>{this.getTypeName(historyOrder.type)}
-                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.open_price}
-                                                </div><div className="cell" style={{width: '130px'}}>{this.formatDateTime(historyOrder.open_time)}
-                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.investment}
-                                                </div><div className="cell" style={{width: '100px'}}>{historyOrder.expiration}
-                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.close_price}
-                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.profit}
+                                        this.state.historyOrders.map((historyOrder) => <div key={historyOrder.position} className="row">
+                                                <div className="cell" style={{width: '100px'}}>#{historyOrder.position}&nbsp;
+                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.symbol}&nbsp;
+                                                </div><div className="cell" style={{width: '120px'}}>{this.getTypeName(historyOrder.type)}&nbsp;
+                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.open_price}&nbsp;
+                                                </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(historyOrder.open_time)}&nbsp;
+                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.investment}&nbsp;
+                                                </div><div className="cell" style={{width: '100px'}}>{historyOrder.expiration}&nbsp;
+                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.close_price}&nbsp;
+                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.profit}&nbsp;
                                                 </div>
                                             </div>
                                         )
