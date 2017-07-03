@@ -1,6 +1,6 @@
 import 'whatwg-fetch';
 import React, { Component } from 'react';
-import { Button, Dropdown, Menu, Modal, Select, Tabs } from 'antd';
+import { Button, Dropdown, Menu, Modal, Select, Spin, Tabs } from 'antd';
 import SymbolList from './SymbolList';
 import fecha from 'fecha';
 
@@ -14,6 +14,7 @@ import 'echarts/lib/component/grid';
 import 'echarts/lib/component/legend';
 import ReactEchartsCore from 'echarts-for-react/lib/core';
 import Scrollbars from 'react-custom-scrollbars';
+import CountingDown from './CountingDown';
 
 import { getAccountDetails, getHistoryOrder, openOrder, getOpenOrder, getPrice, getQuotesHistory, getServerInfo, getSymbolGroup  } from '../api';
 
@@ -451,7 +452,8 @@ class App extends Component {
                         {value:310, name:'已过时间'}
                     ]
                 }]
-            }
+            },
+            isOpeningOrder: false
         };
         this.onChartEvents = {
             dataZoom: this.onDataZoom.bind(this)
@@ -461,6 +463,21 @@ class App extends Component {
             start: 50,
             end: 100
         };
+    }
+
+    watchOrders (){
+        if (this.state.orders && this.state.orders.length > 0) {
+            let len = this.state.orders.length;
+            let now = (new Date()).getTime() - this.state.timeDiff;
+            for (let i = 0; i < len; i ++) {
+                let order = this.state.orders[i];
+                if (now > order.open_time * 1000 + order.expiration * 60 * 1000 ) {
+                    this.getHistoryOrders();
+                    this.getOpenOrders();
+                    break;
+                }
+            }
+        }
     }
 
     componentDidMount (){
@@ -481,11 +498,14 @@ class App extends Component {
         this.timer = window.setInterval(() => {
             this.getLatestQuotes();
         }, this.state.period * 60 * 1000);
+
+        this.watchOrdersTimer = window.setInterval(this.watchOrders.bind(this), 5000);
     }
 
     componentWillUnmount () {
         window.clearInterval(this.timer);
         window.clearInterval(this.getPriceTimer);
+        window.clearInterval(this.watchOrdersTimer);
     }
 
     /**
@@ -495,7 +515,7 @@ class App extends Component {
     formatDateTime (timestamp) {
         let v = '';
         if (timestamp) {
-            v = fecha.format(new Date(timestamp * 1000 + this.state.timeDiff), 'YYYY/MM/dd HH:mm:ss');
+            v = fecha.format(new Date(timestamp * 1000 + this.state.timeDiff), 'YYYY/MM/DD HH:mm:ss');
         }
         return v;
     }
@@ -525,10 +545,13 @@ class App extends Component {
         });
     }
 
-    getHistoryOrders (params) {
-        params = params || {
-                from: 1478033917,
-                to: 2068713600
+    getHistoryOrders () {
+        let now = new Date();
+        let to = (now.getTime()  - this.state.timeDiff) / 1000;
+        let from = to - 24 * 3600;
+        let params = {
+                from,
+                to
             };
         let promise = getHistoryOrder(params);
         promise.then((res) => {
@@ -982,18 +1005,25 @@ class App extends Component {
             msec: ''
         };
         let promise = openOrder(params);
+        this.setState({
+            isOpeningOrder: true
+        });
         promise.then((res) => {
+            this.setState({
+                isOpeningOrder: false
+            });
             if (res && res.code === 0) {
                 this.setState({
                     modalOrderInfoVisible: true,
                     orderInfo: res.data
                 });
+                this.getOpenOrders();
             }
+        }).catch(() => {
+            this.setState({
+                isOpeningOrder: false
+            });
         });
-    }
-
-    onSymbolSelect (value, option) {
-        this.setSymbol(value);
     }
 
     setSymbol (value) {
@@ -1376,14 +1406,7 @@ class App extends Component {
                 >
                         <div>
                             <div className="chart-box">
-                                {/*<ReactEchartsCore*/}
-                                    {/*style={{position: 'absolute', width: '100%', height: '100%'}}*/}
-                                    {/*echarts={echarts}*/}
-                                    {/*notMerge={ true }*/}
-                                    {/*lazyUpdate={ true }*/}
-                                    {/*option ={this.state.pieChartOpts}*/}
-
-                                {/*/>*/}
+                                { this.state.modalOrderInfoVisible && <CountingDown style={{position: 'relative', width: '100%', height: '100%'}} startTime={this.state.orderInfo.open_time * 1000+ this.state.timeDiff } endTime={ this.state.orderInfo.open_time * 1000 + this.state.timeDiff + this.state.orderInfo.expiration * 60 * 1000} />}
                             </div>
                             <div className="info-box">
                                 <div className="row">
@@ -1436,7 +1459,7 @@ class App extends Component {
                                     </div>
                                     <div className="cell value2">
                                         {
-                                            this.getSymbolPrice(this.state.orderInfo.symbol) - this.state.orderInfo.open_price
+                                            (this.getSymbolPrice(this.state.orderInfo.symbol) - this.state.orderInfo.open_price).toFixed(this.state.orderInfo.digits)
                                         }
                                     </div>
                                 </div>

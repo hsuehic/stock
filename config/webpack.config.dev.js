@@ -308,7 +308,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             filename: 'index.html',
             inject: true,
-            chunks: ['devClient', 'vendor', 'errorOverlay', 'app'],
+            chunks: ['devClient', 'vendor', 'app'],
             chunksSortMode: sortChunks,
             template: paths.appHtml,
         }),
@@ -316,7 +316,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             filename: 'login.html',
             inject: true,
-            chunks: ['devClient', 'vendor','errorOverlay', 'login'],
+            chunks: ['devClient', 'vendor', 'login'],
             chunksSortMode: sortChunks,
             template: paths.loginHtml,
         }),
