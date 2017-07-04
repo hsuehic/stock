@@ -1,9 +1,9 @@
 {
-  "app.js": "static/js/app.3c236ac4.js",
-  "app.js.map": "static/js/app.3c236ac4.js.map",
-  "login.js": "static/js/login.3fa0f66a.js",
-  "login.js.map": "static/js/login.3fa0f66a.js.map",
+  "app.js": "static/js/app.ab79b3d2.js",
+  "app.js.map": "static/js/app.ab79b3d2.js.map",
+  "login.js": "static/js/login.3708236a.js",
+  "login.js.map": "static/js/login.3708236a.js.map",
   "static/media/clm3-logo.png": "static/media/clm3-logo.d9307268.png",
-  "vendor.js": "static/js/vendor.d28c7852.js",
-  "vendor.js.map": "static/js/vendor.d28c7852.js.map"
+  "vendor.js": "static/js/vendor.c18876ae.js",
+  "vendor.js.map": "static/js/vendor.c18876ae.js.map"
 }
