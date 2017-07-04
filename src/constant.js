@@ -20,3 +20,41 @@ export const API_URL = {
     QUOTES_HISTORY: `${apiServer}/api/socket10`,// 获取K线
     SESSION_CHECK: `${apiServer}/api/socket11` // 验证Session
 };
+
+export const COLORS = {
+    WIN: '#00ff00',
+    LOSS: '#ff0000',
+    EQUALS: '#ffffff',
+    UP: '#00ff00',
+    DOWN: '#ff0000',
+    DEFAULT: '#ffffff'
+};
+
+export const PERIOD = [{
+    label: 'M1',
+    key: 1
+},{
+    label: 'M5',
+    key: 5
+},{
+    label: 'M15',
+    key: 15
+},{
+    label: 'M30',
+    key: 30
+},{
+    label: 'H1',
+    key: 60
+},{
+    label: 'H4',
+    key: 240
+},{
+    label: 'D1',
+    key: 1440
+},{
+    label: 'W1',
+    key: 10080
+},{
+    label: 'MN',
+    key: 43200
+}];

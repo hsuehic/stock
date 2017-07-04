@@ -9,6 +9,8 @@ import React from 'react';
 import { Button } from 'antd';
 import PropTypes from 'prop-types';
 
+import { COLORS } from '../../constant';
+
 export default class SymbolItem extends React.Component {
 
     static propTypes = {
@@ -65,38 +67,39 @@ export default class SymbolItem extends React.Component {
         let v = '#ffffff';
         switch (direction) {
             case 1:
-                v = '#ff0000';
+                v = COLORS.UP;
                 break;
             case -1:
-                v = '#39b54a';
+                v = COLORS.DOWN;
                 break;
             default:
-                v = '#ffffff';
+                v = COLORS.DEFAUL;
                 break;
         }
         return v;
     }
 
     render () {
-        let color = this.getTextColor(this.props.symbol.direction);
+        let { symbol, favorites, isOpen } = this.props;
+        let color = this.getTextColor(symbol.direction);
         let collapsedNode = <div className="row" style={{cursor: 'pointer'}} onClick={this.onRowClick.bind(this)}>
-            <div className="cell">{this.props.symbol.name}
-            </div><div className="cell" style={{color: color}}> {this.props.symbol.direction > 0 ? <b>▲</b> : <b>▼</b>} &nbsp;&nbsp;{this.props.symbol.price}
+            <div className="cell">{symbol.name}
+            </div><div className="cell" style={{color: color}}> {symbol.direction > 0 ? <b>▲</b> : <b>▼</b>} &nbsp;&nbsp;{symbol.price.toFixed(symbol.digits)}
             </div>
         </div>;
 
         let expandedNode = <div className="row-selected" style={{padding: '4px', backgroundColor: '#6a6a6a', borderRadius: '4px'}}>
             <div className="sub-row">
-                <div className="cell">{this.props.symbol.name}
-                </div><div className="cell" style={{color: color}}><b>▼</b>{this.props.symbol.price}
+                <div className="cell">{symbol.name}
+                </div><div className="cell" style={{color: color}}><b>▼</b>{symbol.price.toFixed(symbol.digits)}
                 </div>
             </div>
             <div className="sub-row">
                 <div className="cell">收藏</div>
                 <div className="cell">
-                    <Button className={ this.props.favorites.favorite1 ? 'btn-favorite selected' : 'btn-favorite'} onClick={this.onFavoriteClick.bind(this,'1')} size={'small'} >1</Button>
-                    <Button className={ this.props.favorites.favorite2 ? 'btn-favorite selected' : 'btn-favorite'} onClick={this.onFavoriteClick.bind(this,'2')} size={'small'} >2</Button>
-                    <Button className={ this.props.favorites.favorite3 ? 'btn-favorite selected' : 'btn-favorite'} onClick={this.onFavoriteClick.bind(this,'3')} size={'small'} >3</Button>
+                    <Button className={ favorites.favorite1 ? 'btn-favorite selected' : 'btn-favorite'} onClick={this.onFavoriteClick.bind(this,'1')} size={'small'} >1</Button>
+                    <Button className={ favorites.favorite2 ? 'btn-favorite selected' : 'btn-favorite'} onClick={this.onFavoriteClick.bind(this,'2')} size={'small'} >2</Button>
+                    <Button className={ favorites.favorite3 ? 'btn-favorite selected' : 'btn-favorite'} onClick={this.onFavoriteClick.bind(this,'3')} size={'small'} >3</Button>
                 </div>
             </div>
             <div className="sub-row">
@@ -120,7 +123,7 @@ export default class SymbolItem extends React.Component {
             
         </div>;
 
-        let node = this.props.isOpen ? expandedNode : collapsedNode;
+        let node = isOpen ? expandedNode : collapsedNode;
 
         return node;
     }

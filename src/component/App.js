@@ -16,7 +16,9 @@ import ReactEchartsCore from 'echarts-for-react/lib/core';
 import Scrollbars from 'react-custom-scrollbars';
 import CountingDown from './CountingDown';
 
-import { getAccountDetails, getHistoryOrder, openOrder, getOpenOrder, getPrice, getQuotesHistory, getServerInfo, getSymbolGroup  } from '../api';
+import { getAccountDetails, getHistoryOrder, openOrder, getOpenOrder, getPrice, getQuotesHistory, getServerInfo, getSymbolGroup, logout } from '../api';
+
+import { COLORS, PERIOD } from '../constant';
 
 import '../style/App.less';
 
@@ -24,35 +26,21 @@ const Option = Select.Option;
 
 const TabPane = Tabs.TabPane;
 
-const COLORS = {
-    WIN: '#ff0000',
-    LOSS: '#00ff00',
-    EQUALS: '#ffffff'
-};
-
 const CHART_CONTAINER_STYLE = { position: 'relative', marginLeft: '358px', height: '100%', zIndex: 1};
 const CHART_CONTAINER_STYLE_FULL_SCREEN = {position: 'fixed', top: '0', left: '0', marginLeft: '0', width: '100%', height: '100%', zIndex: 1049};
 
-const PERIOD = [{
-    label: 'M1',
-    key: 1
-},{
-    label: 'M5',
-    key: 5
-},{
-    label: 'M15',
-    key: 15
-},{
-    label: 'M30',
-    key: 30
-},{
-    label: 'H1',
-    key: 60
-},{
-    label: 'H4',
-    key: 240
-}];
-
+const formatExpiration = (v) => {
+    let unit = '分钟';
+    if (v >= 60) {
+        unit = '小时';
+        v = v / 60;
+        if (v >= 24) {
+            unit = '天';
+            v = v / 24
+        }
+    }
+    return `${v}${unit}`;
+};
 
 class App extends Component {
 
@@ -325,7 +313,6 @@ class App extends Component {
                     position: 'right',
                     scale: true,
                     axisLine: {lineStyle: {color: '#8392A5'}},
-                    splitLine: {show: false},
                     textStyle: {
                         color: '#65f1f1'
                     },
@@ -352,10 +339,10 @@ class App extends Component {
                         data: [],
                         itemStyle: {
                             normal: {
-                                color: '#FD1050',
-                                color0: '#0CF49B',
-                                borderColor: '#FD1050',
-                                borderColor0: '#0CF49B'
+                                color0: '#FD1050',
+                                color: '#0CF49B',
+                                borderColor0: '#FD1050',
+                                borderColor: '#0CF49B'
                             }
                         }
                     }
@@ -481,20 +468,20 @@ class App extends Component {
     }
 
     componentDidMount (){
-        this.getServerInfo();
+        let p1 = this.getServerInfo();
         this.getAccountInfo();
         this.getSymbolGroup(() => {
             let getPricesFunc = this.getPrices.bind(this);
             this.getPriceTimer = window.setInterval(getPricesFunc, 1000);
+            this.getLatestQuotes();
+            this.getOpenOrders();
+            this.getHistoryOrders();
         });
         setTimeout(() => {
             if (this.echarts) {
                 this.echarts.resize();
             }
         }, 300);
-        this.getOpenOrders();
-        this.getHistoryOrders();
-        this.getLatestQuotes();
         this.timer = window.setInterval(() => {
             this.getLatestQuotes();
         }, this.state.period * 60 * 1000);
@@ -543,6 +530,7 @@ class App extends Component {
                 });
             }
         });
+        return promise;
     }
 
     getHistoryOrders () {
@@ -592,7 +580,14 @@ class App extends Component {
                     };
                 });
                 let symbolNames= Object.keys(symbolList).join(',');
+                let symbol = symbols[0];
+                let chartOptions = this.state.chartOptions;
+                chartOptions.yAxis.axisLabel.formatter = (v) => {
+                    let digits = symbol.digits;
+                    return (v / Math.pow(10, digits)).toFixed(digits);
+                };
                 self.setState({
+                    symbol: symbol.name,
                     symbols,
                     symbolList,
                     symbolNames
@@ -602,6 +597,7 @@ class App extends Component {
                 }
             }
         });
+        return promise;
     }
 
     getPrices () {
@@ -635,6 +631,7 @@ class App extends Component {
            }
 
         });
+        return promise;
     }
 
     getSymbolPrice (symbolName) {
@@ -661,6 +658,7 @@ class App extends Component {
                 });
             }
         });
+        return promise;
     }
 
     getLatestQuotes (callback) {
@@ -692,10 +690,10 @@ class App extends Component {
                     }
                     let timeStr = fecha.format(new Date(quote.t * 1000 + this.state.timeDiff), format);
                     times.push(timeStr);
-                    let o = quote.o / 100;
-                    let h = (quote.o + quote.h) / 100;
-                    let l = (quote.o + quote.l) / 100;
-                    let c = (quote.o + quote.c) / 100;
+                    let o = quote.o;
+                    let h = (quote.o + quote.h);
+                    let l = (quote.o + quote.l);
+                    let c = (quote.o + quote.c);
                     let item = [o, c, l, h];
                     data.push(item);
                 });
@@ -711,7 +709,6 @@ class App extends Component {
                 callback();
             }
         });
-
     }
 
     calculateStatus (order) {
@@ -802,6 +799,17 @@ class App extends Component {
         return <span style={{color: color}}>{text}</span>;
     }
 
+    calculateOrderPriceDirection (orderInfo) {
+        let diff = this.getSymbolPrice(orderInfo.symbol) - orderInfo.open_price;
+        let v = <span style={{color: COLORS.EQUALS}}>Equal</span>;
+        if (diff > 0) {
+            v = <span style={{color: COLORS.WIN}}>Up</span>;
+        } else if (diff < 0) {
+            v = <span style={{color: COLORS.LOSS}}>Down</span>;
+        }
+        return v;
+    }
+
     getTypeName (type) {
         let v = '';
         if (type) {
@@ -818,6 +826,15 @@ class App extends Component {
             }
         }
         return v;
+    }
+
+    logout () {
+        let promise = logout();
+        promise.then(() => {
+            window.location.href = 'login.html';
+        }).catch(() => {
+            window.location.href = 'login.html';
+        });
     }
 
     onChartReady () {
@@ -894,6 +911,14 @@ class App extends Component {
 
     onCurrentSymbolChange (symbol) {
         this.setSymbol(symbol.name);
+        let chartOptions = this.state.chartOptions;
+        chartOptions.yAxis.axisLabel.formatter = (v) => {
+            let digits = symbol.digits;
+            return (v / Math.pow(10, digits)).toFixed(symbol.digits);
+        };
+        this.setState({
+            chartOptions
+        });
     }
 
     onExpirationChange (value) {
@@ -1075,7 +1100,7 @@ class App extends Component {
                     <Dropdown overlay = {helpMenu} placement="bottomLeft"><a href="javascript: void(0);">帮助</a></Dropdown>
 
                     <div style={{float: 'right'}}>
-                        <span>账户号:{this.state.account.name}</span>
+                        <span>账户号:{this.state.account.account}</span> &nbsp; &nbsp; <span onClick={this.logout.bind(this)} style={{cursor: 'pointer'}}>退出</span>
                     </div>
                 </div>
                 <div className="App-content">
@@ -1278,7 +1303,7 @@ class App extends Component {
                                                 </div><div className="cell" style={{width: '120px'}}>{historyOrder.open_price}&nbsp;
                                                 </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(historyOrder.open_time)}&nbsp;
                                                 </div><div className="cell" style={{width: '120px'}}>{historyOrder.investment}&nbsp;
-                                                </div><div className="cell" style={{width: '100px'}}>{historyOrder.expiration}&nbsp;
+                                                </div><div className="cell" style={{width: '100px'}}>{formatExpiration(historyOrder.expiration)}&nbsp;
                                                 </div><div className="cell" style={{width: '120px'}}>{historyOrder.close_price}&nbsp;
                                                 </div><div className="cell" style={{width: '120px'}}>{this.calculateProfitNode(historyOrder.profit)}&nbsp;
                                                 </div>
@@ -1302,6 +1327,10 @@ class App extends Component {
                                     autoHideTimeout={1000}
                                     autoHideDuration={200}>
                                     <div>
+                                        <div className="row">
+                                            <div className="cell" style={{width: '120px'}}>帐户
+                                            </div><div className="cell">{this.state.account.account}</div>
+                                        </div>
                                         <div className="row">
                                             <div className="cell" style={{width: '120px'}}>帐户名
                                             </div><div className="cell">{this.state.account.name}</div>
@@ -1459,7 +1488,7 @@ class App extends Component {
                                     </div>
                                     <div className="cell value2">
                                         {
-                                            (this.getSymbolPrice(this.state.orderInfo.symbol) - this.state.orderInfo.open_price).toFixed(this.state.orderInfo.digits)
+                                            this.state.orderInfo.type === 1 ? 'UP' : 'DOWN'
                                         }
                                     </div>
                                 </div>
