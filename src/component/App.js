@@ -137,22 +137,6 @@ class App extends Component {
                                 borderColor0: '#FD1050',
                                 borderColor: '#0CF49B'
                             }
-                        },
-                        markLine: {
-                            data: [
-                                {
-                                    name: 'max line on close',
-                                    type: 'max',
-                                    valueDim: 'close'
-                                }
-                            ],
-                            lineStyle: {
-                                normal: {
-                                    color: '#ffffff',
-                                    width: 1,
-                                    type: 'dashed'
-                                }
-                            }
                         }
                     }
                 ]
@@ -512,7 +496,7 @@ class App extends Component {
                 let lastTime;
                 let format;
                 if (this.state.period >= 240) {
-                    format = 'MM/dd';
+                    format = 'MM/DD';
                 } else {
                     format = 'HH:mm';
                 }
