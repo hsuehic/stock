@@ -9,6 +9,7 @@ import 'echarts/lib/chart/candlestick';
 import 'echarts/lib/component/dataZoom';
 import 'echarts/lib/chart/line';
 import 'echarts/lib/chart/lines';
+import 'echarts/lib/component/markLine';
 import 'echarts/lib/component/tooltip';
 import 'echarts/lib/component/grid';
 import 'echarts/lib/component/legend';
@@ -54,219 +55,11 @@ class App extends Component {
                 "name_base64": "VGVzdCBBY2NvdW50",
                 "name": "Test Account"
             },
+            activeKeyFooter: 'open-order',
             orders: [],
             historyOrders: [],
             serverInfo: {},
-            symbols: [
-                {
-                    "name": "EURUSDbo",
-                    "loss": 100,
-                    "type": [
-                        1,
-                        -1
-                    ],
-                    "expiration": "1-80,5-81,15-82,30-83,60-84,240-85,1440-86,",
-                    "description": "RXVybyB2cyBVUyBEb2xsYXIgLSDFt9SqttLDwNSq",
-                    "digits": 5,
-                    "time": 1497902685,
-                    "price": 1.11523,
-                    "minimum": 500,
-                    "maximum": 100000,
-                    "step": 500
-                },
-                {
-                    "name": "EURJPYbo",
-                    "loss": 100,
-                    "type": [
-                        1,
-                        -1
-                    ],
-                    "expiration": "1-80,5-81,15-82,30-83,60-84,240-85,1440-86,",
-                    "description": "RXVybyB2cyBKYXBhbmlzZSBZZW4gLSDFt9SqttLI1dSq",
-                    "digits": 3,
-                    "time": 1497902687,
-                    "price": 124.363,
-                    "minimum": 500,
-                    "maximum": 100000,
-                    "step": 500
-                },
-                {
-                    "name": "USDJPYbo",
-                    "loss": 100,
-                    "type": [
-                        1,
-                        -1
-                    ],
-                    "expiration": "1-80,5-81,15-82,30-83,60-84,240-85,1440-86,",
-                    "description": "VVMgRG9sbGFyIHZzIEphcGFuaXNlIFllbiAtIMPA1Kq20sjV1Ko=",
-                    "digits": 3,
-                    "time": 1497902687,
-                    "price": 111.513,
-                    "minimum": 500,
-                    "maximum": 100000,
-                    "step": 500
-                },
-                {
-                    "name": "GBPUSDbo",
-                    "loss": 100,
-                    "type": [
-                        1,
-                        -1
-                    ],
-                    "expiration": "1-80,5-81,15-82,30-83,60-84,240-85,1440-86,",
-                    "description": "R3JlYXQgQnJpdGFuIFBvdW5kIHZzIFVTIERvbGxhciAtINOisPe20sPA1Ko=",
-                    "digits": 5,
-                    "time": 1497902681,
-                    "price": 1.27297,
-                    "minimum": 500,
-                    "maximum": 100000,
-                    "step": 500
-                },
-                {
-                    "name": "EURCHFbo",
-                    "loss": 100,
-                    "type": [
-                        1,
-                        -1
-                    ],
-                    "expiration": "1-80,5-81,15-82,30-83,60-84,240-85,1440-86,",
-                    "description": "RXVybyB2cyBTd2lzcyBGcmFuYyAtIMW31Kq21Mjwyr+3qMDJ",
-                    "digits": 5,
-                    "time": 1497902674,
-                    "price": 1.08773,
-                    "minimum": 500,
-                    "maximum": 100000,
-                    "step": 500
-                },
-                {
-                    "name": "USDCHFbo",
-                    "loss": 100,
-                    "type": [
-                        1,
-                        -1
-                    ],
-                    "expiration": "1-80,5-81,15-82,30-83,60-84,240-85,1440-86,",
-                    "description": "VVMgRG9sbGFyIHZzIFN3aXNzIEZyYW5jIC0gw8DUqrbSyPDKv7eowMk=",
-                    "digits": 5,
-                    "time": 1497902690,
-                    "price": 0.97533,
-                    "minimum": 500,
-                    "maximum": 100000,
-                    "step": 500
-                },
-                {
-                    "name": "AUDUSDbo",
-                    "loss": 100,
-                    "type": [
-                        1,
-                        -1
-                    ],
-                    "expiration": "1-80,5-81,15-82,30-83,60-84,240-85,1440-86,",
-                    "description": "QXVzdHJhbGlhbiBEb2xsYXIgdnMgVVMgRG9sbGFyIC0gsMTUqrbSw8DUqg==",
-                    "digits": 5,
-                    "time": 1497902689,
-                    "price": 0.7596,
-                    "minimum": 500,
-                    "maximum": 100000,
-                    "step": 500
-                },
-                {
-                    "name": "EURCADbo",
-                    "loss": 100,
-                    "type": [
-                        1,
-                        -1
-                    ],
-                    "expiration": "1-80,5-81,15-82,30-83,60-84,240-85,1440-86,",
-                    "description": "RXVybyB2cyBBdXN0cmFsaWFuIERvbGxhciAtIMW31Kq20rzT1Ko=",
-                    "digits": 5,
-                    "time": 1497902691,
-                    "price": 1.4743,
-                    "minimum": 500,
-                    "maximum": 100000,
-                    "step": 500
-                },
-                {
-                    "name": "USDCADbo",
-                    "loss": 100,
-                    "type": [
-                        1,
-                        -1
-                    ],
-                    "expiration": "1-80,5-81,15-82,30-83,60-84,240-85,1440-86,",
-                    "description": "VVMgRG9sbGFyIHZzIENhbmFkaWFuIERvbGxhciAtIMPA1Kq20rzT1Ko=",
-                    "digits": 5,
-                    "time": 1497902682,
-                    "price": 1.32199,
-                    "minimum": 500,
-                    "maximum": 100000,
-                    "step": 500
-                },
-                {
-                    "name": "GBPJPYbo",
-                    "loss": 100,
-                    "type": [
-                        1,
-                        -1
-                    ],
-                    "expiration": "1-80,5-81,15-82,30-83,60-84,240-85,1440-86,",
-                    "description": "R3JlYXQgQnJpdGFpbiBQb3VuZCB2cyBKYXBhbmlzZSBZZW4gLSDTorD3ttLI1dSq",
-                    "digits": 3,
-                    "time": 1497902688,
-                    "price": 141.948,
-                    "minimum": 500,
-                    "maximum": 100000,
-                    "step": 500
-                },
-                {
-                    "name": "EURGBPbo",
-                    "loss": 100,
-                    "type": [
-                        1,
-                        -1
-                    ],
-                    "expiration": "1-80,5-81,15-82,30-83,60-84,240-85,1440-86,",
-                    "description": "RXVybyB2cyBHcmVhdCBCcml0YW4gUG91bmQgLSDFt9SqttLTorD3",
-                    "digits": 5,
-                    "time": 1497902690,
-                    "price": 0.87609,
-                    "minimum": 500,
-                    "maximum": 100000,
-                    "step": 500
-                },
-                {
-                    "name": "NZDUSDbo",
-                    "loss": 100,
-                    "type": [
-                        1,
-                        -1
-                    ],
-                    "expiration": "1-80,5-81,15-82,30-83,60-84,240-85,1440-86,",
-                    "description": "TmV3IFplYWxhbmQgRG9sbGFyIHZzIFVTIERvbGxhciAtIMWm1Kq20sPA1Ko=",
-                    "digits": 5,
-                    "time": 1497902685,
-                    "price": 0.72303,
-                    "minimum": 500,
-                    "maximum": 100000,
-                    "step": 500
-                },
-                {
-                    "name": "GBPCHFbo",
-                    "loss": 100,
-                    "type": [
-                        1,
-                        -1
-                    ],
-                    "expiration": "1-80,5-81,15-82,30-83,60-84,240-85,1440-86,",
-                    "description": "R3JlYXQgQnJpdGFuIFBvdW5kIHZzIFN3aXNzIEZyYW5jIC0g06Kw97bSyPDKv7eowMk=",
-                    "digits": 5,
-                    "time": 1497902690,
-                    "price": 1.24154,
-                    "minimum": 500,
-                    "maximum": 100000,
-                    "step": 500
-                }
-            ],
+            symbols:[],
             chartOptions: {
                 backgroundColor: '#404141',
                 grid: [{
@@ -344,6 +137,22 @@ class App extends Component {
                                 borderColor0: '#FD1050',
                                 borderColor: '#0CF49B'
                             }
+                        },
+                        markLine: {
+                            data: [
+                                {
+                                    name: 'max line on close',
+                                    type: 'max',
+                                    valueDim: 'close'
+                                }
+                            ],
+                            lineStyle: {
+                                normal: {
+                                    color: '#ffffff',
+                                    width: 1,
+                                    type: 'dashed'
+                                }
+                            }
                         }
                     }
                 ]
@@ -367,6 +176,7 @@ class App extends Component {
             isLoading: false,
             timeDiff: 0,
             historySpan: 1,// 1 一天， 30 一月， -1 所有
+            selectedHistorySpan: ['1'],
             symbolList: {},
             symbolNames: '',
             modalCreateUpOrderVisible: false,
@@ -468,7 +278,7 @@ class App extends Component {
     }
 
     componentDidMount (){
-        let p1 = this.getServerInfo();
+        this.getServerInfo();
         this.getAccountInfo();
         this.getSymbolGroup(() => {
             let getPricesFunc = this.getPrices.bind(this);
@@ -535,8 +345,11 @@ class App extends Component {
 
     getHistoryOrders () {
         let now = new Date();
-        let to = (now.getTime()  - this.state.timeDiff) / 1000;
-        let from = to - 24 * 3600;
+        let to = parseInt(((now.getTime()  - this.state.timeDiff) / 1000).toFixed(0));
+        let from = 1478000000;
+        if (this.state.historySpan > 0) {
+            from = to - this.state.historySpan * 24 * 3600;
+        }
         let params = {
                 from,
                 to
@@ -584,7 +397,7 @@ class App extends Component {
                 let chartOptions = this.state.chartOptions;
                 chartOptions.yAxis.axisLabel.formatter = (v) => {
                     let digits = symbol.digits;
-                    return (v / Math.pow(10, digits)).toFixed(digits);
+                    return v.toFixed(digits);
                 };
                 self.setState({
                     symbol: symbol.name,
@@ -625,7 +438,24 @@ class App extends Component {
                        symbolList[name] = Object.assign({}, obj);
                    }
                });
+               let chartOptions = this.state.chartOptions;
+               let data = chartOptions.series[0].data;
+               let index = data.length - 1;
+               if (index > 0) {
+                   let item = data[index];
+                   let symbol = symbolList[this.state.symbol];
+                   let price = symbol.price;
+                   item[1] = price;
+                   if (item[2] > price) {
+                       item[2] = price;
+                   } else if (item[3] < price) {
+                       item[3] = price;
+                   }
+                   data[index] = item;
+                   chartOptions.series[0].data = data;
+               }
                this.setState({
+                   chartOptions,
                    symbolList
                });
            }
@@ -678,25 +508,31 @@ class App extends Component {
                 let quotes = res.data.quotes;
                 let data = [];
                 let times = [];
+                let lastC;
+                let lastTime;
+                let format;
+                if (this.state.period >= 240) {
+                    format = 'MM/dd';
+                } else {
+                    format = 'HH:mm';
+                }
+                let symbol = this.state.symbolList[this.state.symbol];
+                let factor = Math.pow(10, symbol.digits);
                 quotes.forEach((quote) => {
-                    let format
-                    switch (this.state.period) {
-                        case 240:
-                            format = 'MM/dd';
-                            break;
-                        default:
-                            format = 'HH:mm';
-                            break;
-                    }
-                    let timeStr = fecha.format(new Date(quote.t * 1000 + this.state.timeDiff), format);
+                    lastTime = quote.t * 1000 + this.state.timeDiff;
+                    let timeStr = fecha.format(new Date(lastTime), format);
                     times.push(timeStr);
-                    let o = quote.o;
-                    let h = (quote.o + quote.h);
-                    let l = (quote.o + quote.l);
-                    let c = (quote.o + quote.c);
-                    let item = [o, c, l, h];
+                    let o = quote.o / factor;
+                    let h = (quote.o + quote.h) / factor;
+                    let l = (quote.o + quote.l) / factor;
+                    lastC = (quote.o + quote.c) / factor;
+                    let item = [o, lastC, l, h];
                     data.push(item);
                 });
+                let lastTimeStr  = fecha.format(new Date(lastTime + this.state.period * 60 * 1000), format);
+                let lastCandlestick = [lastC, lastC, lastC, lastC];
+                times.push(lastTimeStr);
+                data.push(lastCandlestick);
                 let chartOptions = this.state.chartOptions;
                 chartOptions.xAxis.data = times;
                 chartOptions.series[0].data = data;
@@ -872,6 +708,12 @@ class App extends Component {
         this.createUpDownOrder(symbol.name, -1);
     }
 
+    onFooterTabClick (key) {
+        this.setState({
+            activeKeyFooter: key
+        });
+    }
+
     createUpDownOrder (symbolName, type) {
         let order = this.state.order;
         order.type = type;
@@ -914,7 +756,7 @@ class App extends Component {
         let chartOptions = this.state.chartOptions;
         chartOptions.yAxis.axisLabel.formatter = (v) => {
             let digits = symbol.digits;
-            return (v / Math.pow(10, digits)).toFixed(symbol.digits);
+            return v.toFixed(digits);
         };
         this.setState({
             chartOptions
@@ -981,6 +823,18 @@ class App extends Component {
         })
     }
 
+    onHistoryQueryTypeClick ({key}) {
+        let historySpan = parseInt(key);
+        let selectedHistorySpan = [key];
+        this.setState({
+            historySpan,
+            selectedHistorySpan,
+            activeKeyFooter: 'history-order'
+        },() => {
+            this.getHistoryOrders();
+        })
+    }
+
     onOrderClick (order) {
         this.setState({
             orderInfo: order,
@@ -1040,7 +894,8 @@ class App extends Component {
             if (res && res.code === 0) {
                 this.setState({
                     modalOrderInfoVisible: true,
-                    orderInfo: res.data
+                    orderInfo: res.data,
+                    activeKeyFooter: 'open-order'
                 });
                 this.getOpenOrders();
             }
@@ -1081,6 +936,11 @@ class App extends Component {
             {helps.map((help,index) => <MenuItem key={index}><span>{help}</span></MenuItem>) }
         </Menu>;
 
+        let historyQueryTypes = [{key: 1, label:'近一天'},{key: 7, label:'近一周'}, {key: 30, label: '近一月'}, {key: -1, label: '全部'}];
+        let historyQueryTypeMenu = <Menu onClick={this.onHistoryQueryTypeClick.bind(this)} multiple={false} selectedKeys={this.state.selectedHistorySpan}>
+            {historyQueryTypes.map((item,index) => <MenuItem key={item.key}><span>{item.label}</span></MenuItem>) }
+        </Menu>;
+
         let symbols = Object.values(this.state.symbolList);
         let symbols1 = symbols.filter((item) => {
             return this.state.favorite1.indexOf(item.name) > -1;
@@ -1096,6 +956,7 @@ class App extends Component {
             <div className="App">
                 <div className="App-header">
                     <Dropdown overlay = {dealerMenu} placement="bottomLeft" ><a href="javascript: void(0);">交易员</a></Dropdown>
+                    <Dropdown overlay = {historyQueryTypeMenu} placement="bottomLeft" ><a href="javascript: void(0);">历史订单</a></Dropdown>
                     <Dropdown overlay = {i18nMenu}><a href="javascript: void(0);">语言</a></Dropdown>
                     <Dropdown overlay = {helpMenu} placement="bottomLeft"><a href="javascript: void(0);">帮助</a></Dropdown>
 
@@ -1231,8 +1092,8 @@ class App extends Component {
                     </div>
                 </div>
                 <div className="App-footer panel">
-                    <Tabs type="card">
-                        <TabPane tab="二元期订单" key="1">
+                    <Tabs onTabClick={this.onFooterTabClick.bind(this)} type="card" activeKey={this.state.activeKeyFooter}>
+                        <TabPane tab="二元期订单" key="open-order">
                             <div className="table-header">
                                 <div className="row header">
                                     <div className="cell" style={{width: '101px'}}>订单号</div>
@@ -1273,7 +1134,7 @@ class App extends Component {
                                 </Scrollbars>
                             </div>
                         </TabPane>
-                        <TabPane tab="历史订单" key="2">
+                        <TabPane tab="历史订单" key="history-order">
                             <div className="table-header">
                                 <div className="row header">
                                     <div className="cell" style={{width: '101px'}}>订单号</div>
@@ -1313,7 +1174,7 @@ class App extends Component {
                                 </Scrollbars>
                             </div>
                         </TabPane>
-                        <TabPane tab="账户" key="3">
+                        <TabPane tab="账户" key="account">
                             <div className="table-header">
                                 <div className="row header">
                                     <div className="cell" style={{width: '100px'}}>账户信息</div>
