@@ -7,12 +7,10 @@
 
 
 import React from 'react';
-import { Form, Icon, Input, Button, Checkbox, notification } from 'antd';
+import { Button, notification } from 'antd';
 
 import {login} from '../api';
 import logo from '../assets/clm3-logo.png';
-
-const FormItem = Form.Item;
 
 export default class Login extends React.Component {
 

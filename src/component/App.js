@@ -1,6 +1,6 @@
 import 'whatwg-fetch';
 import React, { Component } from 'react';
-import { Button, Dropdown, Menu, Modal, Select, Spin, Tabs } from 'antd';
+import { Button, Dropdown, Menu, Modal, Select, Tabs } from 'antd';
 import SymbolList from './SymbolList';
 import fecha from 'fecha';
 
@@ -24,7 +24,7 @@ import { COLORS, PERIOD } from '../constant';
 import '../style/App.less';
 
 const Option = Select.Option;
-
+const MenuItem = Menu.Item;
 const TabPane = Tabs.TabPane;
 
 const CHART_CONTAINER_STYLE = { position: 'relative', marginLeft: '358px', height: '100%', zIndex: 1};
@@ -329,7 +329,7 @@ class App extends Component {
 
     getHistoryOrders () {
         let now = new Date();
-        let to = parseInt(((now.getTime()  - this.state.timeDiff) / 1000).toFixed(0));
+        let to = parseInt(((now.getTime()  - this.state.timeDiff) / 1000).toFixed(0), 10);
         let from = 1478000000;
         if (this.state.historySpan > 0) {
             from = to - this.state.historySpan * 24 * 3600;
@@ -375,6 +375,7 @@ class App extends Component {
                         direction: 0,
                         ...symbol
                     };
+                    return symbol;
                 });
                 let symbolNames= Object.keys(symbolList).join(',');
                 let symbol = symbols[0];
@@ -421,6 +422,7 @@ class App extends Component {
                        obj.price = price;
                        symbolList[name] = Object.assign({}, obj);
                    }
+                   return item;
                });
                let chartOptions = this.state.chartOptions;
                let data = chartOptions.series[0].data;
@@ -576,7 +578,7 @@ class App extends Component {
         let value = [];
         let symbol = this.state.symbolList[symbolName];
         let getKey = (str) => {
-            let v = parseInt(str);
+            let v = parseInt(str, 10);
             return v;
         };
         let getLabel = (str) => {
@@ -595,6 +597,7 @@ class App extends Component {
                         label: getLabel(tmp[0])
                     });
                 }
+                return str;
             })
         }
         return value;
@@ -748,7 +751,7 @@ class App extends Component {
     }
 
     onExpirationChange (value) {
-        value = parseInt(value);
+        value = parseInt(value, 10);
         let order = this.state.order;
         order.expiration = value;
         let len = order.expirations.length;
@@ -808,7 +811,7 @@ class App extends Component {
     }
 
     onHistoryQueryTypeClick ({key}) {
-        let historySpan = parseInt(key);
+        let historySpan = parseInt(key, 10);
         let selectedHistorySpan = [key];
         this.setState({
             historySpan,
@@ -827,7 +830,7 @@ class App extends Component {
     }
 
     onPeriodSelect (value, option) {
-        let key = parseInt(value);
+        let key = parseInt(value, 10);
         let label
         for (let i = 0; i < PERIOD.length; i++) {
             if (PERIOD[i].key === key) {
@@ -904,18 +907,13 @@ class App extends Component {
     }
 
     render() {
-        let dealers = ['张三', '李四', '王五'];
-        const MenuItem = Menu.Item;
-        let dealerMenu = <Menu>
-            { dealers.map((dealer, index) => <MenuItem key={index}><span>{dealer}</span></MenuItem>) }
-        </Menu>;
 
         let i18ns = ['中文', 'English'];
         let i18nMenu = <Menu>
             { i18ns.map((i18n, index) => <MenuItem key={index}><span>{i18n}</span></MenuItem>)}
         </Menu>;
 
-        let helps = ['帮助', '关于']
+        let helps = ['关于']
         let helpMenu = <Menu>
             {helps.map((help,index) => <MenuItem key={index}><span>{help}</span></MenuItem>) }
         </Menu>;
@@ -939,7 +937,6 @@ class App extends Component {
         return (
             <div className="App">
                 <div className="App-header">
-                    <Dropdown overlay = {dealerMenu} placement="bottomLeft" ><a href="javascript: void(0);">交易员</a></Dropdown>
                     <Dropdown overlay = {historyQueryTypeMenu} placement="bottomLeft" ><a href="javascript: void(0);">历史订单</a></Dropdown>
                     <Dropdown overlay = {i18nMenu}><a href="javascript: void(0);">语言</a></Dropdown>
                     <Dropdown overlay = {helpMenu} placement="bottomLeft"><a href="javascript: void(0);">帮助</a></Dropdown>
