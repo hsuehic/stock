@@ -103,7 +103,7 @@ export default class SymbolItem extends React.Component {
                 </div>
             </div>
             <div className="sub-row">
-                <div className="cell">直到60%支出</div>
+                <div className="cell">盈利: 80%</div>
                 <div className="cell">5.00 &nbsp; 投资 <br />
                     60秒
                 </div>

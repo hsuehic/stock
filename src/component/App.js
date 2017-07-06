@@ -16,6 +16,7 @@ import 'echarts/lib/component/legend';
 import ReactEchartsCore from 'echarts-for-react/lib/core';
 import Scrollbars from 'react-custom-scrollbars';
 import CountingDown from './CountingDown';
+import ModalAbout from './About';
 
 import { getAccountDetails, getHistoryOrder, openOrder, getOpenOrder, getPrice, getQuotesHistory, getServerInfo, getSymbolGroup, logout } from '../api';
 
@@ -156,7 +157,7 @@ class App extends Component {
             favorite2: [],
             favorite3: [],
             symbol: 'GBPUSDbo',
-            period: 1,
+            period: 5,
             isLoading: false,
             timeDiff: 0,
             historySpan: 1,// 1 一天， 30 一月， -1 所有
@@ -177,6 +178,7 @@ class App extends Component {
             },
             modalCreateOrderVisible: false,
             modalOrderInfoVisible: false,
+            modalAboutVisible: false,
             orderInfo: {
                 "position": "12341434333", // 订单号
                 "symbol": "EURCHFbo", // 货币
@@ -342,6 +344,11 @@ class App extends Component {
         promise.then((res) => {
             if (res && res.code === 0) {
                 let orders = res.data.orders;
+                orders.sort((a, b) => {
+                    let c = a.open_time + a.expiration * 60;
+                    let d = b.open_time + b.expiration * 60;
+                    return d - c;
+                });
                 this.setState({
                     historyOrders: orders
                 });
@@ -560,6 +567,14 @@ class App extends Component {
         } else if (status < 0) {
             v = order.investment * -1;
         }
+        v = v + '';
+        let index = v.indexOf('.');
+        if (index > -1) {
+            if (v.length - index > 4) {
+                v = parseFloat(v);
+                v = v.toFixed(3);
+            }
+        }
         return v;
     }
 
@@ -620,6 +635,19 @@ class App extends Component {
                 break;
         }
         return <span style={{color: color}}>{text}</span>;
+    }
+
+    calculateTimeSpan (order) {
+        let now = (new Date()).getTime();
+        let end = (order.open_time + order.expiration * 60) * 1000 + this.state.timeDiff;
+        let v = end - now;
+        let value = '00:00:00';
+        if (v > 0) {
+            let d = new Date(v);
+            d.setHours(d.getUTCHours());
+            value = fecha.format(d, 'HH:mm:ss');
+        }
+        return value;
     }
 
     calculateOrderPriceDirection (orderInfo) {
@@ -810,6 +838,24 @@ class App extends Component {
         })
     }
 
+    onHideAbout () {
+        this.setState({
+            modalAboutVisible: false
+        })
+    }
+
+    onShowAbout () {
+        this.setState({
+            modalAboutVisible: true
+        })
+    }
+
+    onHelpMenuClick ({key}) {
+        if (key === '0') {
+            this.onShowAbout();
+        }
+    }
+
     onHistoryQueryTypeClick ({key}) {
         let historySpan = parseInt(key, 10);
         let selectedHistorySpan = [key];
@@ -914,7 +960,7 @@ class App extends Component {
         </Menu>;
 
         let helps = ['关于']
-        let helpMenu = <Menu>
+        let helpMenu = <Menu onClick={this.onHelpMenuClick.bind(this)}>
             {helps.map((help,index) => <MenuItem key={index}><span>{help}</span></MenuItem>) }
         </Menu>;
 
@@ -1084,6 +1130,7 @@ class App extends Component {
                                     <div className="cell" style={{width: '101px'}}>看涨/看跌</div>
                                     <div className="cell" style={{width: '141px'}}>时间</div>
                                     <div className="cell" style={{width: '141px'}}>到期</div>
+                                    <div className="cell" style={{width: '81px'}}>倒计时</div>
                                     <div className="cell" style={{width: '101px'}}>投资</div>
                                     <div className="cell" style={{width: '101px'}}>盈亏</div>
                                     <div className="cell" style={{width: '101px'}}>状态</div>
@@ -1099,15 +1146,16 @@ class App extends Component {
                                 {
                                     this.state.orders.length > 0 ? this.state.orders.map((order) => <div key={order.position} className="row" onClick={this.onOrderClick.bind(this, order)}>
                                             <div className="cell" style={{width: '100px'}}>#{order.position}
-                                            </div><div className="cell" style={{width: '100px'}}>{order.symbol}&nbsp;
-                                            </div><div className="cell" style={{width: '100px'}}>{order.open_price}&nbsp;
-                                            </div><div className="cell" style={{width: '100px'}}>{this.getSymbolPrice(order.symbol)}&nbsp;
-                                            </div><div className="cell" style={{width: '100px'}}>{this.getTypeName(order.type)}&nbsp;
-                                            </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(order.open_time)}&nbsp;
-                                            </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(order.open_time + order.expiration * 60)}&nbsp;
-                                            </div><div className="cell" style={{width: '100px'}}>{order.investment}&nbsp;
-                                            </div><div className="cell" style={{width: '100px'}}>{this.calculateProfitNode(this.calculateProfit(order))}&nbsp;
-                                            </div><div className="cell" style={{width: '100px'}}>{this.calculateStatusNode(order)}&nbsp;
+                                            </div><div className="cell" style={{width: '100px'}}>{order.symbol}
+                                            </div><div className="cell" style={{width: '100px'}}>{order.open_price}
+                                            </div><div className="cell" style={{width: '100px'}}>{this.getSymbolPrice(order.symbol)}
+                                            </div><div className="cell" style={{width: '100px'}}>{this.getTypeName(order.type)}
+                                            </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(order.open_time)}
+                                            </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(order.open_time + order.expiration * 60)}
+                                            </div><div className="cell" style={{width: '80px'}}>{this.calculateTimeSpan(order)}
+                                            </div><div className="cell" style={{width: '100px'}}>{order.investment}
+                                            </div><div className="cell" style={{width: '100px'}}>{this.calculateProfitNode(this.calculateProfit(order))}
+                                            </div><div className="cell" style={{width: '100px'}}>{this.calculateStatusNode(order)}
                                             </div>
                                         </div>
                                     ): <div className="row-no-record">没有持仓订单！</div>
@@ -1139,15 +1187,15 @@ class App extends Component {
                                            autoHideDuration={200}>
                                     {
                                         this.state.historyOrders.length > 0 ? this.state.historyOrders.map((historyOrder) => <div key={historyOrder.position} className="row">
-                                                <div className="cell" style={{width: '100px'}}>#{historyOrder.position}&nbsp;
-                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.symbol}&nbsp;
-                                                </div><div className="cell" style={{width: '120px'}}>{this.getTypeName(historyOrder.type)}&nbsp;
-                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.open_price}&nbsp;
-                                                </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(historyOrder.open_time)}&nbsp;
-                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.investment}&nbsp;
-                                                </div><div className="cell" style={{width: '100px'}}>{formatExpiration(historyOrder.expiration)}&nbsp;
-                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.close_price}&nbsp;
-                                                </div><div className="cell" style={{width: '120px'}}>{this.calculateProfitNode(historyOrder.profit)}&nbsp;
+                                                <div className="cell" style={{width: '100px'}}>#{historyOrder.position}
+                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.symbol}
+                                                </div><div className="cell" style={{width: '120px'}}>{this.getTypeName(historyOrder.type)}
+                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.open_price}
+                                                </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(historyOrder.open_time)}
+                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.investment}
+                                                </div><div className="cell" style={{width: '100px'}}>{formatExpiration(historyOrder.expiration)}
+                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.close_price}
+                                                </div><div className="cell" style={{width: '120px'}}>{this.calculateProfitNode(historyOrder.profit)}
                                                 </div>
                                             </div>
                                         ) : <div className="row-no-record">没有符合条件的历史订单！</div>
@@ -1337,6 +1385,8 @@ class App extends Component {
                             </div>
                         </div>
                 </Modal>
+
+                <ModalAbout visible={this.state.modalAboutVisible} onClose={this.onHideAbout.bind(this)} />
             </div>
         );
     }
