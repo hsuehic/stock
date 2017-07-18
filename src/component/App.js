@@ -727,6 +727,9 @@ class App extends Component {
         this.setState({
             activeKeyFooter: key
         });
+        if (key === 'account') {
+            this.getAccountInfo();
+        }
     }
 
     createUpDownOrder (symbolName, type) {
@@ -1258,7 +1261,7 @@ class App extends Component {
                         <div className="cell">
                             投放资本
                         </div><div className="cell">
-                            <input id="investment" name="investment" defaultValue="5.0" type="text" ref = {(input) => {this.investmentInput = input}} />
+                            <input id="investment" style={{width: '80px', marginTop: '4px'}} name="investment" defaultValue="5.0" type="text" ref = {(input) => {this.investmentInput = input}} />
                         </div><div className="cell">
                             <Button onClick={this.onSubmitCreateOrderUp.bind(this)} style={{width: '138px'}} size={'small'} className={ 'btn-up'}>看涨</Button>
                         </div>
