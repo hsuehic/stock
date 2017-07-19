@@ -699,6 +699,16 @@ class App extends Component {
         return v;
     }
 
+    getHistoryOrderType (order) {
+        if (order.cmd === 6 ) {
+            return 'balance';
+        } else if (order.cmd === 7) {
+            return 'credit';
+        } else {
+            return this.getTypeName(order.type)
+        }
+    }
+
     logout () {
         let promise = logout();
         promise.then(() => {
@@ -1212,12 +1222,12 @@ class App extends Component {
                                         this.state.historyOrders.length > 0 ? this.state.historyOrders.map((historyOrder) => <div key={historyOrder.position} className="row">
                                                 <div className="cell" style={{width: '100px'}}>#{historyOrder.position}
                                                 </div><div className="cell" style={{width: '120px'}}>{historyOrder.symbol}
-                                                </div><div className="cell" style={{width: '120px'}}>{this.getTypeName(historyOrder.type)}
-                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.open_price}
+                                                </div><div className="cell" style={{width: '120px'}}>{this.getHistoryOrderType(historyOrder)}
+                                                </div><div className="cell" style={{width: '120px'}}>{(historyOrder.cmd!==6&&historyOrder.cmd!==7)&&historyOrder.open_price}
                                                 </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(historyOrder.open_time)}
-                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.investment}
-                                                </div><div className="cell" style={{width: '100px'}}>{formatExpiration(historyOrder.expiration)}
-                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.close_price}
+                                                </div><div className="cell" style={{width: '120px'}}>{(historyOrder.cmd!==6&&historyOrder.cmd!==7)&&historyOrder.investment}
+                                                </div><div className="cell" style={{width: '100px'}}>{(historyOrder.cmd!==6&&historyOrder.cmd!==7)&&formatExpiration(historyOrder.expiration)}
+                                                </div><div className="cell" style={{width: '120px'}}>{(historyOrder.cmd!==6&&historyOrder.cmd!==7)&&historyOrder.close_price}
                                                 </div><div className="cell" style={{width: '120px'}}>{this.calculateProfitNode(historyOrder.profit)}
                                                 </div>
                                             </div>
