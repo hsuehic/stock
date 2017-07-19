@@ -445,7 +445,27 @@ class App extends Component {
                        item[3] = price;
                    }
                    data[index] = item;
+                   let len = data.length;
+                   let startIndex = Math.ceil(this.dataZoom.start * len / 100) - 1;
+                   let lastIndex = Math.floor(this.dataZoom.end * len / 100) - 1;
+
+                   let markLink = {
+                       symbol: ['none', 'none'],
+                       data: [
+                           [
+                               {
+                                   name: `${price}`,
+                                   coord: [startIndex, price]
+                               },
+                               {
+                                   name: `${price}`,
+                                   coord: [lastIndex, price]
+                               }
+                           ]
+                       ]
+                   };
                    chartOptions.series[0].data = data;
+                   chartOptions.series[0].markLine = markLink;
                }
                this.setState({
                    chartOptions,
