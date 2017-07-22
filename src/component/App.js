@@ -1259,7 +1259,7 @@ class App extends Component {
                                         <div className="cell" style={{width: '121px'}}><FormattedMessage id="title.transactionType" defaultMessage="交易类型"/></div>
                                         <div className="cell" style={{width: '121px'}}><FormattedMessage id="title.openPrice" defaultMessage="开仓价"/></div>
                                         <div className="cell" style={{width: '141px'}}><FormattedMessage id="title.openTime" defaultMessage="开仓时间"/></div>
-                                        <div className="cell" style={{width: '121px'}}><FormattedMessage id="investment" defaultMessage="投资金额"/></div>
+                                        <div className="cell" style={{width: '121px'}}><FormattedMessage id="title.investment" defaultMessage="投资金额"/></div>
                                         <div className="cell" style={{width: '101px'}}><FormattedMessage id="title.expectedTime" defaultMessage="预期时间"/></div>
                                         <div className="cell" style={{width: '121px'}}><FormattedMessage id="title.closePrice" defaultMessage="平仓价格"/></div>
                                         <div className="cell" style={{width: '121px'}}><FormattedMessage id="profit" defaultMessage="盈利"/></div>
