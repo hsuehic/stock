@@ -1,5 +1,12 @@
 import 'whatwg-fetch';
 import React, { Component } from 'react';
+
+import { FormattedMessage, IntlProvider, addLocaleData } from 'react-intl';
+import zh from 'react-intl/locale-data/zh';
+import en from 'react-intl/locale-data/en';
+import zhCN from '../locales/zh-CN';
+import enUS from '../locales/en-US';
+
 import { Button, Dropdown, Menu, Modal, Select, Tabs } from 'antd';
 import SymbolList from './SymbolList';
 import fecha from 'fecha';
@@ -31,6 +38,8 @@ const TabPane = Tabs.TabPane;
 const CHART_CONTAINER_STYLE = { position: 'relative', marginLeft: '358px', height: '100%', zIndex: 1};
 const CHART_CONTAINER_STYLE_FULL_SCREEN = {position: 'fixed', top: '0', left: '0', marginLeft: '0', width: '100%', height: '100%', zIndex: 1049};
 
+addLocaleData([...zh, ...en]);
+
 const formatExpiration = (v) => {
     let unit = '分钟';
     if (v >= 60) {
@@ -49,6 +58,9 @@ class App extends Component {
     constructor(props, context) {
         super(props, context)
         this.state = {
+            locale: 'zh-CN',
+            messages: zhCN,
+            selectedLanguageKeys: ['zh-CN'],
             account: {
                 "balance": 10675.3,
                 "credit": 0,
@@ -718,6 +730,27 @@ class App extends Component {
         });
     }
 
+    setLocale (locale) {
+        let messages = zhCN;
+        let selectedLanguageKeys = ['zh-CN'];
+        switch (locale) {
+            case 'zh-CN':
+                messages = zhCN;
+                break;
+            case 'en-US':
+                messages = enUS;
+                selectedLanguageKeys = ['en-US'];
+                break;
+            default:
+                break;
+        }
+        this.setState({
+            locale,
+            messages,
+            selectedLanguageKeys
+        });
+    }
+
     onChartReady () {
         console.log('Chart ready!')
     }
@@ -889,6 +922,10 @@ class App extends Component {
         }
     }
 
+    onLanguageMenuClick ({key}) {
+        this.setLocale(key);
+    }
+
     onHistoryQueryTypeClick ({key}) {
         let historySpan = parseInt(key, 10);
         let selectedHistorySpan = [key];
@@ -987,17 +1024,17 @@ class App extends Component {
 
     render() {
 
-        let i18ns = ['中文', 'English'];
-        let i18nMenu = <Menu>
-            { i18ns.map((i18n, index) => <MenuItem key={index}><span>{i18n}</span></MenuItem>)}
+        let i18ns = [{label: '中文', value: 'zh-CN'}, {label: 'English', value: 'en-US'}];
+        let i18nMenu = <Menu onClick={this.onLanguageMenuClick.bind(this)} selectedKeys={this.state.selectedLanguageKeys}>
+            { i18ns.map((i18n, index) => <MenuItem key={i18n.value}><span>{i18n.label}</span></MenuItem>)}
         </Menu>;
 
-        let helps = ['关于']
+        let helps = [<FormattedMessage id="menu.help.about" defaultMessage="关于"/>]
         let helpMenu = <Menu onClick={this.onHelpMenuClick.bind(this)}>
             {helps.map((help,index) => <MenuItem key={index}><span>{help}</span></MenuItem>) }
         </Menu>;
 
-        let historyQueryTypes = [{key: 1, label:'近一天'},{key: 7, label:'近一周'}, {key: 30, label: '近一月'}, {key: -1, label: '全部'}];
+        let historyQueryTypes = [{key: 1, label: <FormattedMessage id="menu.historyOrders.day" defaultMessage="近一天"/>},{key: 7, label: <FormattedMessage id = "menu.historyOrders.week" defaultMessage="近一周" />}, {key: 30, label: <FormattedMessage id="menu.historyOrders.month" defaultMessage="近一月"/>}, {key: -1, label: <FormattedMessage id ="menu.historyOrders.all" defaultMessage="全部"/>}];
         let historyQueryTypeMenu = <Menu onClick={this.onHistoryQueryTypeClick.bind(this)} multiple={false} selectedKeys={this.state.selectedHistorySpan}>
             {historyQueryTypes.map((item,index) => <MenuItem key={item.key}><span>{item.label}</span></MenuItem>) }
         </Menu>;
@@ -1014,413 +1051,442 @@ class App extends Component {
         });
 
         return (
-            <div className="App">
-                <div className="App-header">
-                    <Dropdown overlay = {historyQueryTypeMenu} placement="bottomLeft" ><a href="javascript: void(0);">历史订单</a></Dropdown>
-                    <Dropdown overlay = {i18nMenu}><a href="javascript: void(0);">语言</a></Dropdown>
-                    <Dropdown overlay = {helpMenu} placement="bottomLeft"><a href="javascript: void(0);">帮助</a></Dropdown>
+            <IntlProvider locale={this.state.locale} messages={this.state.messages}>
+                <div className="App">
+                    <div className="App-header">
+                        <Dropdown overlay = {historyQueryTypeMenu} placement="bottomLeft" ><a href="javascript: void(0);">
+                            <FormattedMessage
+                                id="menu.historyOrders"
+                                defaultMessage = "历史订单"
+                            />
+                        </a></Dropdown>
+                        <Dropdown overlay = {i18nMenu}><a href="javascript: void(0);">
+                            <FormattedMessage
+                                id="menu.language"
+                                defaultMessage = "语言"
+                            />
+                        </a></Dropdown>
+                        <Dropdown overlay = {helpMenu} placement="bottomLeft"><a href="javascript: void(0);">
+                            <FormattedMessage
+                                id="menu.help"
+                                defaultMessage = "帮助"
+                            />
+                        </a></Dropdown>
 
-                    <div style={{float: 'right'}}>
-                        <span>账户号:{this.state.account.account}</span> &nbsp; &nbsp; <span onClick={this.logout.bind(this)} style={{cursor: 'pointer'}}>退出</span>
+                        <div style={{float: 'right'}}>
+                            <span><FormattedMessage id="accountNumber" defaultMessage="账户号"/>:{this.state.account.account}</span> &nbsp; &nbsp; <span onClick={this.logout.bind(this)} style={{cursor: 'pointer'}}><FormattedMessage id="menu.logout" defaultMessage="退出" /></span>
+                        </div>
                     </div>
-                </div>
-                <div className="App-content">
-                    <div className="nav panel">
-                        <Tabs type="card">
-                            <TabPane tab="二元期商品" key="1">
+                    <div className="App-content">
+                        <div className="nav panel">
+                            <Tabs type="card">
+                                <TabPane tab={<FormattedMessage id="forexOptions" defaultMessage="二元期商品" />} key="1">
+                                    <div className="table-header">
+                                        <div className="row header">
+                                            <div className="cell name"><FormattedMessage id="symbol" defaultMessage="商品"/></div>
+                                            <div className="cell price"><FormattedMessage id="price" defaultMessage="价位"/></div>
+                                        </div>
+                                        <div className="b-symbol-list" style={{position: 'absolute', top: '30px', left: '4px', bottom: '6px', right: '4px'}}>
+                                            <Tabs tabPosition="bottom" type="card">
+                                                <TabPane tab={<FormattedMessage id="all" defaultMessage="全部"/>} key="0">
+                                                    <div className="table-rows">
+                                                    <Scrollbars
+                                                        autoHide
+                                                        autoHideTimeout={1000}
+                                                        autoHideDuration={200}>
+                                                        <SymbolList
+                                                            symbols={symbols}
+                                                            onFavoriteClick={this.onFavoriteClick.bind(this)}
+                                                            onCreateOrder={this.onCreateOrder.bind(this)}
+                                                            onCreateDownOrder={this.onCreateDownOrder.bind(this)}
+                                                            onCreateUpOrder={this.onCreateUpOrder.bind(this)}
+                                                            onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
+                                                            favorite1={this.state.favorite1}
+                                                            favorite2={this.state.favorite2}
+                                                            favorite3={this.state.favorite3}
+                                                        />
+                                                    </Scrollbars>
+                                                    </div>
+                                                </TabPane>
+                                                <TabPane tab="1" key="1">
+                                                    <div className="table-rows">
+                                                    <Scrollbars
+                                                        autoHide
+                                                        autoHideTimeout={1000}
+                                                        autoHideDuration={200}>
+                                                        <SymbolList
+                                                            symbols={symbols1}
+                                                            onFavoriteClick={this.onFavoriteClick.bind(this)}
+                                                            onCreateOrder={this.onCreateOrder.bind(this)}
+                                                            onCreateDownOrder={this.onCreateDownOrder.bind(this)}
+                                                            onCreateUpOrder={this.onCreateUpOrder.bind(this)}
+                                                            onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
+                                                            favorite1={this.state.favorite1}
+                                                            favorite2={this.state.favorite2}
+                                                            favorite3={this.state.favorite3}
+                                                        />
+                                                    </Scrollbars>
+                                                    </div>
+                                                </TabPane>
+                                                <TabPane tab="2" key="2">
+                                                    <div className="table-rows">
+                                                    <Scrollbars
+                                                        autoHide
+                                                        autoHideTimeout={1000}
+                                                        autoHideDuration={200}>
+                                                        <SymbolList
+                                                            symbols={symbols2}
+                                                            onFavoriteClick={this.onFavoriteClick.bind(this)}
+                                                            onCreateOrder={this.onCreateOrder.bind(this)}
+                                                            onCreateDownOrder={this.onCreateDownOrder.bind(this)}
+                                                            onCreateUpOrder={this.onCreateUpOrder.bind(this)}
+                                                            onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
+                                                            favorite1={this.state.favorite1}
+                                                            favorite2={this.state.favorite2}
+                                                            favorite3={this.state.favorite3}
+                                                        />
+                                                    </Scrollbars>
+                                                    </div>
+                                                </TabPane>
+                                                <TabPane tab="3" key="3">
+                                                    <div className="table-rows">
+                                                    <Scrollbars
+                                                        autoHide
+                                                        autoHideTimeout={1000}
+                                                        autoHideDuration={200}>
+                                                        <SymbolList
+                                                            symbols={symbols3}
+                                                            onFavoriteClick={this.onFavoriteClick.bind(this)}
+                                                            onCreateOrder={this.onCreateOrder.bind(this)}
+                                                            onCreateDownOrder={this.onCreateDownOrder.bind(this)}
+                                                            onCreateUpOrder={this.onCreateUpOrder.bind(this)}
+                                                            onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
+                                                            favorite1={this.state.favorite1}
+                                                            favorite2={this.state.favorite2}
+                                                            favorite3={this.state.favorite3}
+                                                        />
+                                                    </Scrollbars>
+                                                    </div>
+                                                </TabPane>
+                                            </Tabs>
+                                        </div>
+                                    </div>
+                                </TabPane>
+                            </Tabs>
+                        </div>
+                        <div className="main" style={this.state.chartContainerStyle}>
+                            <div className="header">
+                                <div className="icon-logo" style={{marginRight: '20px'}}>
+                                </div><Button onClick={this.onFullScreen.bind(this)} type={'primary'} size={'small'} style={{marginRight: '20px'}}>{this.state.fullScreen ? <FormattedMessage id="reset" defaultMessage="还原"/> : <FormattedMessage id="maxsize" defaultMessage="最大化"/>}
+                                </Button><span style={{marginRight: '20px'}}>{this.state.symbol}</span><Select  value={this.state.period  + ''} size={'small'} onSelect={this.onPeriodSelect.bind(this)}>
+                                { PERIOD.map((period) => <Option key={period.key}> {period.label} </Option>) }
+                                </Select>
+                            </div>
+                            <div style={{position: 'absolute', top: '30px', bottom: '0', width: '100%'}}>
+                                <ReactEchartsCore
+                                        style={{position: 'absolute', width: '100%', height: '100%'}}
+                                        echarts={echarts}
+                                        option={this.state.chartOptions}
+                                        notMerge={ true }
+                                        lazyUpdate={ true }
+                                        onChartReady={ this.onChartReady.bind(this)}
+                                        onEvents={this.onChartEvents}
+                                        showLoading={this.state.isLoading}
+                                        loadingOption={this.state.loadingOpts}
+                                        ref={(e) => {
+                                            if (e) {
+                                                this.echarts = e.getEchartsInstance();
+                                            } else {
+                                                this.echarts = null;
+                                            }
+                                        }}
+                                    />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="App-footer panel">
+                        <Tabs onTabClick={this.onFooterTabClick.bind(this)} type="card" activeKey={this.state.activeKeyFooter}>
+                            <TabPane tab={<FormattedMessage id="title.pendingOrder" defaultMessage="二元期订单"/>} key="open-order">
                                 <div className="table-header">
                                     <div className="row header">
-                                        <div className="cell name">商品</div>
-                                        <div className="cell price">价位</div>
+                                        <div className="cell" style={{width: '101px'}}><FormattedMessage id="title.id" defaultMessage="订单号"/></div>
+                                        <div className="cell" style={{width: '101px'}}><FormattedMessage id="symbol" defaultMessage="货币"/></div>
+                                        <div className="cell" style={{width: '101px'}}><FormattedMessage id="title.openPrice" defaultMessage="开仓价"/></div>
+                                        <div className="cell" style={{width: '101px'}}><FormattedMessage id="price" defaultMessage="现价"/></div>
+                                        <div className="cell" style={{width: '101px'}}><FormattedMessage id="type" defaultMessage="看涨/看跌"/></div>
+                                        <div className="cell" style={{width: '141px'}}><FormattedMessage id="time" defaultMessage="时间"/></div>
+                                        <div className="cell" style={{width: '141px'}}><FormattedMessage id="title.expiration" defaultMessage="到期"/></div>
+                                        <div className="cell" style={{width: '81px'}}><FormattedMessage id="title.countdown" defaultMessage="倒计时"/></div>
+                                        <div className="cell" style={{width: '101px'}}><FormattedMessage id="investment" defaultMessage="投资"/></div>
+                                        <div className="cell" style={{width: '101px'}}><FormattedMessage id="profit" defaultMessage="盈利"/></div>
+                                        <div className="cell" style={{width: '101px'}}><FormattedMessage id="title.status" defaultMessage="状态"/></div>
+                                        <div className="cell"></div>
                                     </div>
-                                    <div className="b-symbol-list" style={{position: 'absolute', top: '30px', left: '4px', bottom: '6px', right: '4px'}}>
-                                        <Tabs tabPosition="bottom" type="card">
-                                            <TabPane tab="全部" key="0">
-                                                <div className="table-rows">
-                                                <Scrollbars
-                                                    autoHide
-                                                    autoHideTimeout={1000}
-                                                    autoHideDuration={200}>
-                                                    <SymbolList
-                                                        symbols={symbols}
-                                                        onFavoriteClick={this.onFavoriteClick.bind(this)}
-                                                        onCreateOrder={this.onCreateOrder.bind(this)}
-                                                        onCreateDownOrder={this.onCreateDownOrder.bind(this)}
-                                                        onCreateUpOrder={this.onCreateUpOrder.bind(this)}
-                                                        onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
-                                                        favorite1={this.state.favorite1}
-                                                        favorite2={this.state.favorite2}
-                                                        favorite3={this.state.favorite3}
-                                                    />
-                                                </Scrollbars>
+                                </div>
+
+                                <div className="table-rows">
+                                    <Scrollbars
+                                        autoHide
+                                        autoHideTimeout={1000}
+                                        autoHideDuration={200}>
+                                    {
+                                        this.state.orders.length > 0 ? this.state.orders.map((order) => <div key={order.position} className="row" onClick={this.onOrderClick.bind(this, order)}>
+                                                <div className="cell" style={{width: '100px'}}>#{order.position}
+                                                </div><div className="cell" style={{width: '100px'}}>{order.symbol}
+                                                </div><div className="cell" style={{width: '100px'}}>{order.open_price}
+                                                </div><div className="cell" style={{width: '100px'}}>{this.getSymbolPrice(order.symbol)}
+                                                </div><div className="cell" style={{width: '100px'}}>{this.getTypeName(order.type)}
+                                                </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(order.open_time)}
+                                                </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(order.open_time + order.expiration * 60)}
+                                                </div><div className="cell" style={{width: '80px'}}>{this.calculateTimeSpan(order)}
+                                                </div><div className="cell" style={{width: '100px'}}>{order.investment}
+                                                </div><div className="cell" style={{width: '100px'}}>{this.calculateProfitNode(this.calculateProfit(order))}
+                                                </div><div className="cell" style={{width: '100px'}}>{this.calculateStatusNode(order)}
                                                 </div>
-                                            </TabPane>
-                                            <TabPane tab="1" key="1">
-                                                <div className="table-rows">
-                                                <Scrollbars
-                                                    autoHide
-                                                    autoHideTimeout={1000}
-                                                    autoHideDuration={200}>
-                                                    <SymbolList
-                                                        symbols={symbols1}
-                                                        onFavoriteClick={this.onFavoriteClick.bind(this)}
-                                                        onCreateOrder={this.onCreateOrder.bind(this)}
-                                                        onCreateDownOrder={this.onCreateDownOrder.bind(this)}
-                                                        onCreateUpOrder={this.onCreateUpOrder.bind(this)}
-                                                        onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
-                                                        favorite1={this.state.favorite1}
-                                                        favorite2={this.state.favorite2}
-                                                        favorite3={this.state.favorite3}
-                                                    />
-                                                </Scrollbars>
-                                                </div>
-                                            </TabPane>
-                                            <TabPane tab="2" key="2">
-                                                <div className="table-rows">
-                                                <Scrollbars
-                                                    autoHide
-                                                    autoHideTimeout={1000}
-                                                    autoHideDuration={200}>
-                                                    <SymbolList
-                                                        symbols={symbols2}
-                                                        onFavoriteClick={this.onFavoriteClick.bind(this)}
-                                                        onCreateOrder={this.onCreateOrder.bind(this)}
-                                                        onCreateDownOrder={this.onCreateDownOrder.bind(this)}
-                                                        onCreateUpOrder={this.onCreateUpOrder.bind(this)}
-                                                        onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
-                                                        favorite1={this.state.favorite1}
-                                                        favorite2={this.state.favorite2}
-                                                        favorite3={this.state.favorite3}
-                                                    />
-                                                </Scrollbars>
-                                                </div>
-                                            </TabPane>
-                                            <TabPane tab="3" key="3">
-                                                <div className="table-rows">
-                                                <Scrollbars
-                                                    autoHide
-                                                    autoHideTimeout={1000}
-                                                    autoHideDuration={200}>
-                                                    <SymbolList
-                                                        symbols={symbols3}
-                                                        onFavoriteClick={this.onFavoriteClick.bind(this)}
-                                                        onCreateOrder={this.onCreateOrder.bind(this)}
-                                                        onCreateDownOrder={this.onCreateDownOrder.bind(this)}
-                                                        onCreateUpOrder={this.onCreateUpOrder.bind(this)}
-                                                        onCurrentSymbolChange={this.onCurrentSymbolChange.bind(this)}
-                                                        favorite1={this.state.favorite1}
-                                                        favorite2={this.state.favorite2}
-                                                        favorite3={this.state.favorite3}
-                                                    />
-                                                </Scrollbars>
-                                                </div>
-                                            </TabPane>
-                                        </Tabs>
+                                            </div>
+                                        ): <div className="row-no-record">
+                                            <FormattedMessage id="text.noOrders" defaultMessage="没有持仓订单!"/>
+                                        </div>
+                                    }
+                                    </Scrollbars>
+                                </div>
+                            </TabPane>
+                            <TabPane tab={<FormattedMessage id="menu.historyOrders" defaultMessage="历史订单"/>} key="history-order">
+                                <div className="table-header">
+                                    <div className="row header">
+                                        <div className="cell" style={{width: '101px'}}><FormattedMessage id="title.ID" defaultMessage="订单号"/></div>
+                                        <div className="cell" style={{width: '121px'}}><FormattedMessage id="symbol" defaultMessage="货币"/></div>
+                                        <div className="cell" style={{width: '121px'}}><FormattedMessage id="title.transactionType" defaultMessage="交易类型"/></div>
+                                        <div className="cell" style={{width: '121px'}}><FormattedMessage id="title.openPrice" defaultMessage="开仓价"/></div>
+                                        <div className="cell" style={{width: '141px'}}><FormattedMessage id="title.openTime" defaultMessage="开仓时间"/></div>
+                                        <div className="cell" style={{width: '121px'}}><FormattedMessage id="investment" defaultMessage="投资金额"/></div>
+                                        <div className="cell" style={{width: '101px'}}><FormattedMessage id="title.expectedTime" defaultMessage="预期时间"/></div>
+                                        <div className="cell" style={{width: '121px'}}><FormattedMessage id="title.closePrice" defaultMessage="平仓价格"/></div>
+                                        <div className="cell" style={{width: '121px'}}><FormattedMessage id="profit" defaultMessage="盈利"/></div>
+                                        <div className="cell"></div>
                                     </div>
+                                </div>
+
+
+                                <div className="table-rows">
+                                    <Scrollbars
+                                               autoHide
+                                               autoHideTimeout={1000}
+                                               autoHideDuration={200}>
+                                        {
+                                            this.state.historyOrders.length > 0 ? this.state.historyOrders.map((historyOrder) => <div key={historyOrder.position} className="row">
+                                                    <div className="cell" style={{width: '100px'}}>#{historyOrder.position}
+                                                    </div><div className="cell" style={{width: '120px'}}>{historyOrder.symbol}
+                                                    </div><div className="cell" style={{width: '120px'}}>{this.getHistoryOrderType(historyOrder)}
+                                                    </div><div className="cell" style={{width: '120px'}}>{(historyOrder.cmd!==6&&historyOrder.cmd!==7)&&historyOrder.open_price}
+                                                    </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(historyOrder.open_time)}
+                                                    </div><div className="cell" style={{width: '120px'}}>{(historyOrder.cmd!==6&&historyOrder.cmd!==7)&&historyOrder.investment}
+                                                    </div><div className="cell" style={{width: '100px'}}>{(historyOrder.cmd!==6&&historyOrder.cmd!==7)&&formatExpiration(historyOrder.expiration)}
+                                                    </div><div className="cell" style={{width: '120px'}}>{(historyOrder.cmd!==6&&historyOrder.cmd!==7)&&historyOrder.close_price}
+                                                    </div><div className="cell" style={{width: '120px'}}>{this.calculateProfitNode(historyOrder.profit)}
+                                                    </div>
+                                                </div>
+                                            ) : <div className="row-no-record">
+                                               <FormattedMessage id="text.noHistoryOrders" defaultMessage="没有符合条件的历史订单！"/>
+                                            </div>
+                                        }
+                                    </Scrollbars>
+                                </div>
+                            </TabPane>
+                            <TabPane tab={<FormattedMessage id="account" defaultMessage="帐户"/> } key="account">
+                                <div className="table-header">
+                                    <div className="row header">
+                                        <div className="cell" style={{width: '100px'}}><FormattedMessage id="title.accountInfo" defaultMessage="账户信息"/></div>
+                                        <div className="cell"></div>
+                                    </div>
+                                </div>
+                                <div className="table-rows">
+
+                                    <Scrollbars
+                                        autoHide
+                                        autoHideTimeout={1000}
+                                        autoHideDuration={200}>
+                                        <div>
+                                            <div className="row">
+                                                <div className="cell" style={{width: '120px'}}><FormattedMessage id="accountNumber" defaultMessage="帐户号"/>
+                                                </div><div className="cell">{this.state.account.account}</div>
+                                            </div>
+                                            <div className="row">
+                                                <div className="cell" style={{width: '120px'}}><FormattedMessage id="accountName" defaultMessage="帐户名"/>
+                                                </div><div className="cell">{this.state.account.name}</div>
+                                            </div>
+                                            <div className="row">
+                                                <div className="cell" style={{width: '120px'}}><FormattedMessage id="symbol" defaultMessage="货币类型"/>
+                                                </div><div className="cell">{this.state.account.currency}</div>
+                                            </div>
+                                            <div className="row">
+                                                <div className="cell" style={{width: '120px'}}><FormattedMessage id="balance" defaultMessage="账户余额"/>
+                                                </div><div className="cell">{this.state.account.balance}</div>
+                                            </div>
+                                            <div className="row">
+                                                <div className="cell" style={{width: '120px'}}><FormattedMessage id="credit" defaultMessage="信用额"/>
+                                                </div><div className="cell">{this.state.account.credit}</div>
+                                            </div>
+                                        </div>
+                                    </Scrollbars>
                                 </div>
                             </TabPane>
                         </Tabs>
                     </div>
-                    <div className="main" style={this.state.chartContainerStyle}>
-                        <div className="header">
-                            <div className="icon-logo" style={{marginRight: '20px'}}>
-                            </div><Button onClick={this.onFullScreen.bind(this)} type={'primary'} size={'small'} style={{marginRight: '20px'}}>{this.state.fullScreen ? '还原' : '最大化'}
-                            </Button><span style={{marginRight: '20px'}}>{this.state.symbol}</span><Select  value={this.state.period  + ''} size={'small'} onSelect={this.onPeriodSelect.bind(this)}>
-                            { PERIOD.map((period) => <Option key={period.key}> {period.label} </Option>) }
-                            </Select>
+                    <Modal
+                        className={'order-dialog-large'}
+                        visible={this.state.modalCreateOrderVisible}
+                        closable={false}
+                        title={this.state.symbol}
+                        footer={
+                            <div style={{textAlign: 'center'}}>
+                                <Button size={'small'} style={{width: '100%'}} className={'btn-default'} onClick={this.onHideModalCreateOrder.bind(this)}><FormattedMessage id="button.cancel" defaultMessage="取消"/></Button>
+                            </div>
+                        }
+                    >
+                        <div className="order-row">
+                            <div className="cell">
+                                <FormattedMessage id="title.investmentAmount" defaultMessage="投放资本"/>
+                            </div><div className="cell">
+                                <input id="investment" style={{width: '80px', marginTop: '4px'}} name="investment" defaultValue="5.0" type="text" ref = {(input) => {this.investmentInput = input}} />
+                            </div><div className="cell">
+                                <Button onClick={this.onSubmitCreateOrderUp.bind(this)} style={{width: '138px'}} size={'small'} className={ 'btn-up'}>
+                                    <FormattedMessage id="button.up" defaultMessage="看涨"/></Button>
+                            </div>
                         </div>
-                        <div style={{position: 'absolute', top: '30px', bottom: '0', width: '100%'}}>
-                            <ReactEchartsCore
-                                    style={{position: 'absolute', width: '100%', height: '100%'}}
-                                    echarts={echarts}
-                                    option={this.state.chartOptions}
-                                    notMerge={ true }
-                                    lazyUpdate={ true }
-                                    onChartReady={ this.onChartReady.bind(this)}
-                                    onEvents={this.onChartEvents}
-                                    showLoading={this.state.isLoading}
-                                    loadingOption={this.state.loadingOpts}
-                                    ref={(e) => {
-                                        if (e) {
-                                            this.echarts = e.getEchartsInstance();
-                                        } else {
-                                            this.echarts = null;
-                                        }
-                                    }}
-                                />
+                        <div className="order-row">
+                            <div className="cell">
+                                <FormattedMessage id="title.payoff" defaultMessage="支付盈利"/>
+                            </div><div className="cell">
+                                {this.state.order.win}%
+                            </div><div className="cell">
+                                {this.getSymbolPrice(this.state.symbol)}
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div className="App-footer panel">
-                    <Tabs onTabClick={this.onFooterTabClick.bind(this)} type="card" activeKey={this.state.activeKeyFooter}>
-                        <TabPane tab="二元期订单" key="open-order">
-                            <div className="table-header">
-                                <div className="row header">
-                                    <div className="cell" style={{width: '101px'}}>订单号</div>
-                                    <div className="cell" style={{width: '101px'}}>货币</div>
-                                    <div className="cell" style={{width: '101px'}}>开仓价</div>
-                                    <div className="cell" style={{width: '101px'}}>现价</div>
-                                    <div className="cell" style={{width: '101px'}}>看涨/看跌</div>
-                                    <div className="cell" style={{width: '141px'}}>时间</div>
-                                    <div className="cell" style={{width: '141px'}}>到期</div>
-                                    <div className="cell" style={{width: '81px'}}>倒计时</div>
-                                    <div className="cell" style={{width: '101px'}}>投资</div>
-                                    <div className="cell" style={{width: '101px'}}>盈亏</div>
-                                    <div className="cell" style={{width: '101px'}}>状态</div>
-                                    <div className="cell"></div>
-                                </div>
-                            </div>
+                        <div className="order-row">
+                            <div className="cell">
+                                <FormattedMessage id="title.manualCloseOrder" defaultMessage="手动关闭委托"/>
+                            </div><div className="cell">
+                                --
+                            </div><div className="cell">
 
-                            <div className="table-rows">
-                                <Scrollbars
-                                    autoHide
-                                    autoHideTimeout={1000}
-                                    autoHideDuration={200}>
-                                {
-                                    this.state.orders.length > 0 ? this.state.orders.map((order) => <div key={order.position} className="row" onClick={this.onOrderClick.bind(this, order)}>
-                                            <div className="cell" style={{width: '100px'}}>#{order.position}
-                                            </div><div className="cell" style={{width: '100px'}}>{order.symbol}
-                                            </div><div className="cell" style={{width: '100px'}}>{order.open_price}
-                                            </div><div className="cell" style={{width: '100px'}}>{this.getSymbolPrice(order.symbol)}
-                                            </div><div className="cell" style={{width: '100px'}}>{this.getTypeName(order.type)}
-                                            </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(order.open_time)}
-                                            </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(order.open_time + order.expiration * 60)}
-                                            </div><div className="cell" style={{width: '80px'}}>{this.calculateTimeSpan(order)}
-                                            </div><div className="cell" style={{width: '100px'}}>{order.investment}
-                                            </div><div className="cell" style={{width: '100px'}}>{this.calculateProfitNode(this.calculateProfit(order))}
-                                            </div><div className="cell" style={{width: '100px'}}>{this.calculateStatusNode(order)}
-                                            </div>
-                                        </div>
-                                    ): <div className="row-no-record">没有持仓订单！</div>
-                                }
-                                </Scrollbars>
                             </div>
-                        </TabPane>
-                        <TabPane tab="历史订单" key="history-order">
-                            <div className="table-header">
-                                <div className="row header">
-                                    <div className="cell" style={{width: '101px'}}>订单号</div>
-                                    <div className="cell" style={{width: '121px'}}>货币名称</div>
-                                    <div className="cell" style={{width: '121px'}}>交易类型</div>
-                                    <div className="cell" style={{width: '121px'}}>开仓价</div>
-                                    <div className="cell" style={{width: '141px'}}>开仓时间</div>
-                                    <div className="cell" style={{width: '121px'}}>投资金额</div>
-                                    <div className="cell" style={{width: '101px'}}>预期时间</div>
-                                    <div className="cell" style={{width: '121px'}}>平仓价格</div>
-                                    <div className="cell" style={{width: '121px'}}>盈亏</div>
-                                    <div className="cell"></div>
-                                </div>
-                            </div>
-
-
-                            <div className="table-rows">
-                                <Scrollbars
-                                           autoHide
-                                           autoHideTimeout={1000}
-                                           autoHideDuration={200}>
+                        </div>
+                        <div className="order-row">
+                            <div className="cell">
+                                <FormattedMessage id="title.expiration" defaultMessage="到期"/>
+                            </div><div className="cell">
+                                <Select value={this.state.order.expiration + ''} onChange={this.onExpirationChange.bind(this)} style={{width: '80px'}} size={'small'} >
                                     {
-                                        this.state.historyOrders.length > 0 ? this.state.historyOrders.map((historyOrder) => <div key={historyOrder.position} className="row">
-                                                <div className="cell" style={{width: '100px'}}>#{historyOrder.position}
-                                                </div><div className="cell" style={{width: '120px'}}>{historyOrder.symbol}
-                                                </div><div className="cell" style={{width: '120px'}}>{this.getHistoryOrderType(historyOrder)}
-                                                </div><div className="cell" style={{width: '120px'}}>{(historyOrder.cmd!==6&&historyOrder.cmd!==7)&&historyOrder.open_price}
-                                                </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(historyOrder.open_time)}
-                                                </div><div className="cell" style={{width: '120px'}}>{(historyOrder.cmd!==6&&historyOrder.cmd!==7)&&historyOrder.investment}
-                                                </div><div className="cell" style={{width: '100px'}}>{(historyOrder.cmd!==6&&historyOrder.cmd!==7)&&formatExpiration(historyOrder.expiration)}
-                                                </div><div className="cell" style={{width: '120px'}}>{(historyOrder.cmd!==6&&historyOrder.cmd!==7)&&historyOrder.close_price}
-                                                </div><div className="cell" style={{width: '120px'}}>{this.calculateProfitNode(historyOrder.profit)}
-                                                </div>
-                                            </div>
-                                        ) : <div className="row-no-record">没有符合条件的历史订单！</div>
+                                        this.state.order.expirations.map((item) => {
+                                            return <Option key={item.key}>{item.label}</Option>
+                                        })
                                     }
-                                </Scrollbars>
+                                </Select>
+                            </div><div className="cell">
+                                <Button onClick={this.onSubmitCreateOrderDown.bind(this)} style={{width: '138px'}} size={'small'} className={ 'btn-down'}>看跌</Button>
                             </div>
-                        </TabPane>
-                        <TabPane tab="账户" key="account">
-                            <div className="table-header">
-                                <div className="row header">
-                                    <div className="cell" style={{width: '100px'}}>账户信息</div>
-                                    <div className="cell"></div>
-                                </div>
-                            </div>
-                            <div className="table-rows">
+                        </div>
+                    </Modal>
 
-                                <Scrollbars
-                                    autoHide
-                                    autoHideTimeout={1000}
-                                    autoHideDuration={200}>
-                                    <div>
-                                        <div className="row">
-                                            <div className="cell" style={{width: '120px'}}>帐户
-                                            </div><div className="cell">{this.state.account.account}</div>
+                    <Modal
+                        className={'order-dialog-small'}
+                        visible={this.state.modalCreateUpOrderVisible}
+                        closable={false}
+                        title={<span><FormattedMessage id="button.makeInvestment" defaultMessage="下单"/> ?</span>}
+                        footer={
+                            <div style={{textAlign: 'center'}}>
+                                <Button onClick={this.onSubmitCreateUpDownOrder.bind(this)} style={{width: '90px'}} size={'small'} className={ this.state.order.type === 1 ? 'btn-up': 'btn-down'}>{this.state.order.type === 1 ? <FormattedMessage id="button.up" defaultMessage="看涨"/>: <FormattedMessage id="button.down" defaultMessage="看跌"/>}</Button><Button onClick={this.onHideCreateUpOrder.bind(this)} style={{width: '90px', marginLeft: '20px'}} size={'small'} className={ 'btn-cancel' }><FormattedMessage id="button.cancel" defaultMessage="取消"/></Button>
+                            </div>
+                        }
+                    >
+                        <p>
+                            <FormattedMessage id="text.orderDescription" defaultMessage="买{symbol}{direction}为期{expiration}" values={{
+                                symbol: this.state.order.symbol,
+                                expiration: this.formatExpiration(this.state.order.expiration),
+                                direction: this.state.order.type === 1 ? <FormattedMessage id="button.up" defaultMessage="看涨"/>: <FormattedMessage id="button.down" defaultMessage="看跌"/>
+                            }}/>
+                        </p>
+                    </Modal>
+
+                    <Modal
+                        className={'order-dialog-info'}
+                        visible={this.state.modalOrderInfoVisible}
+                        closable={false}
+                        title={this.state.orderInfo ? (this.state.orderInfo.symbol + ' ' + (this.state.orderInfo.type === 1 ? 'UP' : 'DOWN')) : '' }
+                        footer={
+                            <div style={{textAlign: 'center'}}>
+                                <Button onClick={this.onHideModalOrderInfo.bind(this)} style={{width: '100%'}} size={'small'} className={'btn-default'}>
+                                    <FormattedMessage id="button.cancel" defaultMessage="取消"/></Button>
+                            </div>
+                        }
+                    >
+                            <div>
+                                <div className="chart-box">
+                                    { this.state.modalOrderInfoVisible && <CountingDown style={{position: 'relative', width: '100%', height: '100%'}} startTime={this.state.orderInfo.open_time * 1000+ this.state.timeDiff } endTime={ this.state.orderInfo.open_time * 1000 + this.state.timeDiff + this.state.orderInfo.expiration * 60 * 1000} />}
+                                </div>
+                                <div className="info-box">
+                                    <div className="row">
+                                        <div className="cell label1">
+                                            <FormattedMessage id="investment" defaultMessage="投资"/>
                                         </div>
-                                        <div className="row">
-                                            <div className="cell" style={{width: '120px'}}>帐户名
-                                            </div><div className="cell">{this.state.account.name}</div>
+                                        <div className="cell value1">
+                                            {
+                                                this.state.orderInfo.investment
+                                            }
                                         </div>
-                                        <div className="row">
-                                            <div className="cell" style={{width: '120px'}}>货币类型
-                                            </div><div className="cell">{this.state.account.currency}</div>
+                                        <div className="cell label2">
+                                            <FormattedMessage id="title.openPrice" defaultMessage="开仓价格"/>
                                         </div>
-                                        <div className="row">
-                                            <div className="cell" style={{width: '120px'}}>账户余客
-                                            </div><div className="cell">{this.state.account.balance}</div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="cell" style={{width: '120px'}}>信用额
-                                            </div><div className="cell">{this.state.account.credit}</div>
+                                        <div className="cell value2">
+                                            {
+                                                this.state.orderInfo.open_price
+                                            }
                                         </div>
                                     </div>
-                                </Scrollbars>
+                                    <div className="row">
+                                        <div className="cell label1">
+                                            <FormattedMessage id="profit" defaultMessage="盈利"/>
+                                        </div>
+                                        <div className="cell value1">
+                                            {
+                                                this.calculateProfit(this.state.orderInfo)
+                                            }
+                                        </div>
+                                        <div className="cell label2">
+                                            <FormattedMessage id="price" defaultMessage="现价"/>
+                                        </div>
+                                        <div className="cell value2">
+                                            {
+                                                this.getSymbolPrice(this.state.orderInfo.symbol)
+                                            }
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="cell label1">
+                                            <FormattedMessage id="title.expiration" defaultMessage="到期"/>
+                                        </div>
+                                        <div className="cell value1">
+                                            {
+                                                this.formatExpiration(this.state.orderInfo.expiration)
+                                            }
+                                        </div>
+                                        <div className="cell label2">
+                                            <FormattedMessage id="title.direction" defaultMessage="方向"/>
+                                        </div>
+                                        <div className="cell value2">
+                                            {
+                                                this.state.orderInfo.type === 1 ? 'UP' : 'DOWN'
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </TabPane>
-                    </Tabs>
+                    </Modal>
+
+                    <ModalAbout visible={this.state.modalAboutVisible} onClose={this.onHideAbout.bind(this)} />
                 </div>
-                <Modal
-                    className={'order-dialog-large'}
-                    visible={this.state.modalCreateOrderVisible}
-                    closable={false}
-                    title={this.state.symbol}
-                    footer={
-                        <div style={{textAlign: 'center'}}>
-                            <Button size={'small'} style={{width: '100%'}} className={'btn-default'} onClick={this.onHideModalCreateOrder.bind(this)}>取消</Button>
-                        </div>
-                    }
-                >
-                    <div className="order-row">
-                        <div className="cell">
-                            投放资本
-                        </div><div className="cell">
-                            <input id="investment" style={{width: '80px', marginTop: '4px'}} name="investment" defaultValue="5.0" type="text" ref = {(input) => {this.investmentInput = input}} />
-                        </div><div className="cell">
-                            <Button onClick={this.onSubmitCreateOrderUp.bind(this)} style={{width: '138px'}} size={'small'} className={ 'btn-up'}>看涨</Button>
-                        </div>
-                    </div>
-                    <div className="order-row">
-                        <div className="cell">
-                            支付盈利
-                        </div><div className="cell">
-                            {this.state.order.win}%
-                        </div><div className="cell">
-                            {this.getSymbolPrice(this.state.symbol)}
-                        </div>
-                    </div>
-                    <div className="order-row">
-                        <div className="cell">
-                            手动关闭委托
-                        </div><div className="cell">
-                            --
-                        </div><div className="cell">                        
-
-                        </div>
-                    </div>
-                    <div className="order-row">
-                        <div className="cell">
-                            到期
-                        </div><div className="cell">
-                            <Select value={this.state.order.expiration + ''} onChange={this.onExpirationChange.bind(this)} style={{width: '80px'}} size={'small'} >
-                                {
-                                    this.state.order.expirations.map((item) => {
-                                        return <Option key={item.key}>{item.label}</Option>
-                                    })
-                                }
-                            </Select>
-                        </div><div className="cell">
-                            <Button onClick={this.onSubmitCreateOrderDown.bind(this)} style={{width: '138px'}} size={'small'} className={ 'btn-down'}>看跌</Button>
-                        </div>
-                    </div>
-                </Modal>
-
-                <Modal
-                    className={'order-dialog-small'}
-                    visible={this.state.modalCreateUpOrderVisible}
-                    closable={false}
-                    title="下单?"
-                    footer={
-                        <div style={{textAlign: 'center'}}>
-                            <Button onClick={this.onSubmitCreateUpDownOrder.bind(this)} style={{width: '90px'}} size={'small'} className={ this.state.order.type === 1 ? 'btn-up': 'btn-down'}>{this.state.order.type === 1 ? '看涨': '看跌'}</Button><Button onClick={this.onHideCreateUpOrder.bind(this)} style={{width: '90px', marginLeft: '20px'}} size={'small'} className={ 'btn-cancel' }>取消</Button>
-                        </div>
-                    }
-                >
-                    <p>买 {this.state.order.investment} &nbsp; {this.state.order.symbol} {this.state.order.type === 1 ? '看涨': '看跌'}为期{this.formatExpiration(this.state.order.expiration)}</p>
-                </Modal>
-
-                <Modal
-                    className={'order-dialog-info'}
-                    visible={this.state.modalOrderInfoVisible}
-                    closable={false}
-                    title={this.state.orderInfo ? (this.state.orderInfo.symbol + ' ' + (this.state.orderInfo.type === 1 ? 'UP' : 'DOWN')) : '' }
-                    footer={
-                        <div style={{textAlign: 'center'}}>
-                            <Button onClick={this.onHideModalOrderInfo.bind(this)} style={{width: '100%'}} size={'small'} className={'btn-default'}>取消</Button>
-                        </div>
-                    }
-                >
-                        <div>
-                            <div className="chart-box">
-                                { this.state.modalOrderInfoVisible && <CountingDown style={{position: 'relative', width: '100%', height: '100%'}} startTime={this.state.orderInfo.open_time * 1000+ this.state.timeDiff } endTime={ this.state.orderInfo.open_time * 1000 + this.state.timeDiff + this.state.orderInfo.expiration * 60 * 1000} />}
-                            </div>
-                            <div className="info-box">
-                                <div className="row">
-                                    <div className="cell label1">
-                                        投资
-                                    </div>
-                                    <div className="cell value1">
-                                        {
-                                            this.state.orderInfo.investment
-                                        }
-                                    </div>
-                                    <div className="cell label2">
-                                        开仓价格
-                                    </div>
-                                    <div className="cell value2">
-                                        {
-                                            this.state.orderInfo.open_price
-                                        }
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="cell label1">
-                                        盈利
-                                    </div>
-                                    <div className="cell value1">
-                                        {
-                                            this.calculateProfit(this.state.orderInfo)
-                                        }
-                                    </div>
-                                    <div className="cell label2">
-                                        现价
-                                    </div>
-                                    <div className="cell value2">
-                                        {
-                                            this.getSymbolPrice(this.state.orderInfo.symbol)
-                                        }
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="cell label1">
-                                        到期
-                                    </div>
-                                    <div className="cell value1">
-                                        {
-                                            this.formatExpiration(this.state.orderInfo.expiration)
-                                        }
-                                    </div>
-                                    <div className="cell label2">
-                                        方向
-                                    </div>
-                                    <div className="cell value2">
-                                        {
-                                            this.state.orderInfo.type === 1 ? 'UP' : 'DOWN'
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                </Modal>
-
-                <ModalAbout visible={this.state.modalAboutVisible} onClose={this.onHideAbout.bind(this)} />
-            </div>
+            </IntlProvider>
         );
     }
 }

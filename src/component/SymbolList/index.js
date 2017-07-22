@@ -8,6 +8,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FormattedMessage } from 'react-intl';
 
 import SymbolItem from '../SymbolItem';
 
@@ -22,14 +23,16 @@ export default class SymbolList extends React.Component {
         onCreateUpOrder: PropTypes.func,
         onCreateDownOrder: PropTypes.func,
         onFavoriteClick: PropTypes.func,
-        onCurrentSymbolChange: PropTypes.func
+        onCurrentSymbolChange: PropTypes.func,
+        noItemMessage: PropTypes.string
     };
 
     static defaultProps = {
         symbols: [],
         favorite1: [],
         favorite2: [],
-        favorite3: []
+        favorite3: [],
+        noItemMessage: <FormattedMessage id="text.noForexOptionsSymbol" message="没有商品信息!"/>
     };
 
     constructor(props) {
@@ -94,9 +97,9 @@ export default class SymbolList extends React.Component {
     }
 
     render() {
-        return <div>
+        return <div style={{position: 'relative', 'width': '100%', 'height': '100%'}}>
             {
-                this.props.symbols.map((symbol) => <SymbolItem
+                this.props.symbols.length > 0 ? this.props.symbols.map((symbol) => <SymbolItem
                     key={symbol.name}
                     symbol={symbol}
                     onCreateOrder={this.onCreateOrder.bind(this)}
@@ -106,7 +109,9 @@ export default class SymbolList extends React.Component {
                     onRowClick={this.onRowClick.bind(this)}
                     favorites={this.getFavorites(symbol)}
                     isOpen={this.state.currentSymbol === symbol.name}
-                />)
+                />) : <div style={{position: 'relative', top: '50%', height: '30px', lineHeight: '30px', marginTop: '-15px', textAlign: 'center'}}>
+                    { this.props.noItemMessage }
+                </div>
             }
         </div>;
     }
