@@ -59,6 +59,6 @@ export default {
     'title.investmentAmount': '投入资本',
     'title.payoff': '支付盈利',
     'title.manualCloseOrder': '手动关闭委托',
-    'text.orderDescription': '买{symbol}{direction}为期{expiration}'
-
+    'text.orderDescription': '买{symbol}{direction}为期{expiration}',
+    'close': '关闭'
 }

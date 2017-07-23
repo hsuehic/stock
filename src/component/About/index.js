@@ -8,6 +8,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FormattedMessage } from 'react-intl';
 
 import { Button, Modal } from 'antd';
 
@@ -33,10 +34,10 @@ export default class Component extends React.Component {
             className={'order-dialog-info'}
             closable={false}
             visible={this.props.visible}
-            title={ '关于' }
+            title={ <FormattedMessage id="menu.help.about" defaultMessage="关于" />}
             footer={
                 <div style={{textAlign: 'right'}}>
-                    <Button onClick={this.props.onClose} style={{width: '60px'}} size={'small'} className={'btn-default'}>关闭</Button>
+                    <Button onClick={this.props.onClose} style={{width: '60px'}} size={'small'} className={'btn-default'}><FormattedMessage id="close" defaultMessage="关闭"/> </Button>
                 </div>
             }
         >

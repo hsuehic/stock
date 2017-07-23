@@ -59,5 +59,6 @@ export default {
     'title.investmentAmount': 'Investment Amount',
     'title.payoff': 'Payoff',
     'title.manualCloseOrder': 'Close order manually',
-    'text.orderDescription': 'buy {symbol} {direction} for {expiration}'
+    'text.orderDescription': 'buy {symbol} {direction} for {expiration}',
+    'close': 'Close'
 }
