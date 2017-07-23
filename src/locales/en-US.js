@@ -7,6 +7,7 @@
 
 export default {
     locale: 'zh-CN',
+    'unit.days': 'Days',
     'unit.hours': 'Hours',
     'unit.minutes': 'Minutes',
     'unit.seconds': 'Seconds',

@@ -41,16 +41,16 @@ const CHART_CONTAINER_STYLE_FULL_SCREEN = {position: 'fixed', top: '0', left: '0
 addLocaleData([...zh, ...en]);
 
 const formatExpiration = (v) => {
-    let unit = '分钟';
+    let unit = <FormattedMessage id="unit.minutes" defaultMessage="分钟"/>;
     if (v >= 60) {
-        unit = '小时';
+        unit = <FormattedMessage id="unit.hours" defaultMessage="小时"/>;
         v = v / 60;
         if (v >= 24) {
-            unit = '天';
+            unit = <FormattedMessage id="unit.days" defaultMessage="天"/>;
             v = v / 24
         }
     }
-    return `${v}${unit}`;
+    return <span>{v}{unit}</span>;
 };
 
 class App extends Component {
@@ -1217,7 +1217,7 @@ class App extends Component {
                                         <div className="cell" style={{width: '141px'}}><FormattedMessage id="time" defaultMessage="时间"/></div>
                                         <div className="cell" style={{width: '141px'}}><FormattedMessage id="title.expiration" defaultMessage="到期"/></div>
                                         <div className="cell" style={{width: '81px'}}><FormattedMessage id="title.countdown" defaultMessage="倒计时"/></div>
-                                        <div className="cell" style={{width: '101px'}}><FormattedMessage id="investment" defaultMessage="投资"/></div>
+                                        <div className="cell" style={{width: '101px'}}><FormattedMessage id="title.investment" defaultMessage="投资"/></div>
                                         <div className="cell" style={{width: '101px'}}><FormattedMessage id="profit" defaultMessage="盈利"/></div>
                                         <div className="cell" style={{width: '101px'}}><FormattedMessage id="title.status" defaultMessage="状态"/></div>
                                         <div className="cell"></div>

@@ -7,6 +7,7 @@
 
 export default {
     locale: 'zh-CN',
+    'unit.days': '天',
     'unit.hours': '小时',
     'unit.minutes': '分钟',
     'unit.seconds': '秒',
