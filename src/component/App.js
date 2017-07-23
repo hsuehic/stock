@@ -1254,7 +1254,7 @@ class App extends Component {
                             <TabPane tab={<FormattedMessage id="menu.historyOrders" defaultMessage="历史订单"/>} key="history-order">
                                 <div className="table-header">
                                     <div className="row header">
-                                        <div className="cell" style={{width: '101px'}}><FormattedMessage id="title.ID" defaultMessage="订单号"/></div>
+                                        <div className="cell" style={{width: '101px'}}><FormattedMessage id="title.id" defaultMessage="订单号"/></div>
                                         <div className="cell" style={{width: '121px'}}><FormattedMessage id="symbol" defaultMessage="货币"/></div>
                                         <div className="cell" style={{width: '121px'}}><FormattedMessage id="title.transactionType" defaultMessage="交易类型"/></div>
                                         <div className="cell" style={{width: '121px'}}><FormattedMessage id="title.openPrice" defaultMessage="开仓价"/></div>
