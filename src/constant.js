@@ -18,7 +18,8 @@ export const API_URL = {
     OPEN_ORDER: `${apiServer}/api/socket8`, // 下单
     PRICE_REQUEST: `${apiServer}/api/socket9`, // 获取货币报价
     QUOTES_HISTORY: `${apiServer}/api/socket10`,// 获取K线
-    SESSION_CHECK: `${apiServer}/api/socket11` // 验证Session
+    SESSION_CHECK: `${apiServer}/api/socket11`, // 验证Session
+    ORDER_INFO: `${apiServer}/api/socket13` // 订单信息
 };
 
 export const COLORS = {
