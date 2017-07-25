@@ -167,3 +167,7 @@ export const getQuotesHistory = (params) => {
 export const openOrder = (params) => {
     return post(API_URL.OPEN_ORDER, params);
 };
+
+export const getOrderDetail = (params) => {
+    return post(API_URL.ORDER_INFO, params);
+};

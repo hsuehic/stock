@@ -25,7 +25,7 @@ import Scrollbars from 'react-custom-scrollbars';
 import CountingDown from './CountingDown';
 import ModalAbout from './About';
 
-import { getAccountDetails, getHistoryOrder, openOrder, getOpenOrder, getPrice, getQuotesHistory, getServerInfo, getSymbolGroup, logout } from '../api';
+import { getAccountDetails, getHistoryOrder, openOrder, getOpenOrder, getPrice, getQuotesHistory, getServerInfo, getSymbolGroup, logout, getOrderDetail } from '../api';
 
 import { COLORS, PERIOD } from '../constant';
 
@@ -417,6 +417,40 @@ class App extends Component {
         return promise;
     }
 
+    updateMarkLine () {
+        let chartOptions = this.state.chartOptions;
+        let data = chartOptions.series[0].data;
+        if (data && data.length > 0) {
+            let len = data.length;
+            let item = data[len - 1];
+            let price = item[1];
+            let startIndex = Math.ceil(this.dataZoom.start * len / 100) - 1;
+            let lastIndex = Math.floor(this.dataZoom.end * len / 100) - 1;
+
+            let markLink = {
+                symbol: ['none', 'none'],
+                data: [
+                    [
+                        {
+                            name: `${price}`,
+                            coord: [startIndex, price]
+                        },
+                        {
+                            name: `${price}`,
+                            coord: [lastIndex, price]
+                        }
+                    ]
+                ]
+            };
+            chartOptions.series[0].markLine = markLink;
+            this.setState({
+                chartOptions
+            });
+        }
+
+
+    }
+
     getPrices () {
         let params = {
             symbols: this.state.symbolNames
@@ -476,8 +510,8 @@ class App extends Component {
                            ]
                        ]
                    };
-                   chartOptions.series[0].data = data;
                    chartOptions.series[0].markLine = markLink;
+                   chartOptions.series[0].data = data;
                }
                this.setState({
                    chartOptions,
@@ -564,6 +598,8 @@ class App extends Component {
                 chartOptions.dataZoom=[this.dataZoom];
                 this.setState({
                     chartOptions
+                }, () => {
+                    this.updateMarkLine();
                 });
             }
             if (typeof callback === 'function') {
@@ -592,22 +628,35 @@ class App extends Component {
     }
 
     calculateProfit (order) {
-        let status = this.calculateStatus(order);
         let v = 0;
-        if (status > 0) {
-            v = order.investment * 0.01 * order.win;
-        } else if (status < 0) {
-            v = order.investment * -1;
-        }
-        v = v + '';
-        let index = v.indexOf('.');
-        if (index > -1) {
-            if (v.length - index > 4) {
-                v = parseFloat(v);
-                v = v.toFixed(3);
+        if (order.hasOwnProperty('profit')) {
+            v = order.profit;
+        } else {
+            let status = this.calculateStatus(order);
+            if (status > 0) {
+                v = order.investment * 0.01 * order.win;
+            } else if (status < 0) {
+                v = order.investment * -1;
             }
         }
-        return v;
+        let str = v + '';
+        let index = str.indexOf('.');
+        if (index > -1) {
+            if (str.length - index > 4) {
+                str = v.toFixed(3);
+            }
+        }
+
+        let node;
+        let color = COLORS.DEFAULT;
+        if (v > 0) {
+            color = COLORS.WIN;
+        } else if (v < 0) {
+            color = COLORS.LOSS;
+        }
+        node = <span style={{color}}>{str}</span>
+
+        return node;
     }
 
     calculateProfitNode (profit) {
@@ -618,7 +667,7 @@ class App extends Component {
         } else if (profit < 0) {
             color = COLORS.LOSS;
         }
-        return <span style={{color:color}}>{text}</span>;
+        return <span style={{color}}>{text}</span>;
     }
 
     calculateExpirations (symbolName) {
@@ -721,6 +770,38 @@ class App extends Component {
         }
     }
 
+    getOrderDetail() {
+        let self = this;
+        let orderInfo = this.state.orderInfo;
+        let expirationTime  = orderInfo.open_time * 1000 + this.state.timeDiff + orderInfo.expiration * 60 * 1000;
+        let now = (new Date()).getTime();
+        if (now > expirationTime) {
+            let promise = getOrderDetail({
+                order: orderInfo.position || orderInfo.order
+            });
+            promise
+                .then((res) => {
+                    if (res.code === 0) {
+                        let data = res.data;
+                        if (data && data.hasOwnProperty('profit')) {
+                            window.clearInterval(self.getOrderInfoTimer);
+                            orderInfo.profit = data.profit;
+                            self.setState({
+                                orderInfo
+                            });
+                        }
+                    }
+                });
+        }
+    }
+
+    startGetOrderDetail (order) {
+        if (this.getOrderInfoTimer) {
+            window.clearInterval(this.getOrderInfoTimer);
+        }
+        this.getOrderInfoTimer = setInterval(this.getOrderDetail.bind(this, order), 1000);
+    }
+
     logout () {
         let promise = logout();
         promise.then(() => {
@@ -758,6 +839,7 @@ class App extends Component {
     onDataZoom (dataZoom) {
         this.dataZoom.start = dataZoom.batch[0].start;
         this.dataZoom.end = dataZoom.batch[0].end;
+        this.updateMarkLine();
     }
 
     onCreateOrder (symbol) {
@@ -893,6 +975,9 @@ class App extends Component {
     }
 
     onHideModalOrderInfo () {
+        if (this.getOrderInfoTimer) {
+            window.clearInterval(this.getOrderInfoTimer);
+        }
         this.setState({
             modalOrderInfoVisible: false
         })
@@ -942,7 +1027,9 @@ class App extends Component {
         this.setState({
             orderInfo: order,
             modalOrderInfoVisible: true
-        })
+        }, () => {
+            this.startGetOrderDetail(this.state.orderInfo);
+        });
     }
 
     onPeriodSelect (value, option) {
@@ -975,6 +1062,7 @@ class App extends Component {
     }
 
     submitOrder () {
+        let self = this;
         let symbolName = this.state.order.symbol;
         let type = this.state.order.type === 1 ? 'UP': 'DOWN';
         let params = {
@@ -991,16 +1079,18 @@ class App extends Component {
             isOpeningOrder: true
         });
         promise.then((res) => {
-            this.setState({
+            self.setState({
                 isOpeningOrder: false
             });
             if (res && res.code === 0) {
-                this.setState({
+                self.setState({
                     modalOrderInfoVisible: true,
                     orderInfo: res.data,
                     activeKeyFooter: 'open-order'
+                }, () => {
+                    self.startGetOrderDetail(this.state.orderInfo);
                 });
-                this.getOpenOrders();
+                self.getOpenOrders();
             }
         }).catch(() => {
             this.setState({
@@ -1240,7 +1330,7 @@ class App extends Component {
                                                 </div><div className="cell" style={{width: '140px'}}>{this.formatDateTime(order.open_time + order.expiration * 60)}
                                                 </div><div className="cell" style={{width: '80px'}}>{this.calculateTimeSpan(order)}
                                                 </div><div className="cell" style={{width: '100px'}}>{order.investment}
-                                                </div><div className="cell" style={{width: '100px'}}>{this.calculateProfitNode(this.calculateProfit(order))}
+                                                </div><div className="cell" style={{width: '100px'}}>{this.calculateProfit(order)}
                                                 </div><div className="cell" style={{width: '100px'}}>{this.calculateStatusNode(order)}
                                                 </div>
                                             </div>
@@ -1417,7 +1507,7 @@ class App extends Component {
                         footer={
                             <div style={{textAlign: 'center'}}>
                                 <Button onClick={this.onHideModalOrderInfo.bind(this)} style={{width: '100%'}} size={'small'} className={'btn-default'}>
-                                    <FormattedMessage id="button.cancel" defaultMessage="取消"/></Button>
+                                    <FormattedMessage id="close" defaultMessage="关闭"/></Button>
                             </div>
                         }
                     >
