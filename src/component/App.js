@@ -1,6 +1,5 @@
 import 'whatwg-fetch';
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 import { FormattedMessage, IntlProvider, addLocaleData } from 'react-intl';
 import zh from 'react-intl/locale-data/zh';
@@ -1493,7 +1492,7 @@ class App extends Component {
                             <div className="cell">
                                 <FormattedMessage id="title.investmentAmount" defaultMessage="投放资本"/>
                             </div><div className="cell">
-                                <input id="investment" style={{width: '80px', marginTop: '4px'}} name="investment" defaultValue="5.0" type="text" ref = {(input) => {this.investmentInput = input}} />
+                                <input id="investment" style={{width: '100px', marginTop: '4px'}} name="investment" defaultValue="5.0" type="text" ref = {(input) => {this.investmentInput = input}} />
                             </div><div className="cell">
                                 <Button onClick={this.onSubmitCreateOrderUp.bind(this)} style={{width: '138px'}} size={'small'} className={ 'btn-up'}>
                                     <FormattedMessage id="button.up" defaultMessage="看涨"/></Button>
@@ -1521,7 +1520,7 @@ class App extends Component {
                             <div className="cell">
                                 <FormattedMessage id="title.expiration" defaultMessage="到期"/>
                             </div><div className="cell">
-                                <Select value={this.state.order.expiration + ''} onChange={this.onExpirationChange.bind(this)} style={{width: '80px'}} size={'small'} >
+                                <Select value={this.state.order.expiration + ''} onChange={this.onExpirationChange.bind(this)} style={{width: '100px'}} size={'small'} >
                                     {
                                         this.state.order.expirations.map((item) => {
                                             return <Option key={item.key}>{item.label}</Option>

@@ -281,8 +281,9 @@ module.exports = {
             },
             {
                 test: /\.less/,
-                use: [
-                    require.resolve('style-loader'),
+                use: ExtractTextPlugin.extract({
+                    fallback: require.resolve('style-loader'),
+                    use: [
                     {
                         loader: require.resolve('css-loader'),
                         options: {
@@ -314,7 +315,7 @@ module.exports = {
                             modifyVars: modifyVars,
                         }
                     }
-                ],
+                ]}),
             },
             // ** STOP ** Are you adding a new loader?
             // Remember to add the new extension(s) to the "file" loader exclusion list.
@@ -389,6 +390,7 @@ module.exports = {
         // Note: this won't work without ExtractTextPlugin.extract(..) in `loaders`.
         new ExtractTextPlugin({
             filename: cssFilename,
+            allChunks: true
         }),
         // Generate a manifest file which contains a mapping of all asset filenames
         // to their corresponding output file so that tools can pick it up without
