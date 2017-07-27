@@ -1,5 +1,6 @@
 import 'whatwg-fetch';
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import { FormattedMessage, IntlProvider, addLocaleData } from 'react-intl';
 import zh from 'react-intl/locale-data/zh';
@@ -54,9 +55,12 @@ const formatExpiration = (v) => {
 };
 
 class App extends Component {
-
+    static propTypes = {
+        intl: PropTypes.object
+    }
     constructor(props, context) {
-        super(props, context)
+        super(props, context);
+        let { intl } = this.props;
         this.state = {
             locale: 'zh-CN',
             messages: zhCN,
@@ -155,7 +159,7 @@ class App extends Component {
                 ]
             },
             loadingOpts: {
-                text: '加载中',
+                text: 'Loading...',
                 color: '#c23531',
                 textColor: '#fff',
                 maskColor: 'rgba(86, 86, 86, 0.6)',
@@ -318,12 +322,12 @@ class App extends Component {
     formatExpiration (expiration) {
         let v = '';
         if (1 === expiration) {
-            v = '60秒';
+            v = <span>60 <FormattedMessage id="unit.seconds" defaultMessage="秒"/></span>;
         } else if (expiration < 60) {
-            v = `${expiration}分钟`;
+            v = <span>{expiration} <FormattedMessage id="unit.minutes" defaultMessage="分钟" /></span>;
         } else {
             expiration = expiration / 60;
-            v = `${expiration}小时`
+            v = <span>{expiration} <FormattedMessage id="unit.hours" defaultMessage="小时"/></span>;
         }
         return v;
     }
@@ -701,15 +705,15 @@ class App extends Component {
     
     calculateStatusNode (order) {
         let s = this.calculateStatus(order);
-        let text = '平盘';
+        let text = <FormattedMessage id="equal" defaultMessage="平盘"/>;
         let color = COLORS.EQUALS;
         switch (s) {
             case 1:
-                text = '盈利';
+                text = <FormattedMessage id="win" defaultMessage="盈利"/>;
                 color = COLORS.WIN;
                 break;
             case -1:
-                text = '亏损';
+                text = <FormattedMessage id="loss" defaultMessage="亏损"/>;
                 color = COLORS.LOSS;
                 break;
             default:
@@ -1185,6 +1189,7 @@ class App extends Component {
                                                         autoHideTimeout={1000}
                                                         autoHideDuration={200}>
                                                         <SymbolList
+                                                            noItemMessage={<FormattedMessage id="text.noForexOptionsSymbol" message="没有商品信息!"/>}
                                                             symbols={symbols}
                                                             onFavoriteClick={this.onFavoriteClick.bind(this)}
                                                             onCreateOrder={this.onCreateOrder.bind(this)}
@@ -1205,6 +1210,7 @@ class App extends Component {
                                                         autoHideTimeout={1000}
                                                         autoHideDuration={200}>
                                                         <SymbolList
+                                                            noItemMessage={<FormattedMessage id="text.noForexOptionsSymbol" message="没有商品信息!"/>}
                                                             symbols={symbols1}
                                                             onFavoriteClick={this.onFavoriteClick.bind(this)}
                                                             onCreateOrder={this.onCreateOrder.bind(this)}
@@ -1225,6 +1231,7 @@ class App extends Component {
                                                         autoHideTimeout={1000}
                                                         autoHideDuration={200}>
                                                         <SymbolList
+                                                            noItemMessage={<FormattedMessage id="text.noForexOptionsSymbol" message="没有商品信息!"/>}
                                                             symbols={symbols2}
                                                             onFavoriteClick={this.onFavoriteClick.bind(this)}
                                                             onCreateOrder={this.onCreateOrder.bind(this)}
@@ -1245,6 +1252,7 @@ class App extends Component {
                                                         autoHideTimeout={1000}
                                                         autoHideDuration={200}>
                                                         <SymbolList
+                                                            noItemMessage={<FormattedMessage id="text.noForexOptionsSymbol" message="没有商品信息!"/>}
                                                             symbols={symbols3}
                                                             onFavoriteClick={this.onFavoriteClick.bind(this)}
                                                             onCreateOrder={this.onCreateOrder.bind(this)}
@@ -1474,7 +1482,7 @@ class App extends Component {
                                     }
                                 </Select>
                             </div><div className="cell">
-                                <Button onClick={this.onSubmitCreateOrderDown.bind(this)} style={{width: '138px'}} size={'small'} className={ 'btn-down'}>看跌</Button>
+                                <Button onClick={this.onSubmitCreateOrderDown.bind(this)} style={{width: '138px'}} size={'small'} className={ 'btn-down'}><FormattedMessage id="button.down" defaultMessage="看跌" /></Button>
                             </div>
                         </div>
                     </Modal>
@@ -1518,7 +1526,7 @@ class App extends Component {
                                 <div className="info-box">
                                     <div className="row">
                                         <div className="cell label1">
-                                            <FormattedMessage id="investment" defaultMessage="投资"/>
+                                            <FormattedMessage id="title.investment" defaultMessage="投资"/>
                                         </div>
                                         <div className="cell value1">
                                             {

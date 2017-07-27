@@ -24,7 +24,7 @@ export default class SymbolList extends React.Component {
         onCreateDownOrder: PropTypes.func,
         onFavoriteClick: PropTypes.func,
         onCurrentSymbolChange: PropTypes.func,
-        noItemMessage: PropTypes.string
+        noItemMessage: PropTypes.object
     };
 
     static defaultProps = {
