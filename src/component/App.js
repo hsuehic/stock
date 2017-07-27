@@ -8,9 +8,11 @@ import en from 'react-intl/locale-data/en';
 import zhCN from '../locales/zh-CN';
 import enUS from '../locales/en-US';
 
-import { Button, Dropdown, Menu, Modal, Select, Tabs } from 'antd';
+import { Button, Dropdown, Menu, Modal, notification, Select, Tabs } from 'antd';
 import SymbolList from './SymbolList';
 import fecha from 'fecha';
+import BO_RET from '../error'
+
 
 import echarts from 'echarts/lib/echarts';
 import 'echarts/lib/chart/candlestick';
@@ -39,6 +41,13 @@ const TabPane = Tabs.TabPane;
 const CHART_CONTAINER_STYLE = { position: 'relative', marginLeft: '358px', height: '100%', zIndex: 1};
 const CHART_CONTAINER_STYLE_FULL_SCREEN = {position: 'fixed', top: '0', left: '0', marginLeft: '0', width: '100%', height: '100%', zIndex: 1049};
 
+const openNotificationWithIcon = ({type, message, description}) => {
+    notification[type]({
+        message,
+        description
+    });
+};
+
 addLocaleData([...zh, ...en]);
 
 const formatExpiration = (v) => {
@@ -55,15 +64,12 @@ const formatExpiration = (v) => {
 };
 
 class App extends Component {
-    static propTypes = {
-        intl: PropTypes.object
-    }
     constructor(props, context) {
         super(props, context);
-        let { intl } = this.props;
+        let messages = zhCN;
         this.state = {
             locale: 'zh-CN',
-            messages: zhCN,
+            messages,
             selectedLanguageKeys: ['zh-CN'],
             account: {
                 "balance": 10675.3,
@@ -159,7 +165,7 @@ class App extends Component {
                 ]
             },
             loadingOpts: {
-                text: 'Loading...',
+                text: messages['text.loading'],
                 color: '#c23531',
                 textColor: '#fff',
                 maskColor: 'rgba(86, 86, 86, 0.6)',
@@ -264,6 +270,44 @@ class App extends Component {
         };
     }
 
+    getErrorMessage(code) {
+        return this.state.messages[`error${code}`] || 'Unknown error!';
+    }
+
+    processResponse (res) {
+        if (res.ok && res.status === 200) {
+            return res.json().then((json) => {
+                let code = json.code;
+                switch (code) {
+                    case BO_RET.BO_RET_OK.code:
+                        return json;
+                    default:
+                        json.message = this.getErrorMessage(code);
+                        openNotificationWithIcon({
+                            type: 'error',
+                            message: this.state.messages['title.error'],
+                            description: `${code}: ${json.message}`
+                        });
+                        return json;
+                }
+            });
+        }
+        else {
+            let code = res.status;
+            let message = `Network error: ${res.status} ${res.statusText}`
+            openNotificationWithIcon({
+                type: 'error',
+                message: this.state.messages['title.error'],
+                description: message
+            });
+            return {
+                code,
+                message
+            };
+        }
+
+    }
+
     watchOrders (){
         if (this.state.orders && this.state.orders.length > 0) {
             let len = this.state.orders.length;
@@ -335,7 +379,7 @@ class App extends Component {
     getAccountInfo() {
         let params = {};
         let promise = getAccountDetails(params);
-        promise.then((res) => {
+        promise.then(this.processResponse.bind(this)).then((res) => {
             if (res.code === 0) {
                 this.setState({
                     account: res.data
@@ -357,7 +401,7 @@ class App extends Component {
                 to
             };
         let promise = getHistoryOrder(params);
-        promise.then((res) => {
+        promise.then(this.processResponse.bind(this)).then((res) => {
             if (res && res.code === 0) {
                 let orders = res.data.orders;
                 orders.sort((a, b) => {
@@ -375,7 +419,7 @@ class App extends Component {
     getOpenOrders () {
         let params = {};
         let promise = getOpenOrder(params);
-        promise.then((res) => {
+        promise.then(this.processResponse.bind(this)).then((res) => {
             if (res && res.code === 0) {
                 this.setState({
                     orders: res.data.orders
@@ -388,7 +432,7 @@ class App extends Component {
         let self = this;
         let params = {};
         let promise = getSymbolGroup(params);
-        promise.then((res) => {
+        promise.then(this.processResponse.bind(this)).then((res) => {
             if (res && res.code === 0) {
                 let symbols = res.data.symbols;
                 let symbolList = {};
@@ -460,7 +504,7 @@ class App extends Component {
             symbols: this.state.symbolNames
         };
         let promise = getPrice(params);
-        promise.then((res) => {
+        promise.then(this.processResponse.bind(this)).then((res) => {
            if (res && res.code === 0) {
                let prices = res.data.quotes;
                let symbolList = this.state.symbolList;
@@ -540,7 +584,7 @@ class App extends Component {
         let self = this;
         let params = {};
         let promise = getServerInfo(params);
-        promise.then((res) => {
+        promise.then(this.processResponse.bind(this)).then((res) => {
             if (res.code === 0) {
                 let data = res.data;
                 let time = data.server_time;
@@ -563,7 +607,7 @@ class App extends Component {
             isLoading: true
         });
         let promise = getQuotesHistory(params);
-        promise.then((res) => {
+        promise.then(this.processResponse.bind(this)).then((res) => {
             this.setState({
                 isLoading: false
             });
@@ -808,7 +852,7 @@ class App extends Component {
 
     logout () {
         let promise = logout();
-        promise.then(() => {
+        promise.then(this.processResponse.bind(this)).then(() => {
             window.location.href = 'login.html';
         }).catch(() => {
             window.location.href = 'login.html';
@@ -829,8 +873,11 @@ class App extends Component {
             default:
                 break;
         }
+        let loadingOpts = this.state.loadingOpts;
+        loadingOpts.text = messages['text.loading'];
         this.setState({
             locale,
+            loadingOpts,
             messages,
             selectedLanguageKeys
         });
@@ -1082,7 +1129,7 @@ class App extends Component {
         this.setState({
             isOpeningOrder: true
         });
-        promise.then((res) => {
+        promise.then(this.processResponse.bind(this)).then((res) => {
             self.setState({
                 isOpeningOrder: false
             });

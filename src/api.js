@@ -49,7 +49,8 @@ const processResponse = (res) => {
                     return json;
             }
         });
-    } else {
+    }
+    else {
         let code = res.status;
         let message = `网络请求出错: ${res.status} ${res.statusText}`
         openNotificationWithIcon({
@@ -105,7 +106,7 @@ export const get = (url, params = {}, opts = {}) => {
         credentials: 'include',
         method: 'GET'
     });
-    return fetch(url, opts).then(processResponse);
+    return fetch(url, opts);
 };
 
 /**
@@ -125,7 +126,7 @@ export const post = (url, params = {}, opts = {}) => {
         method: 'POST',
         body: data
     }, opts);
-    return fetch(url, opts).then(processResponse);
+    return fetch(url, opts);
 };
 
 export const login = (params) => {

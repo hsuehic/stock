@@ -76,7 +76,7 @@ export default {
     'error11':'安全加密授权',
     'error12':'需要RSA公钥',
     'error64':'账户被禁用',
-    'error65':'错误的账户信息',
+    'error65':'Invalid account!',
     'error128':'价格错误',
     'error129':'账户被禁用',
     'error130':'止盈止损错误',

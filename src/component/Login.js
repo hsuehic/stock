@@ -11,6 +11,16 @@ import { Button, notification } from 'antd';
 
 import {login} from '../api';
 import logo from '../assets/clm3-logo.png';
+import enUs from '../locales/en-US';
+import BO_RET from '../error'
+
+
+const openNotificationWithIcon = ({type, message, description}) => {
+    notification[type]({
+        message,
+        description
+    });
+};
 
 export default class Login extends React.Component {
 
@@ -19,7 +29,8 @@ export default class Login extends React.Component {
         this.state = {
             loginError: false,
             errorMessage: '',
-            isFetching: false
+            isFetching: false,
+            messages: enUs
         };
     }
 
@@ -28,6 +39,44 @@ export default class Login extends React.Component {
     }
 
     componentWillUnmount() {
+
+    }
+
+    getErrorMessage(code) {
+        return this.state.messages[`error${code}`] || 'Unknown error!';
+    }
+
+    processResponse (res) {
+        if (res.ok && res.status === 200) {
+            return res.json().then((json) => {
+                let code = json.code;
+                switch (code) {
+                    case BO_RET.BO_RET_OK.code:
+                        return json;
+                    default:
+                        json.message = this.getErrorMessage(code);
+                        openNotificationWithIcon({
+                            type: 'error',
+                            message: this.state.messages['title.error'],
+                            description: `${code}: ${json.message}`
+                        });
+                        return json;
+                }
+            });
+        }
+        else {
+            let code = res.status;
+            let message = `Network error: ${res.status} ${res.statusText}`
+            openNotificationWithIcon({
+                type: 'error',
+                message: this.state.messages['title.error'],
+                description: message
+            });
+            return {
+                code,
+                message
+            };
+        }
 
     }
 
@@ -42,7 +91,7 @@ export default class Login extends React.Component {
         this.setState({
             isFetching: true
         });
-        promise.then((res) => {
+        promise.then(this.processResponse.bind(this)).then((res) => {
             this.setState({
                 isFetching: false
             });
