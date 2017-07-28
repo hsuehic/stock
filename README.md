@@ -5,18 +5,18 @@
 ### Installation
 
 ```bash
-yarn
+npm i
 ```
 
 ### Develop
 
 ```bash
-yarn start
+npm run start
 ```
 
 ### Build
 ```bash
-yarn build
+npm run build
 ```
 
 ## About
