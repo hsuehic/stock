@@ -13,7 +13,7 @@ const getClientEnvironment = require('./env');
 const paths = require('./paths');
 
 const sortChunks = (a,b) => {
-    let chunks = ['vendor', 'devClient', 'errorOverlay', 'app', 'login'];
+    let chunks = ['vendor', 'devClient', 'errorOverlay', 'app', 'login', 'test'];
     let indexA = chunks.indexOf(a.names[0]);
     let indexB = chunks.indexOf(b.names[0]);
     let v = indexA - indexB;
@@ -62,6 +62,7 @@ module.exports = {
         // initialization, it doesn't blow up the WebpackDevServer client, and
         // changing JS code would still trigger a refresh.
         login: paths.loginIndexJs,
+        test: paths.testIndexJs,
     },
     output: {
         // Next line is not used in dev but WebpackDevServer crashes without it:
@@ -317,6 +318,14 @@ module.exports = {
             filename: 'login.html',
             inject: true,
             chunks: ['devClient', 'vendor', 'login'],
+            chunksSortMode: sortChunks,
+            template: paths.loginHtml,
+        }),
+        // Generates an `login.html` file with the <script> injected.
+        new HtmlWebpackPlugin({
+            filename: 'test.html',
+            inject: true,
+            chunks: ['devClient', 'vendor', 'test'],
             chunksSortMode: sortChunks,
             template: paths.loginHtml,
         }),
