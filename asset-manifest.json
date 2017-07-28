@@ -1,13 +1,13 @@
 {
-  "app.css": "static/css/app.388712cf.css",
-  "app.css.map": "static/css/app.388712cf.css.map",
-  "app.js": "static/js/app.7e4ea540.js",
-  "app.js.map": "static/js/app.7e4ea540.js.map",
-  "login.css": "static/css/login.a6d7b0b7.css",
-  "login.css.map": "static/css/login.a6d7b0b7.css.map",
-  "login.js": "static/js/login.bbc71b8d.js",
-  "login.js.map": "static/js/login.bbc71b8d.js.map",
+  "app.css": "static/css/app.2f3cdc5a.css",
+  "app.css.map": "static/css/app.2f3cdc5a.css.map",
+  "app.js": "static/js/app.1646ec68.js",
+  "app.js.map": "static/js/app.1646ec68.js.map",
+  "login.css": "static/css/login.13faf514.css",
+  "login.css.map": "static/css/login.13faf514.css.map",
+  "login.js": "static/js/login.5abb58f0.js",
+  "login.js.map": "static/js/login.5abb58f0.js.map",
   "static/media/clm3-logo.png": "static/media/clm3-logo.d9307268.png",
-  "vendor.js": "static/js/vendor.bf38ed59.js",
-  "vendor.js.map": "static/js/vendor.bf38ed59.js.map"
+  "vendor.js": "static/js/vendor.4a33d0c1.js",
+  "vendor.js.map": "static/js/vendor.4a33d0c1.js.map"
 }
