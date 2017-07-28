@@ -1,9 +1,13 @@
 {
-  "app.js": "static/js/app.a331dea2.js",
-  "app.js.map": "static/js/app.a331dea2.js.map",
-  "login.js": "static/js/login.e3147c55.js",
-  "login.js.map": "static/js/login.e3147c55.js.map",
+  "app.css": "static/css/app.388712cf.css",
+  "app.css.map": "static/css/app.388712cf.css.map",
+  "app.js": "static/js/app.7e4ea540.js",
+  "app.js.map": "static/js/app.7e4ea540.js.map",
+  "login.css": "static/css/login.a6d7b0b7.css",
+  "login.css.map": "static/css/login.a6d7b0b7.css.map",
+  "login.js": "static/js/login.bbc71b8d.js",
+  "login.js.map": "static/js/login.bbc71b8d.js.map",
   "static/media/clm3-logo.png": "static/media/clm3-logo.d9307268.png",
-  "vendor.js": "static/js/vendor.6a5ca294.js",
-  "vendor.js.map": "static/js/vendor.6a5ca294.js.map"
+  "vendor.js": "static/js/vendor.bf38ed59.js",
+  "vendor.js.map": "static/js/vendor.bf38ed59.js.map"
 }
