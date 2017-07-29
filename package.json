@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "antd": "^2.12.2",
     "echarts": "^3.6.1",
     "echarts-for-react": "^1.4.3",
     "fecha": "^2.3.1",
