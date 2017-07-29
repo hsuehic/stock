@@ -61,8 +61,7 @@ module.exports = {
         // We include the app code last so that if there is a runtime error during
         // initialization, it doesn't blow up the WebpackDevServer client, and
         // changing JS code would still trigger a refresh.
-        login: paths.loginIndexJs,
-        test: paths.testIndexJs,
+        login: paths.loginIndexJs
     },
     output: {
         // Next line is not used in dev but WebpackDevServer crashes without it:
@@ -318,14 +317,6 @@ module.exports = {
             filename: 'login.html',
             inject: true,
             chunks: ['devClient', 'vendor', 'login'],
-            chunksSortMode: sortChunks,
-            template: paths.loginHtml,
-        }),
-        // Generates an `login.html` file with the <script> injected.
-        new HtmlWebpackPlugin({
-            filename: 'test.html',
-            inject: true,
-            chunks: ['devClient', 'vendor', 'test'],
             chunksSortMode: sortChunks,
             template: paths.loginHtml,
         }),
