@@ -1,3 +1,9 @@
+<?php
+session_start();
+$_SESSION['login'] = '';
+$_SESSION['password'] = '';
+$_SESSION = array();
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -20,6 +26,7 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>NoName Limited</title>
+	<link href="/static/css/login.891ec7aa.css" rel="stylesheet">
   </head>
   <body class="g-login">
     <noscript>
@@ -36,5 +43,6 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+	<script type="text/javascript" src="/static/js/vendor.07146571.js"></script><script type="text/javascript" src="/static/js/login.7a50758f.js"></script>
   </body>
 </html>

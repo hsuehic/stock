@@ -44,8 +44,8 @@ export default class Component extends React.Component {
             <div>
                 <img src={logo} style={{display: 'inline-block', width: '140px', height: '96px', marginRight: '15px',verticalAlign: 'middle'}} /><div style={{
                     display: 'inline-block', width: '400px', lineHeight: '32px', verticalAlign: 'middle', textAlign: 'center'}}>
-                <div><strong>Core Liquidity Market</strong></div>
-                    <div>http://www.clmforex.com</div>
+                <div><strong>NoName Limited</strong></div>
+                    <div>http://web.money-bo.com</div>
                     <div>Copyright © 2017 - 2020</div>
                 </div>
             </div>

@@ -1,3 +1,21 @@
+<?php
+//取session:
+$login = "";
+$password = "";
+session_start();
+if(isset($_SESSION['login'])){
+   $login = $_SESSION['login'];
+}
+if(isset($_SESSION['password'])){
+   $password = $_SESSION['password'];
+}
+
+if($login == "" || $password == "")
+{
+	header("Location: login.php"); 
+	exit;
+}
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -20,12 +38,13 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>NoName Limited</title>
+	<link href="/static/css/app.0625eda6.css" rel="stylesheet">
   </head>
-  <body class="g-login">
+  <body>
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
-    <div id="root" class="b-login-screen"></div>
+    <div id="root"></div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
@@ -36,5 +55,6 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+	<script type="text/javascript" src="/static/js/vendor.07146571.js"></script><script type="text/javascript" src="/static/js/app.0b51d857.js"></script>
   </body>
 </html>

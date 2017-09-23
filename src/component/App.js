@@ -4,8 +4,10 @@ import React, { Component } from 'react';
 import { FormattedMessage, IntlProvider, addLocaleData } from 'react-intl';
 import zh from 'react-intl/locale-data/zh';
 import en from 'react-intl/locale-data/en';
+import tw from 'react-intl/locale-data/zh';
 import zhCN from '../locales/zh-CN';
 import enUS from '../locales/en-US';
+import zhTW from '../locales/zh-TW';
 
 import { Button, Dropdown, Menu, Modal, notification, Select, Tabs } from 'antd';
 import SymbolList from './SymbolList';
@@ -852,9 +854,9 @@ class App extends Component {
     logout () {
         let promise = logout();
         promise.then(this.processResponse.bind(this)).then(() => {
-            window.location.href = 'login.html';
+            window.location.href = 'login.php';
         }).catch(() => {
-            window.location.href = 'login.html';
+            window.location.href = 'login.php';
         });
     }
 
@@ -868,6 +870,10 @@ class App extends Component {
             case 'en-US':
                 messages = enUS;
                 selectedLanguageKeys = ['en-US'];
+                break;
+			case 'zh-TW':
+                messages = zhTW;
+                selectedLanguageKeys = ['zh-TW'];
                 break;
             default:
                 break;
@@ -1164,7 +1170,7 @@ class App extends Component {
 
     render() {
 
-        let i18ns = [{label: '中文', value: 'zh-CN'}, {label: 'English', value: 'en-US'}];
+        let i18ns = [{label: '中文', value: 'zh-CN'}, {label: 'English', value: 'en-US'}, {label: '繁體中文', value: 'zh-TW'}];
         let i18nMenu = <Menu onClick={this.onLanguageMenuClick.bind(this)} selectedKeys={this.state.selectedLanguageKeys}>
             { i18ns.map((i18n, index) => <MenuItem key={i18n.value}><span>{i18n.label}</span></MenuItem>)}
         </Menu>;

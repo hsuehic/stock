@@ -8,6 +8,10 @@
 npm i
 ```
 
+```bash
+npm i antd --save
+```
+
 ### Develop
 
 ```bash

@@ -11,7 +11,8 @@ import { Button, notification } from 'antd';
 
 import {login} from '../api';
 import logo from '../assets/clm3-logo.png';
-import enUs from '../locales/en-US';
+//import enUs from '../locales/en-US';
+import zhTw from '../locales/zh-TW';
 import BO_RET from '../error'
 
 
@@ -30,7 +31,8 @@ export default class Login extends React.Component {
             loginError: false,
             errorMessage: '',
             isFetching: false,
-            messages: enUs
+            //messages: enUs
+			messages: zhTw
         };
     }
 
@@ -96,7 +98,7 @@ export default class Login extends React.Component {
                 isFetching: false
             });
             if (res.code === 0) {
-                window.location.href = 'index.html';
+                window.location.href = 'index.php';
             } else {
                 this.setState({
                     loginError: true,
@@ -123,7 +125,7 @@ export default class Login extends React.Component {
                 <div className="header"></div>
             </div>
 
-            <form id="loginModel" className="login-form" action="/index.html" method="post">
+            <form id="loginModel" className="login-form" action="/" method="post">
                 <div className="login-row">
                     <input id="username" name="login" type="text" placeholder="Account Number" />
                 </div>
@@ -140,14 +142,17 @@ export default class Login extends React.Component {
                 <div className="login-row login-button-row">
                     <Button disabled={this.state.isFetching} loading={this.state.isFetching} type="button" id="login-button" onClick={this.onLogin.bind(this)} className="btn">Login</Button>
                 </div>
-                <div className="login-row register-demouser-href-row">
-                    <a className="btn" href="http://www.clmforex.com/demo-account/" target="_blank">Create Account</a>
-                </div>
+                
             </form>
 
             <div className="login-row footer">
-                <a href="http://www.clmforex.com/" target="_blank">www.clmforex.com</a>
+                <a href="http://web.money-bo.com/" target="_blank">web.money-bo.com</a>
             </div>
         </div>;
     }
 }
+/*
+<div className="login-row register-demouser-href-row">
+                    <a className="btn" href="http://web.money-bo.com/demo-account/" target="_blank">Create Account</a>
+                </div>
+*/
