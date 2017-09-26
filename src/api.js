@@ -172,3 +172,7 @@ export const openOrder = (params) => {
 export const getOrderDetail = (params) => {
     return post(API_URL.ORDER_INFO, params);
 };
+
+export const changePassword = (params) => {
+    return post(params)
+}

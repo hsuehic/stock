@@ -7,14 +7,21 @@
 
 
 import React from 'react';
-import { Button, notification } from 'antd';
+import { Button, notification, Select } from 'antd';
 
+import BO_RET from '../error';
 import {login} from '../api';
 import logo from '../assets/clm3-logo.png';
-//import enUs from '../locales/en-US';
-import zhTw from '../locales/zh-TW';
-import BO_RET from '../error'
+import { FormattedMessage, IntlProvider, addLocaleData } from 'react-intl';
+import zh from 'react-intl/locale-data/zh';
+import en from 'react-intl/locale-data/en';
 
+import { LANGUAGES, getMessages, getLocaleInfo } from '../constant';
+import { getBrowserLanguage, getQueryParam } from '../lib/util'
+
+addLocaleData([...zh, ...en]);
+
+const { Option } = Select;
 
 const openNotificationWithIcon = ({type, message, description}) => {
     notification[type]({
@@ -23,16 +30,20 @@ const openNotificationWithIcon = ({type, message, description}) => {
     });
 };
 
+
 export default class Login extends React.Component {
 
     constructor(props) {
         super(props);
+
+        let language = getQueryParam('lng') || getBrowserLanguage();
+        let { locale, messages } = getLocaleInfo(language);
         this.state = {
             loginError: false,
             errorMessage: '',
             isFetching: false,
-            //messages: enUs
-			messages: zhTw
+			messages,
+            locale
         };
     }
 
@@ -45,9 +56,22 @@ export default class Login extends React.Component {
     }
 
     getErrorMessage(code) {
-        return this.state.messages[`error${code}`] || 'Unknown error!';
+        return this.state.messages[`error${code}`] || this.state.messages['text.unknown_error'];
     }
 
+    setLocale (locale) {
+        let localeInfo = getLocaleInfo(locale);
+        locale = localeInfo;
+        let { messages } = localeInfo
+        this.setState({
+            locale,
+            messages
+        });
+    }
+
+    onSelectLanguage(value) {
+        this.setLocale(value)
+    }
     processResponse (res) {
         if (res.ok && res.status === 200) {
             return res.json().then((json) => {
@@ -98,7 +122,8 @@ export default class Login extends React.Component {
                 isFetching: false
             });
             if (res.code === 0) {
-                window.location.href = 'index.php';
+                let { locale } = this.state;
+                window.location.href = `index.php?lng=${locale}`;
             } else {
                 this.setState({
                     loginError: true,
@@ -110,14 +135,16 @@ export default class Login extends React.Component {
                 isFetching: false
             });
             notification.error({
-                message: '网络请求出错了！',
-                description: '返回的数据格式不正确！'
+                message: this.state.messages['text.network_error'],
+                description: this.state.messages['text.response_format_error']
             });
         });
     }
 
     render() {
-        return <div className="center-wrapper">
+        let { locale, messages } = this.state
+        return <IntlProvider locale={ locale } messages={ messages }>
+        <div className="center-wrapper">
             <div className="login-row logo-wrap">
                 <a href="#" target="_blank"><img className="logo" src={logo} /></a>
             </div>
@@ -127,10 +154,29 @@ export default class Login extends React.Component {
 
             <form id="loginModel" className="login-form" action="/" method="post">
                 <div className="login-row">
-                    <input id="username" name="login" type="text" placeholder="Account Number" />
+                    <Select defaultValue={locale} onSelect={this.onSelectLanguage.bind(this)}>
+                        {
+                            LANGUAGES.map(item => <Option value={item.value}>{item.label}</Option>)
+                        }
+                    </Select>
                 </div>
                 <div className="login-row">
-                    <input id="password" name="password" type="password" placeholder="Password" />
+                    <FormattedMessage {...{id: 'accountNumber', defaultMessage: '账户号'}} >
+                        {
+                            txt => (
+                                <input id="username" name="login" type="text" placeholder= { txt } />
+                            )
+                        }
+                    </FormattedMessage>
+                </div>
+                <div className="login-row">
+                    <FormattedMessage {...{id: 'password', defaultMessage: '密码'}}>
+                        {
+                            (txt) => (
+                                <input id="password" name="password" type="password" placeholder={txt} />
+                            )
+                        }
+                    </FormattedMessage>
                 </div>
                 {
                     this.state.loginError &&
@@ -140,7 +186,7 @@ export default class Login extends React.Component {
                 }
 
                 <div className="login-row login-button-row">
-                    <Button disabled={this.state.isFetching} loading={this.state.isFetching} type="button" id="login-button" onClick={this.onLogin.bind(this)} className="btn">Login</Button>
+                    <Button disabled={this.state.isFetching} loading={this.state.isFetching} type="button" id="login-button" onClick={this.onLogin.bind(this)} className="btn"><FormattedMessage id="login" defaultMessage="Login"/></Button>
                 </div>
                 
             </form>
@@ -148,7 +194,8 @@ export default class Login extends React.Component {
             <div className="login-row footer">
                 <a href="http://web.money-bo.com/" target="_blank">web.money-bo.com</a>
             </div>
-        </div>;
+        </div>
+        </IntlProvider>
     }
 }
 /*

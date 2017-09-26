@@ -4,15 +4,11 @@ import React, { Component } from 'react';
 import { FormattedMessage, IntlProvider, addLocaleData } from 'react-intl';
 import zh from 'react-intl/locale-data/zh';
 import en from 'react-intl/locale-data/en';
-import tw from 'react-intl/locale-data/zh';
-import zhCN from '../locales/zh-CN';
-import enUS from '../locales/en-US';
-import zhTW from '../locales/zh-TW';
 
 import { Button, Dropdown, Menu, Modal, notification, Select, Tabs } from 'antd';
 import SymbolList from './SymbolList';
 import fecha from 'fecha';
-import BO_RET from '../error'
+import BO_RET from '../error';
 
 
 import echarts from 'echarts/lib/echarts';
@@ -31,7 +27,8 @@ import ModalAbout from './About';
 
 import { getAccountDetails, getHistoryOrder, openOrder, getOpenOrder, getPrice, getQuotesHistory, getServerInfo, getSymbolGroup, logout, getOrderDetail } from '../api';
 
-import { COLORS, PERIOD } from '../constant';
+import { COLORS, PERIOD, LANGUAGES, getLocaleInfo } from '../constant';
+import { getBrowserLanguage, getQueryParam } from '../lib/util';
 
 import '../style/App.less';
 
@@ -67,11 +64,14 @@ const formatExpiration = (v) => {
 class App extends Component {
     constructor(props, context) {
         super(props, context);
-        let messages = zhCN;
+
+        let language = getQueryParam('lng') || getBrowserLanguage();
+        let { locale, messages } = getLocaleInfo(language);
+
         this.state = {
-            locale: 'zh-CN',
+            locale,
             messages,
-            selectedLanguageKeys: ['zh-CN'],
+            selectedLanguageKeys: [locale],
             account: {
                 "balance": 10675.3,
                 "credit": 0,
@@ -860,24 +860,10 @@ class App extends Component {
         });
     }
 
-    setLocale (locale) {
-        let messages = zhCN;
-        let selectedLanguageKeys = ['zh-CN'];
-        switch (locale) {
-            case 'zh-CN':
-                messages = zhCN;
-                break;
-            case 'en-US':
-                messages = enUS;
-                selectedLanguageKeys = ['en-US'];
-                break;
-			case 'zh-TW':
-                messages = zhTW;
-                selectedLanguageKeys = ['zh-TW'];
-                break;
-            default:
-                break;
-        }
+    setLocale (language) {
+        let localeInfo = getLocaleInfo(language);
+        let { locale, messages } = localeInfo.locale;
+        let selectedLanguageKeys = [locale];
         let loadingOpts = this.state.loadingOpts;
         loadingOpts.text = messages['text.loading'];
         this.setState({
@@ -1170,7 +1156,7 @@ class App extends Component {
 
     render() {
 
-        let i18ns = [{label: '中文', value: 'zh-CN'}, {label: 'English', value: 'en-US'}, {label: '繁體中文', value: 'zh-TW'}];
+        let i18ns = LANGUAGES;
         let i18nMenu = <Menu onClick={this.onLanguageMenuClick.bind(this)} selectedKeys={this.state.selectedLanguageKeys}>
             { i18ns.map((i18n, index) => <MenuItem key={i18n.value}><span>{i18n.label}</span></MenuItem>)}
         </Menu>;

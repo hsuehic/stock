@@ -142,11 +142,15 @@ export default {
     'error2086':'Bad master password ',
     'error2087':'Unauthorized IP',
     'error2088':'Blank command',
+    'error2089':'Passwords must be composed of letters and numbers, at least 5 characters, up to 15 characters',
     'text.loading':'Loading...',
     'loss': 'loss',
     'win': 'win',
     'equal': 'equal',
     'text.unknown_error': 'Unknown error!',
     'title.error': 'Error',
-    'text.network_error': 'Network error'
+    'text.network_error': 'Network error',
+    'text.response_format_error': 'Invalid response format！',
+    'login': 'Login',
+    'password': 'Password'
 }

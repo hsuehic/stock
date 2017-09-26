@@ -142,11 +142,15 @@ export default {
     'error2086':'主密碼錯誤',
     'error2087':'未授權的IP',
     'error2088':'空命令',
+    'error2089':'密码必须由字母和数字组成，至少5位，最多15位',
     'text.loading':'載入中...',
     'loss': '虧損',
     'win': '盈利',
     'equal': '平盤',
     'text.unknown_error': '未知錯誤',
     'title.error': '出錯了',
-    'text.network_error': '網路請求錯誤'
+    'text.network_error': '網路請求錯誤',
+    'text.response_format_error': '返回的数据格式不正确！',
+    'login': '登入',
+    'password': '密碼'
 }

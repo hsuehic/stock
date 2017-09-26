@@ -5,6 +5,10 @@
  * @description: 自定义常量
  */
 
+import zhCN from './locales/zh-CN';
+import zhTW from './locales/zh-TW';
+import enUS from './locales/en-US';
+
 const apiServer = `https://web.money-bo.com`;
 
 export const API_URL = {
@@ -19,7 +23,8 @@ export const API_URL = {
     PRICE_REQUEST: `${apiServer}/api/socket9`, // 获取货币报价
     QUOTES_HISTORY: `${apiServer}/api/socket10`,// 获取K线
     SESSION_CHECK: `${apiServer}/api/socket11`, // 验证Session
-    ORDER_INFO: `${apiServer}/api/socket13` // 订单信息
+    ORDER_INFO: `${apiServer}/api/socket13`, // 订单信息
+    CHANGE_PASSWORD: `${apiServer}/api/socket14`
 };
 
 export const COLORS = {
@@ -59,3 +64,41 @@ export const PERIOD = [{
     label: 'MN',
     key: 43200
 }];
+
+export const LANGUAGES = [{
+    label: '简体中文',
+    value: 'zh-CN',
+    messages: zhCN
+}, {
+    label: 'English',
+    value: 'en-US',
+    messages: enUS
+}, {
+    label: '繁體中文',
+    value: 'zh-TW',
+    messages: zhTW
+}]
+
+export function getMessages(locale) {
+    let messages;
+    LANGUAGES.some(item => {
+        if (item.value === locale) {
+            messages = item.messages;
+            return true;
+        }
+        return false;
+    });
+    return messages;
+}
+
+export function getLocaleInfo (locale) {
+    let messages = getMessages(locale);
+    if (!messages) {
+        locale = LANGUAGES[0].value;
+        messages = LANGUAGES[0].messages
+    }
+    return {
+        locale,
+        messages
+    }
+}
