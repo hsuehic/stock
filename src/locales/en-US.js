@@ -152,5 +152,14 @@ export default {
     'text.network_error': 'Network error',
     'text.response_format_error': 'Invalid response format！',
     'login': 'Login',
-    'password': 'Password'
+    'password': 'Password',
+    'change_password': 'Change password',
+    'old_password': 'Origin password',
+    'new_password': 'New password',
+    'confirm_password': 'Confirm again',
+    'hint.old_password': 'Fill in original password ',
+    'hint.new_password': 'Fill in new password',
+    'hint.confirm_password': 'Fill in again to confirm',
+    'button.save': 'Save',
+    'text.save_password_success': 'Change password successfully！'
 }

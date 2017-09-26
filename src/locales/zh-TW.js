@@ -152,5 +152,14 @@ export default {
     'text.network_error': '網路請求錯誤',
     'text.response_format_error': '返回的数据格式不正确！',
     'login': '登入',
-    'password': '密碼'
+    'password': '密碼',
+    'change_password': '修改密码',
+    'old_password': '原密码',
+    'new_password': '新密码',
+    'confirm_password': '确认密码',
+    'hint_old_password': '填写原密码',
+    'hint_new_password': '填写新密码',
+    'hint_confirm_password': '再次填写确认',
+    'button.save': '保存',
+    'text.save_password_success': '修改密码成功！'
 }

@@ -24,6 +24,7 @@ import ReactEchartsCore from 'echarts-for-react/lib/core';
 import Scrollbars from 'react-custom-scrollbars';
 import CountingDown from './CountingDown';
 import ModalAbout from './About';
+import ModalChangePassword from './ChangePassword';
 
 import { getAccountDetails, getHistoryOrder, openOrder, getOpenOrder, getPrice, getQuotesHistory, getServerInfo, getSymbolGroup, logout, getOrderDetail } from '../api';
 
@@ -77,7 +78,8 @@ class App extends Component {
                 "credit": 0,
                 "currency": "USD",
                 "name_base64": "VGVzdCBBY2NvdW50",
-                "name": "Test Account"
+                "name": "Test Account",
+                "account": ''
             },
             activeKeyFooter: 'open-order',
             orders: [],
@@ -259,7 +261,8 @@ class App extends Component {
                     ]
                 }]
             },
-            isOpeningOrder: false
+            isOpeningOrder: false,
+            isModalChangePasswordVisible: false
         };
         this.onChartEvents = {
             dataZoom: this.onDataZoom.bind(this)
@@ -922,7 +925,7 @@ class App extends Component {
     createUpDownOrder (symbolName, type) {
         let order = this.state.order;
         order.type = type;
-        order.symbol = symbolName
+        order.symbol = symbolName;
         order.expiration = 1;
         order.investment = 5;
         this.setState({
@@ -1045,6 +1048,8 @@ class App extends Component {
 
     onHelpMenuClick ({key}) {
         if (key === '0') {
+            this.onShowChangePassword();
+        } else if (key === '1') {
             this.onShowAbout();
         }
     }
@@ -1100,7 +1105,18 @@ class App extends Component {
             modalCreateUpOrderVisible: false
         });
         this.submitOrder();
+    }
 
+    onShowChangePassword() {
+        this.setState({
+            isModalChangePasswordVisible: true
+        });
+    }
+
+    onHideChangePassword() {
+        this.setState({
+            isModalChangePasswordVisible: false
+        });
     }
 
     submitOrder () {
@@ -1161,7 +1177,7 @@ class App extends Component {
             { i18ns.map((i18n, index) => <MenuItem key={i18n.value}><span>{i18n.label}</span></MenuItem>)}
         </Menu>;
 
-        let helps = [<FormattedMessage id="menu.help.about" defaultMessage="关于"/>]
+        let helps = [<FormattedMessage id="change_password" defaultMessage="修改密码"/>,<FormattedMessage id="menu.help.about" defaultMessage="关于"/>]
         let helpMenu = <Menu onClick={this.onHelpMenuClick.bind(this)}>
             {helps.map((help,index) => <MenuItem key={index}><span>{help}</span></MenuItem>) }
         </Menu>;
@@ -1621,6 +1637,8 @@ class App extends Component {
                     </Modal>
 
                     <ModalAbout visible={this.state.modalAboutVisible} onClose={this.onHideAbout.bind(this)} />
+
+                    <ModalChangePassword login={this.state.account.account} visible={this.state.isModalChangePasswordVisible} onClose={this.onHideChangePassword.bind(this)} />
                 </div>
             </IntlProvider>
         );

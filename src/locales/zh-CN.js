@@ -152,5 +152,18 @@ export default {
     'text.network_error': '网络请求错误',
     'text.response_format_error': '返回的数据格式不正确！',
     'login': '登录',
-    'password': '密码'
+    'password': '密码',
+    'change_password': '修改密码',
+    'old_password': '原密码',
+    'new_password': '新密码',
+    'confirm_password': '确认密码',
+    'hint.old_password': '填写原密码',
+    'hint.new_password': '填写新密码',
+    'hint.confirm_password': '再次填写确认',
+    'button.save': '保存',
+    'text.save_password_success': '修改密码成功！',
+    'text.old_password_required': '请输入原密码',
+    'text.new_password_required': '请输入新密码',
+    'text.confirm_password_required': '请再次输入密码',
+    'text.password_inconsistent': '两次输入密码不一致!'
 }
