@@ -45,3 +45,13 @@ export function getQueryParam(name) {
     let params = getQueryParams();
     return params[name]
 }
+
+/**
+ * 判断是否是符合条件的密码，数字和字母的组合，且长度至少5位，不超过15位
+ * @param value
+ * @return bool
+ */
+export function isValidPassword(value) {
+    let reg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9a-zA-Z]{5,15}$/g;
+    return reg.test(value);
+}

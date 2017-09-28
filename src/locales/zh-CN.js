@@ -165,5 +165,12 @@ export default {
     'text.old_password_required': '请输入原密码',
     'text.new_password_required': '请输入新密码',
     'text.confirm_password_required': '请再次输入密码',
-    'text.password_inconsistent': '两次输入密码不一致!'
+    'text.password_inconsistent': '两次输入密码不一致!',
+    'text.need_to_change_password': '登录成功,请先修改密码!',
+    'invest_instruction': '说明',
+    'invest_description': '最小投资额:{minimum},最大投资额:{maximum},步长:{step}',
+    'product_full_name': '商品全称',
+    'product_EURUSDbo': '欧元兑美元',
+    'product_EURJPYbo': '欧元兑日元',
+    'product_USDJPYbo': '美元兑日元'
 }

@@ -11,6 +11,8 @@ import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl } from 'react-intl';
 
 import { changePassword } from '../../api';
+import { isValidPassword } from '../../lib/util';
+import BO_RET from '../../error';
 
 import { Form, Input, Button, Modal,message, notification } from 'antd';
 
@@ -19,11 +21,11 @@ const FormItem = Form.Item;
 const formItemLayout = {
     labelCol: {
         xs: { span: 24 },
-        sm: { span: 8 },
+        sm: { span: 6 },
     },
     wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 14 },
+        sm: { span: 16 },
     },
 };
 
@@ -61,48 +63,87 @@ class Component extends React.Component {
     }
 
     checkPassword(rule, value, callback) {
-        let { intl } = this.props;
+        let { intl, form } = this.props;
         let { formatMessage } = intl;
-        let reg = /(^\d+[a-zA-Z]+$)|(^[a-zA-Z]\d+$)/g
         let msg;
-        if (!reg.test(value)) {
+        if (value && !isValidPassword(value)) {
             msg = formatMessage({id: 'error2089'});
+        }
+        if (value && this.state.confirmDirty) {
+            form.validateFields(['confirm'], {force: true})
         }
         callback(msg);
     }
 
     checkConfirm(rule, value, callback) {
-        let { intl } = this.props;
+        let { intl, form } = this.props;
         let { formatMessage } = intl;
         let msg
-        msg = formatMessage({ id: 'text.password_inconsistent'});
+        if(value && value != form.getFieldValue('newpassword')) {
+            msg = formatMessage({ id: 'text.password_inconsistent'});
+        }
         callback(msg)
     }
 
+
+    processResponse (res) {
+        let { intl } = this.props;
+        let { formatMessage } = intl;
+        if (res.ok && res.status === 200) {
+            return res.json().then((json) => {
+                let code = json.code;
+                switch (code) {
+                    case BO_RET.BO_RET_OK.code:
+                        return json;
+                    default:
+                        json.message = formatMessage({id: `error${code}`, defaultMessage: formatMessage({id: 'text.unknown_error'})});
+                        message.error(`${code}: ${json.message}`);
+                        return json;
+                }
+            });
+        }
+        else {
+            let code = res.status;
+            let message = `Network error: ${res.status} ${res.statusText}`
+            message.error(message)
+            return {
+                code,
+                message
+            };
+        }
+    }
+
     onSave() {
-        let { form, intl } = this.props;
+        let { form, intl, onClose, login } = this.props;
         let { getFieldsValue, validateFields} = form;
         let { formatMessage } = intl;
         validateFields(errors => {
             if (!errors) {
-                let { login, password, newpassword } = getFieldsValue();
+                let {  password, newpassword } = getFieldsValue();
+
                 let params = {login, password, newpassword };
                 this.setState({
                     isSaving: true
                 });
                 let promise = changePassword(params);
-                promise.then(res => {
+                promise.then(this.processResponse.bind(this)).then(res => {
                     this.setState({
                         isSaving: false
                     });
                     if (res.code === 0) {
-                        message.success(formatMessage({id: 'text.save_password_success'}))
-                    } else {
-                        openNotificationWithIcon('error', formatMessage({id: 'title.error'}), formatMessage({id: `error${res.code}`, defaultMessage: formatMessage({id: 'text.unknown_error'})}))
+                        message.success(formatMessage({id: 'text.save_password_success'}));
+                        form.resetFields();
+                        onClose(true);
                     }
                 });
             }
         });
+    }
+
+    onClose() {
+        let { onClose, form } = this.props;
+        form.resetFields();
+        onClose();
     }
 
     render() {
@@ -118,10 +159,9 @@ class Component extends React.Component {
             footer={
                 <div style={{textAlign: 'right'}}>
                     <Button onClick={this.onSave.bind(this)} type="primary" style={{width: '60px'}} size={'small'} className={'btn-default'}><FormattedMessage id="button.save" defaultMessage="保存"/> </Button>
-                    <Button onClick={this.props.onClose} style={{width: '60px', marginLeft: '10px'}} size={'small'} className={'btn-default'}><FormattedMessage id="button.cancel" defaultMessage="取消"/> </Button>
+                    <Button onClick={this.onClose.bind(this)} style={{width: '60px', marginLeft: '10px'}} size={'small'} className={'btn-default'}><FormattedMessage id="button.cancel" defaultMessage="取消"/> </Button>
                 </div>
             }
-            style={{width: '320px'}}
         >
             <div>
                <Form>
@@ -131,8 +171,6 @@ class Component extends React.Component {
                                rules: [{
                                    required: true,
                                    message: formatMessage({id: 'text.old_password_required'})
-                               }, {
-
                                }]
                            })(
                                <Input type="password" placeholder={formatMessage({id: 'hint.old_password'})} />
@@ -145,6 +183,8 @@ class Component extends React.Component {
                                rules: [{
                                    required: true,
                                    message: formatMessage({id: 'text.new_password_required'})
+                               }, {
+                                   validator: this.checkPassword.bind(this)
                                }]
                            })(
                                <Input type="password" placeholder={formatMessage({id: 'hint.new_password'})} />
@@ -157,6 +197,8 @@ class Component extends React.Component {
                                rules: [{
                                    required: true,
                                    message: formatMessage({id: 'text.confirm_password_required'})
+                               }, {
+                                   validator: this.checkConfirm.bind(this)
                                }]
                            })(
                                <Input type="password" placeholder={formatMessage({id: 'hint.confirm_password'})} onBlur={this.handleConfirmBlur.bind(this)} />

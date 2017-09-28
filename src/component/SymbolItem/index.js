@@ -8,11 +8,11 @@
 import React from 'react';
 import { Button } from 'antd';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, injectIntl } from 'react-intl';
 
 import { COLORS } from '../../constant';
 
-export default class SymbolItem extends React.Component {
+class SymbolItem extends React.Component {
 
     static propTypes = {
         symbol: PropTypes.object,
@@ -81,21 +81,34 @@ export default class SymbolItem extends React.Component {
     }
 
     render () {
-        let { symbol, favorites, isOpen } = this.props;
-        let color = this.getTextColor(symbol.direction);
+        let { symbol, favorites, isOpen, intl } = this.props;
+        let { formatMessage } = intl;
+        let { name, digits, price, direction} = symbol;
+        let color = this.getTextColor(direction);
         let collapsedNode = <div className="row" style={{cursor: 'pointer'}} onClick={this.onRowClick.bind(this)}>
             <div className="cell">{symbol.name}
-            </div><div className="cell" style={{color: color}}> {symbol.direction > 0 ? <b>▲</b> : <b>▼</b>} &nbsp;&nbsp;{symbol.price.toFixed(symbol.digits)}
+            </div><div className="cell" style={{color: color}}> {direction > 0 ? <b>▲</b> : <b>▼</b>} &nbsp;&nbsp;{price.toFixed(symbol.digits)}
             </div>
         </div>;
+        let defaultMessage = '无商品全称';
+        let productName = formatMessage({id: `product_${name}`, defaultMessage});
 
         let expandedNode = <div className="row-selected" style={{padding: '4px', backgroundColor: '#6a6a6a', borderRadius: '4px'}}>
             <div className="sub-row">
                 <div className="cell">{symbol.name}
-                </div><div className="cell" style={{color: color}}><b>▼</b>{symbol.price.toFixed(symbol.digits)}
+                </div><div className="cell" style={{color: color}}><b>▼</b>{price.toFixed(digits)}
                 </div>
             </div>
             <div className="sub-row">
+                {
+                    productName !== defaultMessage &&
+                    <div className="sub-row">
+                        <div className="cell"><FormattedMessage id="product_full_name" defaultMessage="商品全称"/>:</div>
+                        <div className="cell">
+                            { productName }
+                        </div>
+                    </div>
+                }
                 <div className="cell"><FormattedMessage id="title.addToFavorite" defaultMessage="收藏"/></div>
                 <div className="cell">
                     <Button className={ favorites.favorite1 ? 'btn-favorite selected' : 'btn-favorite'} onClick={this.onFavoriteClick.bind(this,'1')} size={'small'} >1</Button>
@@ -129,3 +142,5 @@ export default class SymbolItem extends React.Component {
         return node;
     }
 }
+
+export default injectIntl(SymbolItem);

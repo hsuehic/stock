@@ -309,7 +309,6 @@ class App extends Component {
                 message
             };
         }
-
     }
 
     watchOrders (){
@@ -499,8 +498,6 @@ class App extends Component {
                 chartOptions
             });
         }
-
-
     }
 
     getPrices () {
@@ -580,6 +577,18 @@ class App extends Component {
         let symbol = this.state.symbolList[symbolName];
         if (symbol) {
             v = symbol.price;
+        }
+        return v;
+    }
+
+    getSymbolInfo (symbolName) {
+        let symbol = this.state.symbolList[symbolName];
+        let v = {minimum: 5, maximum: 10, step: 1};
+        if (symbol) {
+            let minimum = symbol.minimum/100;
+            let maximum = symbol.maximum/100;
+            let step = symbol.step/100;
+            v = {minimum, maximum, step};
         }
         return v;
     }
@@ -865,7 +874,7 @@ class App extends Component {
 
     setLocale (language) {
         let localeInfo = getLocaleInfo(language);
-        let { locale, messages } = localeInfo.locale;
+        let { locale, messages } = localeInfo;
         let selectedLanguageKeys = [locale];
         let loadingOpts = this.state.loadingOpts;
         loadingOpts.text = messages['text.loading'];
@@ -1504,6 +1513,14 @@ class App extends Component {
                             </div><div className="cell">
                                 <Button onClick={this.onSubmitCreateOrderUp.bind(this)} style={{width: '138px'}} size={'small'} className={ 'btn-up'}>
                                     <FormattedMessage id="button.up" defaultMessage="看涨"/></Button>
+                            </div>
+                        </div>
+
+                        <div className="order-row">
+                            <div className="cell">
+                                <FormattedMessage id="invest_instruction" defaultMessage="说明"/>
+                            </div><div className="cell" style={{width: '66.66%'}}>
+                                <FormattedMessage values={this.getSymbolInfo(this.state.symbol)} id="invest_description" defaultMessage="最小投资额:{minimum},最大投资额:{maximum},步长:{step}"/>
                             </div>
                         </div>
                         <div className="order-row">

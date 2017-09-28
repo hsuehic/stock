@@ -174,5 +174,5 @@ export const getOrderDetail = (params) => {
 };
 
 export const changePassword = (params) => {
-    return post(params)
+    return post(API_URL.CHANGE_PASSWORD, params)
 }

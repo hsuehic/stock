@@ -161,5 +161,16 @@ export default {
     'hint.new_password': 'Fill in new password',
     'hint.confirm_password': 'Fill in again to confirm',
     'button.save': 'Save',
-    'text.save_password_success': 'Change password successfully！'
+    'text.save_password_success': 'Change password successfully！',
+    'text.old_password_required': 'Please input old password',
+    'text.new_password_required': 'Please input new password',
+    'text.confirm_password_required': 'Input new password again',
+    'text.password_inconsistent': 'Two passwords that you enter are inconsistent!',
+    'text.need_to_change_password': '登录成功,请先修改密码!',
+    'invest_instruction': '说明',
+    'invest_description': '最小投资额:{minimum},最大投资额:{maximum},步长:{step}',
+    'product_full_name': '商品全称',
+    'product_EURUSDbo': '欧元兑美元',
+    'product_EURJPYbo': '欧元兑日元',
+    'product_USDJPYbo': '美元兑日元'
 }

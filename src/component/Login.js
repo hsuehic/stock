@@ -7,7 +7,7 @@
 
 
 import React from 'react';
-import { Button, notification, Select } from 'antd';
+import { Button, notification, Select, message } from 'antd';
 
 import BO_RET from '../error';
 import {login} from '../api';
@@ -16,8 +16,10 @@ import { FormattedMessage, IntlProvider, addLocaleData } from 'react-intl';
 import zh from 'react-intl/locale-data/zh';
 import en from 'react-intl/locale-data/en';
 
+import ModalChangePassword from './ChangePassword';
+
 import { LANGUAGES, getMessages, getLocaleInfo } from '../constant';
-import { getBrowserLanguage, getQueryParam } from '../lib/util'
+import { getBrowserLanguage, getQueryParam } from '../lib/util';
 
 addLocaleData([...zh, ...en]);
 
@@ -43,7 +45,9 @@ export default class Login extends React.Component {
             errorMessage: '',
             isFetching: false,
 			messages,
-            locale
+            locale,
+            account: '',
+            isModalChangePasswordVisible: false
         };
     }
 
@@ -61,17 +65,23 @@ export default class Login extends React.Component {
 
     setLocale (locale) {
         let localeInfo = getLocaleInfo(locale);
-        locale = localeInfo;
-        let { messages } = localeInfo
-        this.setState({
-            locale,
-            messages
-        });
+        this.setState(localeInfo);
     }
 
     onSelectLanguage(value) {
         this.setLocale(value)
     }
+
+    onHideChangePassword(value) {
+        if (value) {
+            let { locale } = this.state;
+            window.location.href = `index.php?lng=${locale}`;
+        }
+        this.setState({
+            isModalChangePasswordVisible: false
+        });
+    }
+
     processResponse (res) {
         if (res.ok && res.status === 200) {
             return res.json().then((json) => {
@@ -115,15 +125,22 @@ export default class Login extends React.Component {
         });
 
         this.setState({
-            isFetching: true
+            isFetching: true,
+            account: username
         });
         promise.then(this.processResponse.bind(this)).then((res) => {
             this.setState({
                 isFetching: false
             });
             if (res.code === 0) {
-                let { locale } = this.state;
-                window.location.href = `index.php?lng=${locale}`;
+                if (password !== 'aa8888') {
+                    this.goMain();
+                } else {
+                    message.warning(this.state.messages['text.need_to_change_password']);
+                    this.setState({
+                        isModalChangePasswordVisible: true
+                    });
+                }
             } else {
                 this.setState({
                     loginError: true,
@@ -139,6 +156,11 @@ export default class Login extends React.Component {
                 description: this.state.messages['text.response_format_error']
             });
         });
+    }
+
+    goMain() {
+        let { locale } = this.state;
+        window.location.href = `index.php?lng=${locale}`;
     }
 
     render() {
@@ -194,6 +216,8 @@ export default class Login extends React.Component {
             <div className="login-row footer">
                 <a href="http://web.money-bo.com/" target="_blank">web.money-bo.com</a>
             </div>
+
+            <ModalChangePassword login={this.state.account} visible={this.state.isModalChangePasswordVisible} onClose={this.onHideChangePassword.bind(this)} />
         </div>
         </IntlProvider>
     }
