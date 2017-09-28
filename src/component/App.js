@@ -427,6 +427,7 @@ class App extends Component {
                 this.setState({
                     orders: res.data.orders
                 });
+                this.updateMarkLine();
             }
         });
     }
@@ -468,30 +469,64 @@ class App extends Component {
         return promise;
     }
 
+    getOpenOrdersBySymbol () {
+        let { orders, symbol } = this.state;
+        let v = [];
+        if (orders && orders.length > 0) {
+            v = orders.filter((item) => {
+                return item.symbol === symbol;
+            });
+        }
+        return v;
+    }
+
     updateMarkLine () {
         let chartOptions = this.state.chartOptions;
         let data = chartOptions.series[0].data;
+
+
         if (data && data.length > 0) {
             let len = data.length;
             let item = data[len - 1];
             let price = item[1];
             let startIndex = Math.ceil(this.dataZoom.start * len / 100) - 1;
             let lastIndex = Math.floor(this.dataZoom.end * len / 100) - 1;
+            let marklineData = [
+                [
+                    {
+                        name: `${price}`,
+                        coord: [startIndex, price]
+                    },
+                    {
+                        name: `${price}`,
+                        coord: [lastIndex, price]
+                    }
+                ]
+            ];
+            let orders = this.getOpenOrdersBySymbol();
+            if (orders && orders.length > 0) {
+                orders.map((item) => {
+                    let { position, open_price } = item;
+                    marklineData.push([
+                        {
+                            name: `#${position}`,
+                            coord: [startIndex, open_price],
+                            lineStyle: {
+                                normal: {
+                                    color: '#ff0000'
+                                }
+                            }
+                        },
+                        {
+                            coord: [lastIndex, open_price]
+                        }
+                    ]);
+                });
+            }
 
             let markLink = {
                 symbol: ['none', 'none'],
-                data: [
-                    [
-                        {
-                            name: `${price}`,
-                            coord: [startIndex, price]
-                        },
-                        {
-                            name: `${price}`,
-                            coord: [lastIndex, price]
-                        }
-                    ]
-                ]
+                data: marklineData
             };
             chartOptions.series[0].markLine = markLink;
             this.setState({
@@ -544,20 +579,42 @@ class App extends Component {
                    let startIndex = Math.ceil(this.dataZoom.start * len / 100) - 1;
                    let lastIndex = Math.floor(this.dataZoom.end * len / 100) - 1;
 
-                   let markLink = {
-                       symbol: ['none', 'none'],
-                       data: [
-                           [
+                   let marklineData = [
+                       [
+                           {
+                               name: `${price}`,
+                               coord: [startIndex, price]
+                           },
+                           {
+                               name: `${price}`,
+                               coord: [lastIndex, price]
+                           }
+                       ]
+                   ];
+                   let orders = this.getOpenOrdersBySymbol();
+                   if (orders && orders.length > 0) {
+                       orders.map((item) => {
+                           let { position, open_price } = item;
+                           marklineData.push([
                                {
-                                   name: `${price}`,
-                                   coord: [startIndex, price]
+                                   name: `#${position}`,
+                                   coord: [startIndex, open_price],
+                                   lineStyle: {
+                                       normal: {
+                                           color: '#ff0000'
+                                       }
+                                   }
                                },
                                {
-                                   name: `${price}`,
-                                   coord: [lastIndex, price]
+                                   coord: [lastIndex, open_price]
                                }
-                           ]
-                       ]
+                           ]);
+                       });
+                   }
+
+                   let markLink = {
+                       symbol: ['none', 'none'],
+                       data: marklineData
                    };
                    chartOptions.series[0].markLine = markLink;
                    chartOptions.series[0].data = data;
