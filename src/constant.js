@@ -24,7 +24,8 @@ export const API_URL = {
     QUOTES_HISTORY: `${apiServer}/api/socket10`,// 获取K线
     SESSION_CHECK: `${apiServer}/api/socket11`, // 验证Session
     ORDER_INFO: `${apiServer}/api/socket13`, // 订单信息
-    CHANGE_PASSWORD: `${apiServer}/api/socket14`
+    CHANGE_PASSWORD: `${apiServer}/api/socket14`, //修改密码
+    GET_USERNAME: `https://my.money-bo.com/backoffice/zh/getname.php` // 获取用户名
 };
 
 export const COLORS = {
