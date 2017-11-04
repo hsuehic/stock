@@ -96,7 +96,7 @@ class SymbolItem extends React.Component {
         let expandedNode = <div className="row-selected" style={{padding: '4px', backgroundColor: '#6a6a6a', borderRadius: '4px'}}>
             <div className="sub-row">
                 <div className="cell">{symbol.name}
-                </div><div className="cell" style={{color: color}}><b>▼</b>{price.toFixed(digits)}
+                </div><div className="cell" style={{color: color}}>{direction > 0 ? <b>▲</b> : <b>▼</b>}{price.toFixed(digits)}
                 </div>
             </div>
             <div className="sub-row">
