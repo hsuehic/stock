@@ -118,7 +118,7 @@ class SymbolItem extends React.Component {
             </div>
             <div className="sub-row">
                 <div className="cell"><FormattedMessage id="title.payout" defaultMessage="盈利"/>: 80%</div>
-                <div className="cell">5.00 &nbsp; <FormattedMessage id="title.investment" defaultMessage="投资"/> <br />
+                <div className="cell">100 &nbsp; <FormattedMessage id="title.investment" defaultMessage="投资"/> <br />
                     60<FormattedMessage id="unit.seconds" defaultMessage="秒"/>
                 </div>
             </div>
