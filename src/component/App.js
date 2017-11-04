@@ -1566,7 +1566,7 @@ class App extends Component {
                             <div className="cell">
                                 <FormattedMessage id="title.investmentAmount" defaultMessage="投放资本"/>
                             </div><div className="cell">
-                                <input id="investment" style={{width: '100px', marginTop: '4px'}} name="investment" defaultValue="5.0" type="text" ref = {(input) => {this.investmentInput = input}} />
+                                <input id="investment" style={{width: '100px', marginTop: '4px'}} name="investment" defaultValue="" type="text" ref = {(input) => {this.investmentInput = input}} />
                             </div><div className="cell">
                                 <Button onClick={this.onSubmitCreateOrderUp.bind(this)} style={{width: '138px'}} size={'small'} className={ 'btn-up'}>
                                     <FormattedMessage id="button.up" defaultMessage="看涨"/></Button>
