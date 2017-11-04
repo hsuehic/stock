@@ -174,5 +174,9 @@ export const getOrderDetail = (params) => {
 };
 
 export const changePassword = (params) => {
-    return post(API_URL.CHANGE_PASSWORD, params)
-}
+    return post(API_URL.CHANGE_PASSWORD, params);
+};
+
+export const getUserName = (params) => {
+    return post(API_URL.GET_USERNAME, params);
+};
