@@ -26,7 +26,7 @@ import CountingDown from './CountingDown';
 import ModalAbout from './About';
 import ModalChangePassword from './ChangePassword';
 
-import { getAccountDetails, getHistoryOrder, openOrder, getOpenOrder, getPrice, getQuotesHistory, getServerInfo, getSymbolGroup, logout, getOrderDetail } from '../api';
+import { getAccountDetails, getHistoryOrder, openOrder, getOpenOrder, getPrice, getQuotesHistory, getServerInfo, getSymbolGroup, logout, getOrderDetail, getUserName } from '../api';
 
 import { COLORS, PERIOD, LANGUAGES, getLocaleInfo } from '../constant';
 import { getBrowserLanguage, getQueryParam } from '../lib/util';
@@ -387,6 +387,18 @@ class App extends Component {
                 this.setState({
                     account: res.data
                 });
+                let { name, account: login } = res.data
+                if (name === 'Option Trading' ) {
+                    let p = { login };
+                    let d = getUserName(p);
+                    d.then((res) => {
+                        let data = res.json();
+                        let { name } = data;
+                        let { account } = this.state;
+                        account.name = name;
+                        this.setState({account});
+                    });
+                }
             }
         });
         return promise;
