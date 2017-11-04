@@ -1577,7 +1577,7 @@ class App extends Component {
                             <div className="cell">
                                 <FormattedMessage id="invest_instruction" defaultMessage="说明"/>
                             </div><div className="cell" style={{width: '66.66%'}}>
-                                <FormattedMessage values={this.getSymbolInfo(this.state.symbol)} id="invest_description" defaultMessage="最小投资额:{minimum},最大投资额:{maximum},步长:{step}"/>
+                                <FormattedMessage values={this.getSymbolInfo(this.state.symbol)} id="invest_description" defaultMessage="最小投资额:{minimum},最大投资额:{maximum}"/>
                             </div>
                         </div>
                         <div className="order-row">
