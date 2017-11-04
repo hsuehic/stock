@@ -650,6 +650,19 @@ class App extends Component {
         return v;
     }
 
+    getAccountSymbolInfo () {
+        let v = {minimum: 5, maximum: 10, step: 1};
+        let { symbols } = this.state
+        if (symbols.length > 0) {
+            let symbol = symbols[0]
+            let minimum = symbol.minimum/100;
+            let maximum = symbol.maximum/100;
+            let step = symbol.step/100;
+            v = {minimum, maximum, step};
+        }
+        return v;
+    }
+
     getServerInfo () {
         let self = this;
         let params = {};
@@ -1544,6 +1557,11 @@ class App extends Component {
                                             <div className="row">
                                                 <div className="cell" style={{width: '120px'}}><FormattedMessage id="credit" defaultMessage="信用额"/>
                                                 </div><div className="cell">{this.state.account.credit}</div>
+                                            </div>
+                                            <div className="row">
+                                                <div className="cell" style={{width: '120px'}}><FormattedMessage id="invest_instruction" defaultMessage="说明"/>
+                                                </div><div className="cell">
+                                                <FormattedMessage values={this.getAccountSymbolInfo()} id="invest_description" defaultMessage="最小投资额:{minimum},最大投资额:{maximum}"/></div>
                                             </div>
                                         </div>
                                     </Scrollbars>

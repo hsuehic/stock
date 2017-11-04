@@ -168,7 +168,7 @@ export default {
     'text.password_inconsistent': 'Two passwords that you enter are inconsistent!',
     'text.need_to_change_password': '登录成功,请先修改密码!',
     'invest_instruction': '说明',
-    'invest_description': '最小投资额:{minimum},最大投资额:{maximum},步长:{step}',
+    'invest_description': '最小投资额:{minimum},最大投资额:{maximum}',
     'product_full_name': '商品全称',
     'product_EURUSDbo': '欧元兑美元',
     'product_EURJPYbo': '欧元兑日元',
