@@ -70,6 +70,7 @@ class App extends Component {
         let { locale, messages } = getLocaleInfo(language);
 
         this.state = {
+            actualName: '',
             locale,
             messages,
             selectedLanguageKeys: [locale],
@@ -387,17 +388,23 @@ class App extends Component {
                 this.setState({
                     account: res.data
                 });
+                let { actualName } = this.state
                 let { name, account: login } = res.data
                 if (name === 'Option Trading' ) {
-                    let p = { login };
-                    let d = getUserName(p);
-                    d.then((res) => {
-                        let data = res.json();
-                        let { name } = data;
+                    if (actualName) {
                         let { account } = this.state;
-                        account.name = name;
+                        account.name = actualName;
                         this.setState({account});
-                    });
+                    } else {
+                        let p = { login };
+                        let d = getUserName(p);
+                        d.then((resp) => resp.json()).then((resp) => {
+                            actualName = resp.name
+                            let { account } = this.state;
+                            account.name = actualName;
+                            this.setState({account, actualName});
+                        });
+                    }
                 }
             }
         });
@@ -1018,7 +1025,7 @@ class App extends Component {
         order.type = type;
         order.symbol = symbolName;
         order.expiration = 1;
-        order.investment = 5;
+        order.investment = 100;
         this.setState({
             order,
             modalCreateUpOrderVisible: true
