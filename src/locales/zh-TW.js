@@ -184,5 +184,6 @@ export default {
 	'product_GBPCHFbo': '英鎊兌瑞士法郎',
 	'product_EURCADbo': '歐元兌加元',
 	'product_XAUUSDbo': '黃金',
-	'product_XAGUSDbo': '白銀'
+	'product_XAGUSDbo': '白銀',
+    'error_input_investment': '请输入投入资本'
 }

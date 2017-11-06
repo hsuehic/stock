@@ -5,7 +5,7 @@ import { FormattedMessage, IntlProvider, addLocaleData } from 'react-intl';
 import zh from 'react-intl/locale-data/zh';
 import en from 'react-intl/locale-data/en';
 
-import { Button, Dropdown, Menu, Modal, notification, Select, Tabs } from 'antd';
+import { Button, Dropdown, Menu, Modal, notification, Select, Tabs, message } from 'antd';
 import SymbolList from './SymbolList';
 import fecha from 'fecha';
 import BO_RET from '../error';
@@ -1033,20 +1033,23 @@ class App extends Component {
     }
 
     onSubmitCreateOrder (type) {
-        try {
-            let order = this.state.order;
-            order.investment = parseFloat(this.investmentInput.value);
-            order.type = type;
-            order.symbol = this.state.symbol;
-            this.setState({
-                order,
-                modalCreateUpOrderVisible: true,
-                modalCreateOrderVisible: false
-            });
-        } catch (ex) {
-            console.log(ex);
+        if (this.investmentInput.value) {
+            try {
+                let order = this.state.order;
+                order.investment = parseFloat(this.investmentInput.value);
+                order.type = type;
+                order.symbol = this.state.symbol;
+                this.setState({
+                    order,
+                    modalCreateUpOrderVisible: true,
+                    modalCreateOrderVisible: false
+                });
+            } catch (ex) {
+                console.log(ex);
+            }
+        } else {
+            message.error(this.state.messages['error_input_investment']);
         }
-
     }
 
     onSubmitCreateOrderUp () {

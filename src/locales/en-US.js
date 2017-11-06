@@ -184,5 +184,6 @@ export default {
 	'product_GBPCHFbo': 'GBPCHFbo',
 	'product_EURCADbo': 'EURCADbo',
 	'product_XAUUSDbo': 'Gold',
-	'product_XAGUSDbo': 'Silver'
+	'product_XAGUSDbo': 'Silver',
+    'error_input_investment': '请输入投入资本'
 }
