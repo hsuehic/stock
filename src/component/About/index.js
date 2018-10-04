@@ -5,7 +5,6 @@
  * @description:
  */
 
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
@@ -14,41 +13,67 @@ import { Button, Modal } from 'antd';
 
 import logo from '../../assets/clm3-logo.png';
 
+const intl = () => {};
+
 export default class Component extends React.Component {
+  static PropTypes = {
+    visible: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired
+  };
 
-    static PropTypes = {
-        visible: PropTypes.bool.isRequired,
-        onClose: PropTypes.func.isRequired
-    };
+  constructor(props) {
+    super(props);
+  }
 
-    constructor(props) {
-        super(props);
-    }
+  componentDidMount() {}
 
-    componentDidMount() {
-
-    }
-
-    render() {
-        return <Modal
-            className={'order-dialog-info'}
-            closable={false}
-            visible={this.props.visible}
-            title={ <FormattedMessage id="menu.help.about" defaultMessage="关于" />}
-            footer={
-                <div style={{textAlign: 'right'}}>
-                    <Button onClick={this.props.onClose} style={{width: '60px'}} size={'small'} className={'btn-default'}><FormattedMessage id="close" defaultMessage="关闭"/> </Button>
-                </div>
-            }
-        >
+  render() {
+    return (
+      <Modal
+        className={'order-dialog-info'}
+        closable={false}
+        visible={this.props.visible}
+        title={<FormattedMessage id="menu.help.about" defaultMessage="关于" />}
+        footer={
+          <div style={{ textAlign: 'right' }}>
+            <Button
+              onClick={this.props.onClose}
+              style={{ width: '60px' }}
+              size={'small'}
+              className={'btn-default'}>
+              <FormattedMessage id="close" defaultMessage="关闭" />{' '}
+            </Button>
+          </div>
+        }>
+        <div>
+          <img
+            src={logo}
+            style={{
+              display: 'inline-block',
+              width: '140px',
+              height: '96px',
+              marginRight: '15px',
+              verticalAlign: 'middle'
+            }}
+          />
+          <div
+            style={{
+              display: 'inline-block',
+              width: '400px',
+              lineHeight: '32px',
+              verticalAlign: 'middle',
+              textAlign: 'center'
+            }}>
             <div>
-                <img src={logo} style={{display: 'inline-block', width: '140px', height: '96px', marginRight: '15px',verticalAlign: 'middle'}} /><div style={{
-                    display: 'inline-block', width: '400px', lineHeight: '32px', verticalAlign: 'middle', textAlign: 'center'}}>
-                <div><strong>Core Liquidity Market</strong></div>
-                    <div>http://www.clmforex.com</div>
-                    <div>Copyright © 2017 - 2020</div>
-                </div>
+              <strong>Core Liquidity Market</strong>
             </div>
-        </Modal>
-    }
+            <div>http://www.clmforex.com</div>
+            <div>Copyright © 2017 - 2020</div>
+            {intl('menu.historyOrders')}
+            <div />
+          </div>
+        </div>
+      </Modal>
+    );
+  }
 }

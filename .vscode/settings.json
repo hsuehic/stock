@@ -1,0 +1,5 @@
+{
+  "intl.functionName": "intl",
+  "intl.dictionaryFilePath": "src/locales/en.js",
+  "intl.pattern": "(?<=[\\s{(])((intl\\('([a-zA-Z][a-zA-Z0-9._-]*)'\\))|(intl\\(\"([a-zA-Z][a-zA-Z0-9._-]*)\"\\)))"
+}
